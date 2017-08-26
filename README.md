@@ -7,10 +7,10 @@
  	Super Disease.
 
 ## Story
-	You're a microorganism. But not an ordinary one, you're Super D. A virus who has came from
+	You're a microorganism. But not an ordinary one, you're Super D. A virus that came from
 	another planet and has a giant and powerful weapon, your boxing glove! Living as a virus in a hostil environment, 
 	like human body, it's not that easy. You must ensure your survival and make sure that your kind plorifere, by defeating 
-	the inside body's antibodies, known as N-Ts, and penetrating the main cell to install your own core in it.
+	inside body's antibodies, known as N-Ts, and penetrating system's main cell to install your own core in it.
 
 ## Goal
 	Your goal it's to achieve what any microorganism has done it, yet: dominate human nervous system's main cell, and 
@@ -70,4 +70,4 @@
 		First demostration of game's project.
 		Super D animations almost complete.
 		Physics, gravity and collision first implementation.
-		All sound effects, background music and frames are subject to change.
+		All sound effects, background music and sprites are subject to change.

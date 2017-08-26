@@ -13,8 +13,7 @@
 	inside body's antibodies, known as N-Ts, and penetrating system's main cell to install your own core in it.
 
 ## Goal
-	Your goal it's to achieve what any microorganism has done it, yet: dominate human nervous system's main cell, and 
-	overcome human race as dominant species at planet Earth.
+	Your goal it's to achieve what any microorganism has ever done, yet: dominate human nervous system's main cell, and overcome human race as dominant species at planet Earth.
 
 ## Game navigation diagram
  

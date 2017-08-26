@@ -1,7 +1,7 @@
 # Super Disease - The Game
 
 ## Actual Version
-	0.0.4.
+	0.0.4
 
 ## Game name
  	Super Disease.
@@ -19,16 +19,23 @@
  | Splash Scene | 
  | ------------ |
  
- 2. Main menu 
+ 2. 
+ | Main menu |
+ | --------- | 
+ 
+| Menu           | Function      |
+| -------------  | ------------- |
 | Start new Game | Start a new game from beginning |
-| Load Game | Access to a list of saved games in Safe spots |
-| Phases | Access to a list of *phases completed so far |
-| Credits | Special credits |
-| Exit | Exit game |
+| Load Game      | Access to a list of saved games in Safe spots |
+| Phases         | Access to a list of *phases completed so far |
+| Credits        | Special credits |
+| Exit           | Exit game |
 
 * Phases
+```
 	Each phase represent a human system, divided in two or three modules. For this project,
 	the game will try to reproduce respiratory, digestive and nervous systems.
+```
 
 ## Specific objectives
 	Kill the number necessary of Nts to move to the next level;
@@ -53,7 +60,7 @@
 	(Music - You Can't Hide).
 
 ## Versions Features
-	*0.0.4
+	**0.0.4**
 		First demostration of game's project.
 		Game navigation not implemented yet.
 		Super D animations almost complete.

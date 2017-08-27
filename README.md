@@ -1,7 +1,7 @@
 # Super Disease - The Game
 
 ## Actual Version
-	0.0.4
+	0.0.4.2
 
 ## Game name
  	Super Disease.
@@ -70,3 +70,7 @@
 		Super D animations almost complete.
 		Physics, gravity and collision first implementation.
 		All sound effects, background music and sprites are subject to change.
+	**0.0.4.2**
+		Super D animations 90% complete.
+		Fixed invincibility issue after punch (if player has stood still).
+		Life system development start.

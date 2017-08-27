@@ -6,24 +6,42 @@
 
 -- Configure image sheet
 local spritesheetSuperD = require("spritesheet.spritesheet-superD")
+local spritesheetSuperDdamaged = require("spritesheet.spritesheet-superD-taking-damage")
+local spritesheetTopBar = require("spritesheet.spritesheet-superD-top-bar")
 local spritesheetNt = require("spritesheet.spritesheet-nT")
 
 local superDobjectSheet = graphics.newImageSheet( "assets/img/spritesheet-superD.png", spritesheetSuperD.getSheet() )
+local superDdamagedObjectSheet = graphics.newImageSheet( "assets/img/spritesheet-superD-taking-damage.png", spritesheetSuperDdamaged.getSheet() )
+local superDtopBarObjectSheet = graphics.newImageSheet( "assets/img/spritesheet-superD-top-bar.png", spritesheetTopBar.getSheet() )
 local nTobjectSheet = graphics.newImageSheet( "assets/img/spritesheet-nT.png", spritesheetNt.getSheet() )
 
 local sequencesRunSuperDorNt =
   {
     { name = "static", frames = {7, 16} },
-    { name = "movingRight", frames = {9} }, { name = "movingLeft", frames = {8} },
+    { name = "movingRight", frames = {9} },
+    { name = "movingLeft", frames = {8} },
     { name = "attackRight", start = 10, count = 7, time = 260, loopCount = 1 },
-    { name = "attackLeft", start = 1, count = 7, time = 260, loopCount = 1 }
+    { name = "attackLeft", start = 1, count = 7, time = 260, loopCount = 1 },
+    { name = "superDtakingDamage", sheet = superDdamagedObjectSheet, frames = {2, 1} }
+  }
+
+local sequencesTopBar =
+  {
+    { name = "fullLife", frames = {4} },
+    { name = "threeQuartersLife", frames = {6} },
+    { name = "twoQuartersLife", frames = {7} },
+    { name = "oneQuarterLife", frames = {5} },
+    { name = "emptyLife", frames = {3} },
+    { name = "nTs", frames = {2, 1} }
   }
 
 -- Initialize variables
 local superD
 local nT
 local nTtable = {}
-local gamepad
+local lifeOne
+local lifeTwo
+local lifeThree
 local ground
 local wallRight
 local wallLeft
@@ -34,7 +52,7 @@ local jumpButton
 local moveRightButton
 local moveLeftButton
 local died = false
---local lives = 12
+local lives = 12
 local xScale = 0.5
 local yScale = 0.3
 --local offsetSuperDParams = { 0,-37, 37,-10, 23,34, -23,34, -37,-10 }
@@ -68,10 +86,33 @@ superD.x = display.contentCenterX + 400
 superD.y = display.contentHeight - 290
 superD.myName = "superD"
 
+-- Load LifeBar
+lifeOne = display.newSprite( mainGroup, superDtopBarObjectSheet, sequencesTopBar )
+lifeOne:scale(xScale, yScale)
+lifeOne.x = display.contentCenterX - 450
+lifeOne.y = display.contentHeight - 640
+lifeOne.myName = "lifeOne"
+
+lifeTwo = display.newSprite( mainGroup, superDtopBarObjectSheet, sequencesTopBar )
+lifeTwo:scale(xScale, yScale)
+lifeTwo.x = display.contentCenterX - 330
+lifeTwo.y = display.contentHeight - 640
+lifeTwo.myName = "lifeTwo"
+
+lifeThree = display.newSprite( mainGroup, superDtopBarObjectSheet, sequencesTopBar )
+lifeThree:scale(xScale, yScale)
+lifeThree.x = display.contentCenterX - 210
+lifeThree.y = display.contentHeight - 640
+lifeThree.myName = "lifeThree"
+
+lifeOne.alpha = 0.8
+lifeTwo.alpha = 0.8
+lifeThree.alpha = 0.8
+
 -- Initialize physics
 physics = require("physics")
 physics.start()
-physics.addBody( superD, "dynamic", { radius=30, isSensor=false } )
+physics.addBody( superD, "dynamic", { radius=30, isSensor=false, bounce=0.1 } )
 --physics.addBody( superD, "dynamic", { shape=offsetSuperDParams isSensor=false } )
 physics.addBody( ground, "static" )
 
@@ -128,8 +169,8 @@ end
 
 local function punch()
   audio.play( punchTrack )
-  if (  ( superD.sequence == 'static' and superD.frame == 2 ) or
-    superD.sequence == 'movingRight' or superD.sequence == "attackRight" ) then
+  if (  ( superD.sequence == "static" and superD.frame == 2 ) or
+    superD.sequence == "movingRight" or superD.sequence == "attackRight" ) then
     superD:setSequence( "attackRight" )  -- switch to "attackRight" sequence
     superD:play()  -- play the new sequence
   else
@@ -171,16 +212,80 @@ local function jump()
   superD:applyLinearImpulse( 0, 0.70, superD.x, superD.y )
 end
 
+local function takeDamage()
+  if ( lives == 12 ) then
+    lifeThree:setSequence( "threeQuartersLife" )
+    lifeThree:setFrame(1)
+    lives = lives - 1
+  elseif( lives == 11 ) then
+    lifeThree:setSequence( "twoQuartersLife" )
+    lifeThree:setFrame(1)
+    lives = lives - 1
+  elseif( lives == 10 ) then
+    lifeThree:setSequence( "oneQuarterLife" )
+    lifeThree:setFrame(1)
+    lives = lives - 1
+  elseif( lives == 9 ) then
+    lifeThree:setSequence( "emptyLife" )
+    lifeThree:setFrame(1)
+    lives = lives - 1
+  elseif( lives == 8 ) then
+    lifeTwo:setSequence( "threeQuartersLife" )
+    lifeTwo:setFrame(1)
+    lives = lives - 1
+  elseif( lives == 7 ) then
+    lifeTwo:setSequence( "twoQuartersLife" )
+    lifeTwo:setFrame(1)
+    lives = lives - 1
+  elseif( lives == 6 ) then
+    lifeTwo:setSequence( "oneQuarterLife" )
+    lifeTwo:setFrame(1)
+    lives = lives - 1
+  elseif( lives == 5 ) then
+    lifeTwo:setSequence( "emptyLife" )
+    lifeTwo:setFrame(1)
+    lives = lives - 1
+  elseif( lives == 4 ) then
+    lifeOne:setSequence( "threeQuartersLife" )
+    lifeOne:setFrame(1)
+    lives = lives - 1
+  elseif( lives == 3 ) then
+    lifeOne:setSequence( "twoQuartersLife" )
+    lifeOne:setFrame(1)
+    lives = lives - 1
+  elseif( lives == 2 ) then
+    lifeOne:setSequence( "oneQuarterLife" )
+    lifeOne:setFrame(1)
+    lives = lives - 1
+  elseif( lives == 1 ) then
+    lifeOne:setSequence( "emptyLife" )
+    lifeOne:setFrame(1)
+    lives = lives - 1
+    died = true
+  end
+end
+
 local function restoreSuperD()
   superD:setLinearVelocity( 0,0 )
   superD.isBodyActive = false
-  superD.x = display.contentCenterX + 400
-  superD.y = display.contentHeight - 330
+  --superD.x = display.contentCenterX + 400
+  --superD.y = display.contentHeight - 330
 
   -- Fade in SuperD
-  transition.to( superD, { alpha=1, time=4000,
+  transition.to( superD, { alpha=1, time=250,
     onComplete = function()
       superD.isBodyActive = true
+      punchButton:setEnabled( true )
+      jumpButton:setEnabled( true )
+      moveLeftButton:setEnabled( true )
+      moveRightButton:setEnabled( true )
+      if ( superD.sequence == "superDtakingDamage" and superD.frame == 1 ) then
+        superD:setSequence( "static" )
+        superD:setFrame ("2")
+      else
+        superD:setSequence( "static" )
+        superD:setFrame ("1")
+      end
       died = false
     end
   } )
@@ -236,7 +341,9 @@ local function onCollision( event )
 
     if ( superD ~= nil or nT ~= nil ) then
       audio.play( hitTrack )
-      if( superD.sequence == "attackRight" or superD.sequence == "attackLeft") then
+
+      if( ( superD.sequence == "attackRight" or superD.sequence == "attackLeft" ) and superD.frame ~= 7 ) then
+        nT.isSensor = true
         display.remove( nT )
         for i = #nTtable, 1, -1 do
           if ( nTtable[i] == nT ) then
@@ -246,8 +353,22 @@ local function onCollision( event )
         end
       else
         if ( died == false ) then
-          died = true
-          superD.alpha = 0
+          punchButton:setEnabled( false )
+          jumpButton:setEnabled( false )
+          moveLeftButton:setEnabled( false )
+          moveRightButton:setEnabled( false )
+
+          if ( ( superD.sequence == "static" and superD.frame == 2 ) or
+            superD.sequence == "movingRight" or superD.sequence == "attackRight" ) then
+            superD:setSequence( "superDtakingDamage" )
+            superD:setFrame(1)
+          else
+            superD:setSequence( "superDtakingDamage" )
+            superD:setFrame(2)
+          end
+
+          takeDamage()
+          superD.alpha = 0.5
           timer.performWithDelay( 500, restoreSuperD )
         end
       end
@@ -262,6 +383,7 @@ local function gameLoop()
 end
 
 audio.play( musicTrack )
+system.activate( "multitouch" )
 gameLoopTimer = timer.performWithDelay( 6000, gameLoop, 0 )
 Runtime:addEventListener( "collision", onCollision )
 
@@ -269,7 +391,8 @@ Runtime:addEventListener( "collision", onCollision )
 
 -- Initialize widget
 widget = require("widget")
--- Load gamepad ( begin )
+
+-- Load gamepad start
 punchButton = widget.newButton( {
   -- The id can be used to tell you what button was pressed in your button event
   id = "punchButton",
@@ -324,6 +447,4 @@ punchButton.alpha = 0.8;
 jumpButton.alpha = 0.8;
 moveLeftButton.alpha = 0.8;
 moveRightButton.alpha = 0.8;
-
-
--- Load gamepad ( end )
+-- Load gamepad end

@@ -17,21 +17,7 @@
 
 ## Game navigation diagram
  
- 1.
- | Splash Scene | 
- | ------------ |
- 
- 2. 
- | Main menu |
- | --------- | 
- 
-| Menu           | Function      |
-| -------------  | ------------- |
-| Start new Game | Start a new game from beginning |
-| Load Game      | Access to a list of saved games in safe spots |
-| Phases         | Access to a list of *phases completed so far |
-| Credits        | Special credits |
-| Exit           | Exit game |
+In production
 
 * Phases
 ```
@@ -52,7 +38,7 @@
 	Super Disease game's points system it's quite very simple. In each phase, of each module, it will be given a 
 	number of Nts that you must kill. Each Nt dead will increase one point.
 
-## Game end
+## End of the game
 	The game end when Super D reaches nervous system and dominate his main cell. Controlling human body and 
 	subsequently human race.
 

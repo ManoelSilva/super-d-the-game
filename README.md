@@ -9,15 +9,17 @@
 ## Story
 	You're a microorganism. But not an ordinary one, you're Super D. A virus that came from
 	another planet and has a giant and powerful weapon, your boxing glove! Living as a virus in a hostil environment, 
-	like human body, it's not that easy. You must ensure your survival and make sure that your kind plorifere, by defeating 
-	inside body's antibodies, known as N-Ts, and penetrating system's main cell to install your own core in it.
+	like human body, it's not that easy. You must ensure your survival and make sure that your kind plorifere, 
+	by defeating inside body's antibodies, known as N-Ts, and penetrating system's 
+	main cell to install your own core in it.
 
 ## Goal
-	Your goal it's to achieve what any microorganism has ever done, yet: dominate human nervous system's main cell, and overcome human race as dominant species at planet Earth.
+	Your goal it's to achieve what any microorganism has ever done, yet: dominate human 
+	nervous system's main cell, and overcome human race as dominant species at planet Earth.
 
 ## Game navigation diagram
  
-In production
+![alt text](https://github.com/ManoelSilva/super-d-the-game/blob/master/assets/img/game-diagram.png)
 
 * Phases
 ```
@@ -43,6 +45,7 @@ In production
 	subsequently human race.
 
 ## Special considerations and credits
+	Game developed using Corona®.
 	Game and sprites arts developed by Manoel Silva, me. :) 
 	Super Disease arts were inspired in Sonic the Hedgehog, Alex Kid (Sega®) and 
 	Super Mario (Nintendo®).

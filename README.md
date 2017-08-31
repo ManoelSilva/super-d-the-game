@@ -1,7 +1,7 @@
 # Super Disease - The Game
 
 ## Actual Version
-	0.0.4.2
+	0.0.4.4
 
 ## Game name
  	Super Disease.
@@ -39,6 +39,13 @@
 ## Points system
 	Super Disease game's points system it's quite very simple. In each phase, of each module, it will be given a 
 	number of Nts that you must kill. Each Nt dead will increase one point.
+	
+* Points of each phase
+```
+	First Phase-> Random number of 40-60, increasing initial interval by 5 in each module.
+	Second Phase-> Random number of 60-80, increasing initial interval by 5 in each module.
+	Third Phase-> Random number of 80-100, increasing initial interval by 5 in each module.
+```
 
 ## End of the game
 	The game end when Super D reaches nervous system and dominate his main cell. Controlling human body and 
@@ -46,12 +53,13 @@
 
 ## Special considerations and credits
 	Game developed using Corona®.
-	Game and sprites arts developed by Manoel Silva, me. :) 
+	Game and sprites arts developed by Manoel Silva, me. :) Using Inkscape®,
+	to vectorize my drawings, and ShoeBox® to generate sprite sheets and sprite map.
 	Super Disease arts were inspired in Sonic the Hedgehog, Alex Kid (Sega®) and 
 	Super Mario (Nintendo®).
 	Background image of demo version 0.0.4 was obtained in google images. Unknown creator, all credits given.
-	Sound effects credits of demo version 0.0.4 are given to Sega®, Nintendo® and Vintage Culture
-	(Music - You Can't Hide).
+	Sound effects and music credits of demo version 0.0.4 are given to Sega®, Nintendo® and 
+	Vintage Culture (Musics - You Can't Hide, Hollywood).
 
 ## Versions Features
 	**0.0.4**
@@ -63,3 +71,6 @@
 		Super D animations 90% complete.
 		Fixed invincibility issue after punch (if player has stood still).
 		Life system development start.
+	**0.0.4.4**
+		Life system development complete.
+		Composer first implementation.	

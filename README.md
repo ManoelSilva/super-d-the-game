@@ -73,4 +73,5 @@
 		Life system development start.
 	**0.0.4.4**
 		Life system development complete.
-		Composer first implementation.	
+		Composer first implementation.
+		Points system development start.	

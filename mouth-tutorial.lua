@@ -75,7 +75,7 @@ local hitTrack = audio.loadSound( "assets/audio/hitSound.mp3" )
 
 -- Set up display groups
 local backGroup = display.newGroup()  -- Display group for the background image
-local uiGroup = display.newGroup()  -- Display group for Super D, N-Ts etc
+local mainGroup = display.newGroup()  -- Display group for Super D, N-Ts etc
 local uiGroup = display.newGroup()    -- Display group for UI objects
 
 local function punch()
@@ -204,7 +204,7 @@ end
 
 local function nTsFactory()
   if( nTsNumber ~= 0 ) then
-    nT = ( display.newSprite( uiGroup, nTobjectSheet, sequencesRunSuperDorNt ) )
+    nT = ( display.newSprite( mainGroup, nTobjectSheet, sequencesRunSuperDorNt ) )
     nT:scale(xScale, yScale)
     nT:setFrame( 2 )
     table.insert( nTtable, nT )
@@ -263,7 +263,7 @@ local function onCollision( event )
         nTsNumber = nTsNumber - 1
         points = points + 1
         display.remove( nTsLeft )
-        nTsLeft = display.newText( nTsNumber, 100, 200, native.systemFont, 16 )
+        nTsLeft = display.newText( uiGroup, nTsNumber, 100, 200, native.systemFont, 16 )
         nTsLeft:setFillColor( 1, 0, 0 )
         nT.isSensor = true
         display.remove( nT )
@@ -325,8 +325,8 @@ function scene:create( event )
   backGroup = display.newGroup()  -- Display group for the background image
   sceneGroup:insert( backGroup )  -- Insert into the scene's view group
 
-  uiGroup = display.newGroup()  -- Display group for the ship, asteroids, lasers, etc.
-  sceneGroup:insert( uiGroup )  -- Insert into the scene's view group
+  mainGroup = display.newGroup()  -- Display group for the superD, N-Ts, etc.
+  sceneGroup:insert( mainGroup )  -- Insert into the scene's view group
 
   uiGroup = display.newGroup()    -- Display group for UI objects like the score
   sceneGroup:insert( uiGroup )    -- Insert into the scene's view group
@@ -337,7 +337,7 @@ function scene:create( event )
   background.y = display.contentCenterY
 
   -- Load SuperD
-  superD = display.newSprite( uiGroup, superDobjectSheet, sequencesRunSuperDorNt )
+  superD = display.newSprite( mainGroup, superDobjectSheet, sequencesRunSuperDorNt )
   superD:scale(xScale, yScale)
   superD.x = display.contentCenterX + 400
   superD.y = display.contentHeight - 290
@@ -393,7 +393,7 @@ function scene:show( event )
     audio.play( musicTrack )
     physics.start()
     nTsNumber = math.random( 40, 60 )
-    nTsLeft = display.newText( nTsNumber, 100, 200, native.systemFont, 16 )
+    nTsLeft = display.newText( uiGroup, nTsNumber, 100, 200, native.systemFont, 16 )
     nTsLeft:setFillColor( 1, 0, 0 )
     Runtime:addEventListener( "collision", onCollision )
     gameLoopTimer = timer.performWithDelay( 6000, gameLoop, 0 )
@@ -460,7 +460,11 @@ function scene:show( event )
     jumpButton.alpha = 0.8;
     moveLeftButton.alpha = 0.8;
     moveRightButton.alpha = 0.8;
-
+    
+    uiGroup:insert( punchButton )
+    uiGroup:insert( jumpButton )
+    uiGroup:insert( moveLeftButton )
+    uiGroup:insert( moveRightButton )
   -- Load gamepad end
   end
 end
@@ -475,14 +479,9 @@ function scene:hide( event )
     -- Code here runs when the scene is on screen (but is about to go off screen)
     timer.cancel( gameLoopTimer )
     audio.stop()
-    display.remove(lifeOne)
-    display.remove(lifeTwo)
-    display.remove(lifeThree)
-    display.remove(moveLeftButton)
-    display.remove(moveRightButton)
-    display.remove(jumpButton)
-    display.remove(punchButton)
-    display.remove(nTsLeft)
+    display.remove(backGroup)
+    display.remove(mainGroup)
+    display.remove(uiGroup)
 
   elseif ( phase == "did" ) then
     -- Code here runs immediately after the scene goes entirely off screen

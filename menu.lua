@@ -14,16 +14,16 @@ local musicTrack = audio.loadSound( "assets/audio/hollywood.mp3" )
 -- Select option sound effect
 local selected = audio.loadSound( "assets/audio/menuClick.mp3" )
 
-local function gotoMouthTutorialPhase()
-  print("tapped mouthTutorial phase button")
+local function gotoMouthTutorialLevel()
+  print("tapped mouthTutorial level button")
   audio.play( selected )
   composer.gotoScene( "mouth-tutorial", { time=800, effect="crossFade" } )
 end
 
-local function gotoPhases()
-  print("tapped phases button")
+local function gotoLevels()
+  print("tapped levels button")
   audio.play( selected )
-  --composer.gotoScene( "phases" )
+  --composer.gotoScene( "levels" )
 end
 
 local function gotoCredits()
@@ -64,15 +64,15 @@ function scene:create( event )
   newGameOption.isHitTestable = true
   newGameOption.myName = "newGame"
 
-  local phasesOption = display.newRect( sceneGroup, display.contentCenterX+15, display.contentCenterY+74, 260, 10 )
-  phasesOption.strokeWidth = 30
-  --phasesOption:setFillColor( 1, 0 )
-  phasesOption:setFillColor( 0, 0, 0, 0 )
-  --phasesOption:setStrokeColor( 1, 0, 0 )
-  phasesOption:setStrokeColor( 0, 0, 0, 0 )
+  local levelsOption = display.newRect( sceneGroup, display.contentCenterX+15, display.contentCenterY+74, 260, 10 )
+  levelsOption.strokeWidth = 30
+  --levelsOption:setFillColor( 1, 0 )
+  levelsOption:setFillColor( 0, 0, 0, 0 )
+  --levelsOption:setStrokeColor( 1, 0, 0 )
+  levelsOption:setStrokeColor( 0, 0, 0, 0 )
   -- Make ShapeObject squeezable even if invisible
-  phasesOption.isHitTestable = true
-  phasesOption.myName = "phases"
+  levelsOption.isHitTestable = true
+  levelsOption.myName = "levels"
 
   local creditsOption = display.newRect( sceneGroup, display.contentCenterX+10, display.contentCenterY+130, 270, 10 )
   creditsOption.strokeWidth = 30
@@ -92,8 +92,8 @@ function scene:create( event )
   exitOption.isHitTestable = true
   exitOption.myName = "exit"
 
-  newGameOption:addEventListener( "touch", gotoMouthTutorialPhase )
-  phasesOption:addEventListener( "touch", gotoPhases )
+  newGameOption:addEventListener( "touch", gotoMouthTutorialLevel )
+  levelsOption:addEventListener( "touch", gotoLevels )
   creditsOption:addEventListener( "touch", gotoCredits )
   exitOption:addEventListener( "touch", exitGame )
 end

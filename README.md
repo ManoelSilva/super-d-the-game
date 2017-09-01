@@ -21,15 +21,15 @@
  
 ![alt text](https://github.com/ManoelSilva/super-d-the-game/blob/master/assets/img/game-diagram.png)
 
-* Phases
+* Levels
 ```
-	Each phase represent a human system, divided in two or three modules. For this project,
+	Each level represent a human system, divided in two or three sublevels. For this project,
 	the game will try to reproduce respiratory, digestive and nervous systems.
 ```
 
 ## Specific objectives
 	Kill the number necessary of Nts to move to the next level;
-	Kill phase's boss to reach main cell;
+	Kill level's boss to reach main cell;
 	Kill main cell to introduce your own core and dominate body system, obtaining a new power.
 
 ## Life system
@@ -37,14 +37,14 @@
 	corner of the screen, totalizing 12 points of life.
 
 ## Points system
-	Super Disease game's points system it's quite very simple. In each phase, of each module, it will be given a 
+	Super Disease game's points system it's quite very simple. In each sublevel, of each level, it will be given a 
 	number of Nts that you must kill. Each Nt dead will increase one point.
 	
-* Points of each phase
+* Points of each level
 ```
-	First Phase-> Random number of 40-60, increasing initial interval by 5 in each module.
-	Second Phase-> Random number of 60-80, increasing initial interval by 5 in each module.
-	Third Phase-> Random number of 80-100, increasing initial interval by 5 in each module.
+	First level-> Random number of 40-60, increasing initial interval by 5 in each sublevel.
+	Second level-> Random number of 60-80, increasing initial interval by 5 in each sublevel.
+	Third level-> Random number of 80-100, increasing initial interval by 5 in each sublevel.
 ```
 
 ## End of the game

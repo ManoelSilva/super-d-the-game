@@ -1,7 +1,7 @@
 # Super Disease - The Game
 
 ## Actual Version
-	0.0.4.4
+	0.0.4.5
 
 ## Game name
  	Super Disease.
@@ -74,4 +74,9 @@
 	**0.0.4.4**
 		Life system development complete.
 		Composer first implementation.
-		Points system development start.	
+		Points system development start.
+	**0.0.4.5**
+		SuperD can't go off sides screen anymore.
+		Some physics improvements.
+		N-Ts generate time decrease.
+		N-Ts moving faster.		

@@ -90,14 +90,28 @@ local function punch()
   end
 end
 
+local function keepSuperDatScreen()
+  if superD.x > display.contentWidth then
+    superD.x = display.contentWidth
+  elseif superD.x < 0 then
+    superD.x = 0
+  end
+
+  if superD.y < 0 then
+    print("Enter y condition")
+    superD.y = 0
+  end
+end
+
 local function moveRight( event )
   if ( "began" == event.phase ) then
     audio.play( moveTrack )
     superD:setSequence( "movingRight" )
     superD:setFrame(1)
     -- start moving SuperD
-    superD:applyLinearImpulse( 0.3, 0, superD.x, superD.y )
+    superD:applyLinearImpulse( 0.8, 0, superD.x, superD.y )
   elseif ( "ended" == event.phase ) then
+    keepSuperDatScreen()
     superD:setSequence( "static" )
     superD:setFrame(2)
     -- stop moving SuperD
@@ -110,8 +124,9 @@ local function moveLeft( event )
     audio.play( moveTrack )
     superD:setSequence( "movingLeft" )
     superD:setFrame(1)
-    superD:applyLinearImpulse( -0.3, 0, superD.x, superD.y )
+    superD:applyLinearImpulse( -0.8, 0, superD.x, superD.y )
   elseif ( "ended" == event.phase ) then
+    keepSuperDatScreen()
     superD:setSequence( "static" )
     superD:setFrame(1)
     superD:setLinearVelocity( 0,0 )
@@ -120,7 +135,8 @@ end
 
 local function jump()
   audio.play( jumpTrack )
-  superD:applyLinearImpulse( 0, 0.70, superD.x, superD.y )
+  keepSuperDatScreen()
+  superD:applyLinearImpulse( 0, 6, superD.x, superD.y )
 end
 
 local function takeDamage()
@@ -215,7 +231,7 @@ local function nTsFactory()
     --if ( whereFrom == 1 ) then
     nT.x = -60
     nT.y = math.random( 300 )
-    nT:setLinearVelocity( math.random( 40,90 ), math.random( 20,60 ) )
+    nT:setLinearVelocity( math.random( 120,250 ), math.random( 20,60 ) )
     --end
   end
 end
@@ -267,6 +283,7 @@ local function onCollision( event )
         nTsLeft:setFillColor( 1, 0, 0 )
         nT.isSensor = true
         display.remove( nT )
+
         for i = #nTtable, 1, -1 do
           if ( nTtable[i] == nT ) then
             table.remove( nTtable, i )
@@ -296,7 +313,7 @@ local function onCollision( event )
             timer.performWithDelay( 200, endGame )
           else
             superD.alpha = 0.5
-            timer.performWithDelay( 500, restoreSuperD )
+            timer.performWithDelay( 450, restoreSuperD )
           end
         end
       end
@@ -374,8 +391,9 @@ function scene:create( event )
   lifeThree.alpha = 0.8
 
   -- Adding physics
-  physics.addBody( superD, "dynamic", { radius=30, isSensor=false, bounce=0.1 } )
-  physics.addBody( ground, "static" )
+  --physics.setGravity( 0, 20 )
+  physics.addBody( superD, "dynamic", { radius=40, isSensor=false, bounce=0.1 } )
+  physics.addBody( ground, "static", { bounce=0.05 } )
 end
 
 -- show()
@@ -396,7 +414,7 @@ function scene:show( event )
     nTsLeft = display.newText( uiGroup, nTsNumber, 100, 200, native.systemFont, 16 )
     nTsLeft:setFillColor( 1, 0, 0 )
     Runtime:addEventListener( "collision", onCollision )
-    gameLoopTimer = timer.performWithDelay( 6000, gameLoop, 0 )
+    gameLoopTimer = timer.performWithDelay( 1300, gameLoop, 0 )
 
     -- Tests
     print(nTsNumber)
@@ -460,12 +478,12 @@ function scene:show( event )
     jumpButton.alpha = 0.8;
     moveLeftButton.alpha = 0.8;
     moveRightButton.alpha = 0.8;
-    
+
     uiGroup:insert( punchButton )
     uiGroup:insert( jumpButton )
     uiGroup:insert( moveLeftButton )
     uiGroup:insert( moveRightButton )
-  -- Load gamepad end
+    -- Load gamepad end
   end
 end
 

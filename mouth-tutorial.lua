@@ -307,13 +307,13 @@ local function onCollision( event )
           end
 
           takeDamage()
-          if( lives == 0 ) then
+          if( died == true ) then
             --display.remove( superD )
             --died = true
             timer.performWithDelay( 200, endGame )
           else
             superD.alpha = 0.5
-            timer.performWithDelay( 450, restoreSuperD )
+            timer.performWithDelay( 500, restoreSuperD )
           end
         end
       end

@@ -1,7 +1,7 @@
 # Super Disease - The Game
 
 ## Actual Version
-	0.0.4.5
+	0.0.4.6
 
 ## Game name
  	Super Disease.
@@ -54,12 +54,15 @@
 ## Special considerations and credits
 	Game developed using Corona®.
 	Game and sprites arts developed by Manoel Silva, me. :) Using Inkscape®,
-	to vectorize my drawings, and ShoeBox® to generate sprite sheets and sprite map.
+	to vectorize my drawings, TexturePacker® and ShoeBox® to generate sprite sheets and sprite map.
 	Super Disease arts were inspired in Sonic the Hedgehog, Alex Kid (Sega®) and 
 	Super Mario (Nintendo®).
 	Background image of demo version 0.0.4 was obtained in google images. Unknown creator, all credits given.
 	Sound effects and music credits of demo version 0.0.4 are given to Sega®, Nintendo® and 
 	Vintage Culture (Musics - You Can't Hide, Hollywood).
+	Fonts:
+		http://www.dafont.com/pt/star-jedi.font
+		http://www6.flamingtext.com
 
 ## Versions Features
 	**0.0.4**
@@ -79,4 +82,7 @@
 		SuperD can't go off sides screen anymore.
 		Some physics improvements.
 		N-Ts generate time decrease.
-		N-Ts moving faster.		
+		N-Ts moving faster.
+	**0.0.4.6**
+		Points system development complete.
+		Fixed bug after being hit immediately after dying.	

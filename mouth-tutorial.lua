@@ -46,6 +46,7 @@ local sequencesTopBar =
 -- Initialize variables
 local superD
 local points = 0
+local pontuation
 local nT
 local nTsNumber
 local nTsLeft
@@ -53,6 +54,8 @@ local nTtable = {}
 local lifeOne
 local lifeTwo
 local lifeThree
+local nTsToKill
+local nTsKilled
 local ground
 local wallRight
 local wallLeft
@@ -65,6 +68,9 @@ local died = false
 local lives = 12
 local xScale = 0.5
 local yScale = 0.3
+local lifeBarScale = 0.3
+local nTsBarScale = 0.1
+local alpha = 0.8
 --local offsetSuperDParams = { 0,-37, 37,-10, 23,34, -23,34, -37,-10 }
 -- Sound settings
 local musicTrack = audio.loadSound( "assets/audio/youCantHide.mp3" )
@@ -72,7 +78,8 @@ local moveTrack = audio.loadSound( "assets/audio/moveSound.mp3" )
 local jumpTrack = audio.loadSound( "assets/audio/jumpSound.mp3" )
 local punchTrack = audio.loadSound( "assets/audio/punchSound.mp3" )
 local hitTrack = audio.loadSound( "assets/audio/hitSound.mp3" )
-
+-- Font
+local inputText = native.newFont( "Starjedi.ttf" )
 -- Set up display groups
 local backGroup = display.newGroup()  -- Display group for the background image
 local mainGroup = display.newGroup()  -- Display group for Super D, N-Ts etc
@@ -95,11 +102,6 @@ local function keepSuperDatScreen()
     superD.x = display.contentWidth
   elseif superD.x < 0 then
     superD.x = 0
-  end
-
-  if superD.y < 0 then
-    print("Enter y condition")
-    superD.y = 0
   end
 end
 
@@ -135,7 +137,6 @@ end
 
 local function jump()
   audio.play( jumpTrack )
-  keepSuperDatScreen()
   superD:applyLinearImpulse( 0, 6, superD.x, superD.y )
 end
 
@@ -278,9 +279,18 @@ local function onCollision( event )
       if( ( superD.sequence == "attackRight" or superD.sequence == "attackLeft" ) and superD.frame ~= 7 ) then
         nTsNumber = nTsNumber - 1
         points = points + 1
-        display.remove( nTsLeft )
-        nTsLeft = display.newText( uiGroup, nTsNumber, 100, 200, native.systemFont, 16 )
-        nTsLeft:setFillColor( 1, 0, 0 )
+        if( nTsNumber > 0 ) then
+          display.remove( nTsLeft )
+          display.remove( pontuation )
+          nTsLeft = display.newText( uiGroup, nTsNumber, display.contentCenterX + 370, display.contentHeight - 640, inputText, 40 )
+          nTsLeft:setFillColor( 255, 255, 0 )
+          pontuation = display.newText( uiGroup, points, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
+          pontuation:setFillColor( 255, 255, 0 )
+        elseif( nTsNumber == 0 ) then
+          died = true
+          timer.performWithDelay( 200, endGame )
+        end
+
         nT.isSensor = true
         display.remove( nT )
 
@@ -367,26 +377,44 @@ function scene:create( event )
 
   -- Load LifeBar
   lifeOne = display.newSprite( uiGroup, superDtopBarObjectSheet, sequencesTopBar )
-  lifeOne:scale(xScale, yScale)
-  lifeOne.x = display.contentCenterX - 450
+  lifeOne:scale(lifeBarScale, lifeBarScale)
+  lifeOne.x = display.contentCenterX - 470
   lifeOne.y = display.contentHeight - 640
   lifeOne.myName = "lifeOne"
 
   lifeTwo = display.newSprite( uiGroup, superDtopBarObjectSheet, sequencesTopBar )
-  lifeTwo:scale(xScale, yScale)
-  lifeTwo.x = display.contentCenterX - 330
+  lifeTwo:scale(lifeBarScale, lifeBarScale)
+  lifeTwo.x = display.contentCenterX - 400
   lifeTwo.y = display.contentHeight - 640
   lifeTwo.myName = "lifeTwo"
 
   lifeThree = display.newSprite( uiGroup, superDtopBarObjectSheet, sequencesTopBar )
-  lifeThree:scale(xScale, yScale)
-  lifeThree.x = display.contentCenterX - 212
+  lifeThree:scale(lifeBarScale, lifeBarScale)
+  lifeThree.x = display.contentCenterX - 330
   lifeThree.y = display.contentHeight - 640
   lifeThree.myName = "lifeThree"
 
-  lifeOne.alpha = 0.8
-  lifeTwo.alpha = 0.8
-  lifeThree.alpha = 0.8
+  nTsToKill = display.newSprite( uiGroup, superDtopBarObjectSheet, sequencesTopBar )
+  nTsToKill:scale(nTsBarScale, nTsBarScale)
+  nTsToKill.x = display.contentCenterX + 320
+  nTsToKill.y = display.contentHeight - 640
+  nTsToKill.myName = "nTsToKill"
+  nTsToKill:setSequence( "nTs" )
+  nTsToKill:setFrame( 1 )
+
+  nTsKilled = display.newSprite( uiGroup, superDtopBarObjectSheet, sequencesTopBar )
+  nTsKilled:scale(nTsBarScale, nTsBarScale)
+  nTsKilled.x = display.contentCenterX + 430
+  nTsKilled.y = display.contentHeight - 640
+  nTsKilled.myName = "nTsKilled"
+  nTsKilled:setSequence( "nTs" )
+  nTsKilled:setFrame( 2 )
+
+  lifeOne.alpha = alpha
+  lifeTwo.alpha = alpha
+  lifeThree.alpha = alpha
+  nTsToKill.alpha = alpha
+  nTsKilled.alpha = alpha
 
   -- Adding physics
   --physics.setGravity( 0, 20 )
@@ -409,8 +437,10 @@ function scene:show( event )
     audio.play( musicTrack )
     physics.start()
     nTsNumber = math.random( 40, 60 )
-    nTsLeft = display.newText( uiGroup, nTsNumber, 100, 200, native.systemFont, 16 )
-    nTsLeft:setFillColor( 1, 0, 0 )
+    nTsLeft = display.newText( uiGroup, nTsNumber, display.contentCenterX + 370, display.contentHeight - 640, inputText, 40 )
+    nTsLeft:setFillColor( 255, 255, 0 )
+    pontuation = display.newText( uiGroup, points, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
+    pontuation:setFillColor( 255, 255, 0 )
     Runtime:addEventListener( "collision", onCollision )
     gameLoopTimer = timer.performWithDelay( 1300, gameLoop, 0 )
 
@@ -472,10 +502,10 @@ function scene:show( event )
       onEvent = moveLeft
     } )
 
-    punchButton.alpha = 0.8;
-    jumpButton.alpha = 0.8;
-    moveLeftButton.alpha = 0.8;
-    moveRightButton.alpha = 0.8;
+    punchButton.alpha = alpha;
+    jumpButton.alpha = alpha;
+    moveLeftButton.alpha = alpha;
+    moveRightButton.alpha = alpha;
 
     uiGroup:insert( punchButton )
     uiGroup:insert( jumpButton )
@@ -507,7 +537,6 @@ function scene:hide( event )
   end
 end
 
-
 -- destroy()
 function scene:destroy( event )
 
@@ -515,7 +544,6 @@ function scene:destroy( event )
   -- Code here runs prior to the removal of scene's view
 
 end
-
 
 -- -----------------------------------------------------------------------------------
 -- Scene event function listeners

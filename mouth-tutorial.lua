@@ -193,29 +193,29 @@ local function takeDamage()
 end
 
 local function restoreSuperD()
-  superD:setLinearVelocity( 0,0 )
-  superD.isBodyActive = false
-  --superD.x = display.contentCenterX + 400
-  --superD.y = display.contentHeight - 330
+  if( died == false ) then
+    superD:setLinearVelocity( 0,0 )
+    superD.isBodyActive = false
 
-  -- Fade in SuperD
-  transition.to( superD, { alpha=1, time=225,
-    onComplete = function()
-      superD.isBodyActive = true
-      punchButton:setEnabled( true )
-      jumpButton:setEnabled( true )
-      moveLeftButton:setEnabled( true )
-      moveRightButton:setEnabled( true )
-      if ( superD.sequence == "superDtakingDamage" and superD.frame == 1 ) then
-        superD:setSequence( "static" )
-        superD:setFrame ("2")
-      else
-        superD:setSequence( "static" )
-        superD:setFrame ("1")
+    -- Fade in SuperD
+    transition.to( superD, { alpha=1, time=225,
+      onComplete = function()
+        superD.isBodyActive = true
+        punchButton:setEnabled( true )
+        jumpButton:setEnabled( true )
+        moveLeftButton:setEnabled( true )
+        moveRightButton:setEnabled( true )
+        if ( superD.sequence == "superDtakingDamage" and superD.frame == 1 ) then
+          superD:setSequence( "static" )
+          superD:setFrame ("2")
+        else
+          superD:setSequence( "static" )
+          superD:setFrame ("1")
+        end
+        died = false
       end
-      died = false
-    end
-  } )
+    } )
+  end
 end
 
 local function nTsFactory()
@@ -308,12 +308,10 @@ local function onCollision( event )
 
           takeDamage()
           if( died == true ) then
-            --display.remove( superD )
-            --died = true
             timer.performWithDelay( 200, endGame )
           else
             superD.alpha = 0.5
-            timer.performWithDelay( 500, restoreSuperD )
+            timer.performWithDelay( 420, restoreSuperD )
           end
         end
       end

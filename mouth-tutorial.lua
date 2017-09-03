@@ -12,7 +12,7 @@ local physics
 physics = require("physics")
 physics.start()
 
--- Sprite sheet entitys
+-- Sprite sheet entities
 local topBarEntity = require( "entities.topBar" )
 local superDentity = require("entities.superD" )
 local nTentity = require( "entities.nT" )

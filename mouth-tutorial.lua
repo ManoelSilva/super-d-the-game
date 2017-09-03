@@ -12,36 +12,10 @@ local physics
 physics = require("physics")
 physics.start()
 
--- Configure image sheet
-local spritesheetSuperD = require("spritesheet.spritesheet-superD")
-local spritesheetSuperDdamaged = require("spritesheet.spritesheet-superD-taking-damage")
-local spritesheetTopBar = require("spritesheet.spritesheet-superD-top-bar")
-local spritesheetNt = require("spritesheet.spritesheet-nT")
-
-local superDobjectSheet = graphics.newImageSheet( "assets/img/spritesheet-superD.png", spritesheetSuperD.getSheet() )
-local superDdamagedObjectSheet = graphics.newImageSheet( "assets/img/spritesheet-superD-taking-damage.png", spritesheetSuperDdamaged.getSheet() )
-local superDtopBarObjectSheet = graphics.newImageSheet( "assets/img/spritesheet-superD-top-bar.png", spritesheetTopBar.getSheet() )
-local nTobjectSheet = graphics.newImageSheet( "assets/img/spritesheet-nT.png", spritesheetNt.getSheet() )
-
-local sequencesRunSuperDorNt =
-  {
-    { name = "static", frames = {7, 16} },
-    { name = "movingRight", frames = {9} },
-    { name = "movingLeft", frames = {8} },
-    { name = "attackRight", start = 10, count = 7, time = 260, loopCount = 1 },
-    { name = "attackLeft", start = 1, count = 7, time = 260, loopCount = 1 },
-    { name = "superDtakingDamage", sheet = superDdamagedObjectSheet, frames = {2, 1} }
-  }
-
-local sequencesTopBar =
-  {
-    { name = "fullLife", frames = {4} },
-    { name = "threeQuartersLife", frames = {6} },
-    { name = "twoQuartersLife", frames = {7} },
-    { name = "oneQuarterLife", frames = {5} },
-    { name = "emptyLife", frames = {3} },
-    { name = "nTs", frames = {2, 1} }
-  }
+-- Sprite sheet entitys
+local topBarEntity = require( "entities.topBar" )
+local superDentity = require("entities.superD" )
+local nTentity = require( "entities.nT" )
 
 -- Initialize variables
 local superD
@@ -99,7 +73,7 @@ end
 
 local function keepSuperDatScreen()
   if superD.x > display.contentWidth then
-    superD.x = display.contentWidth
+    superD.x = display.contentWidth - 10
   elseif superD.x < 0 then
     superD.x = 0
   end
@@ -221,19 +195,13 @@ end
 
 local function nTsFactory()
   if( nTsNumber ~= 0 ) then
-    nT = ( display.newSprite( mainGroup, nTobjectSheet, sequencesRunSuperDorNt ) )
-    nT:scale(xScale, yScale)
+    nT = nTentity:getNt( xScale, yScale, -60, math.random( 300 ) )
+    mainGroup:insert( nT )
     nT:setFrame( 2 )
+
     table.insert( nTtable, nT )
     physics.addBody( nT, "dynamic", { radius=40, bounce=0.8 } )
-    nT.myName = "nT"
-
-    --local whereFrom = math.random( 2 )
-    --if ( whereFrom == 1 ) then
-    nT.x = -60
-    nT.y = math.random( 300 )
     nT:setLinearVelocity( math.random( 120,250 ), math.random( 20,60 ) )
-    --end
   end
 end
 
@@ -250,6 +218,10 @@ local function removeDriftedNts()
       table.remove( nTtable, i )
     end
   end
+end
+
+local function nTsAttack()
+
 end
 
 local function nTsBehavior()
@@ -362,11 +334,8 @@ function scene:create( event )
   background.y = display.contentCenterY
 
   -- Load SuperD
-  superD = display.newSprite( mainGroup, superDobjectSheet, sequencesRunSuperDorNt )
-  superD:scale(xScale, yScale)
-  superD.x = display.contentCenterX + 400
-  superD.y = display.contentHeight - 290
-  superD.myName = "superD"
+  superD = superDentity:getSuperD( xScale, yScale, 400, 290 )
+  mainGroup:insert( superD )
 
   -- Load the ground
   ground = display.newRect( backGroup, display.contentCenterX, display.contentHeight - 280, display.contentWidth * 30, 10)
@@ -376,45 +345,24 @@ function scene:create( event )
   ground.myName = "ground"
 
   -- Load LifeBar
-  lifeOne = display.newSprite( uiGroup, superDtopBarObjectSheet, sequencesTopBar )
-  lifeOne:scale(lifeBarScale, lifeBarScale)
-  lifeOne.x = display.contentCenterX - 470
-  lifeOne.y = display.contentHeight - 640
-  lifeOne.myName = "lifeOne"
+  lifeOne = topBarEntity:getTopBar( lifeBarScale, lifeBarScale, 470, false )
+  uiGroup:insert( lifeOne )
 
-  lifeTwo = display.newSprite( uiGroup, superDtopBarObjectSheet, sequencesTopBar )
-  lifeTwo:scale(lifeBarScale, lifeBarScale)
-  lifeTwo.x = display.contentCenterX - 400
-  lifeTwo.y = display.contentHeight - 640
-  lifeTwo.myName = "lifeTwo"
+  lifeTwo = topBarEntity:getTopBar( lifeBarScale, lifeBarScale, 400, false )
+  uiGroup:insert( lifeTwo )
 
-  lifeThree = display.newSprite( uiGroup, superDtopBarObjectSheet, sequencesTopBar )
-  lifeThree:scale(lifeBarScale, lifeBarScale)
-  lifeThree.x = display.contentCenterX - 330
-  lifeThree.y = display.contentHeight - 640
-  lifeThree.myName = "lifeThree"
+  lifeThree = topBarEntity:getTopBar( lifeBarScale, lifeBarScale, 330, false )
+  uiGroup:insert( lifeThree )
 
-  nTsToKill = display.newSprite( uiGroup, superDtopBarObjectSheet, sequencesTopBar )
-  nTsToKill:scale(nTsBarScale, nTsBarScale)
-  nTsToKill.x = display.contentCenterX + 320
-  nTsToKill.y = display.contentHeight - 640
-  nTsToKill.myName = "nTsToKill"
+  nTsToKill = topBarEntity:getTopBar( nTsBarScale, nTsBarScale, 320, true )
+  uiGroup:insert( nTsToKill )
   nTsToKill:setSequence( "nTs" )
   nTsToKill:setFrame( 1 )
 
-  nTsKilled = display.newSprite( uiGroup, superDtopBarObjectSheet, sequencesTopBar )
-  nTsKilled:scale(nTsBarScale, nTsBarScale)
-  nTsKilled.x = display.contentCenterX + 430
-  nTsKilled.y = display.contentHeight - 640
-  nTsKilled.myName = "nTsKilled"
+  nTsKilled = topBarEntity:getTopBar( nTsBarScale, nTsBarScale, 430, true )
+  uiGroup:insert( nTsKilled )
   nTsKilled:setSequence( "nTs" )
   nTsKilled:setFrame( 2 )
-
-  lifeOne.alpha = alpha
-  lifeTwo.alpha = alpha
-  lifeThree.alpha = alpha
-  nTsToKill.alpha = alpha
-  nTsKilled.alpha = alpha
 
   -- Adding physics
   --physics.setGravity( 0, 20 )
@@ -443,10 +391,6 @@ function scene:show( event )
     pontuation:setFillColor( 255, 255, 0 )
     Runtime:addEventListener( "collision", onCollision )
     gameLoopTimer = timer.performWithDelay( 1300, gameLoop, 0 )
-
-    -- Tests
-    print(nTsNumber)
-    print(points)
 
     -- Initialize widget
     widget = require("widget")

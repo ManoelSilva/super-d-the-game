@@ -292,7 +292,7 @@ end
 
 local function nTsAttack()
   if( died ~= true ) then
-    for i = math.random( #nTtable ), 1, -2 do
+    for i = #nTtable, 1, -2 do
       local nT = nTtable[i]
       nT:setSequence( "attackRight" )
       nT:play()
@@ -381,7 +381,7 @@ end
 
 local function gameLoop()
   nTsFactory()
-  nTsAttackLoop = timer.performWithDelay( math.random( 1000, 2000 ), nTsAttack, 0 )
+  nTsAttackLoop = timer.performWithDelay( math.random( 2000, 3000 ), nTsAttack, 0 )
   removeDriftedNts()
 end
 

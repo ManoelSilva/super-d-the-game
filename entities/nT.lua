@@ -9,7 +9,7 @@ local sequencesRunNt =
     { name = "movingRight", frames = {9} },
     { name = "movingLeft", frames = {8} },
     { name = "attackRight", start = 10, count = 7, time = 260, loopCount = 1 },
-    { name = "attackLeft", start = 1, count = 7, time = 650, loopCount = math.random( 2, 6 ) }
+    { name = "attackLeft", start = 1, count = 7, time = 1000, loopCount = math.random( 1, 4 ) }
   }
 
 function Nt:getNt( xScale, yScale, xScreen, yScreen )

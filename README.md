@@ -1,7 +1,7 @@
 # Super Disease - The Game
 
 ## Actual Version
-	0.0.4.6
+	0.0.4.7
 
 ## Game name
  	Super Disease.
@@ -85,4 +85,6 @@
 		N-Ts moving faster.
 	**0.0.4.6**
 		Points system development complete.
-		Fixed bug after being hit immediately after dying.	
+		Fixed bug after being hit immediately after dying.
+	**0.0.4.7**
+		N-Ts attack first implementation.	

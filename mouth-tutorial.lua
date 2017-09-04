@@ -114,51 +114,122 @@ local function jump()
   superD:applyLinearImpulse( 0, 6, superD.x, superD.y )
 end
 
-local function takeDamage()
+local function takeDamage( isPunchHit )
   if ( lives == 12 ) then
-    lifeThree:setSequence( "threeQuartersLife" )
-    lifeThree:setFrame(1)
-    lives = lives - 1
+    if( isPunchHit ) then
+      lifeThree:setSequence( "twoQuartersLife" )
+      lifeThree:setFrame(1)
+      lives = lives - 2
+    else
+      lifeThree:setSequence( "threeQuartersLife" )
+      lifeThree:setFrame(1)
+      lives = lives - 1
+    end
   elseif( lives == 11 ) then
-    lifeThree:setSequence( "twoQuartersLife" )
-    lifeThree:setFrame(1)
-    lives = lives - 1
+    if( isPunchHit ) then
+      lifeThree:setSequence( "oneQuarterLife" )
+      lifeThree:setFrame(1)
+      lives = lives - 2
+    else
+      lifeThree:setSequence( "twoQuartersLife" )
+      lifeThree:setFrame(1)
+      lives = lives - 1
+    end
   elseif( lives == 10 ) then
-    lifeThree:setSequence( "oneQuarterLife" )
-    lifeThree:setFrame(1)
-    lives = lives - 1
+    if( isPunchHit ) then
+      lifeThree:setSequence( "emptyLife" )
+      lifeThree:setFrame(1)
+      lives = lives - 2
+    else
+      lifeThree:setSequence( "oneQuarterLife" )
+      lifeThree:setFrame(1)
+      lives = lives - 1
+    end
   elseif( lives == 9 ) then
-    lifeThree:setSequence( "emptyLife" )
-    lifeThree:setFrame(1)
-    lives = lives - 1
+    if( isPunchHit ) then
+      lifeThree:setSequence( "emptyLife" )
+      lifeThree:setFrame(1)
+      lifeTwo:setSequence( "threeQuartersLife" )
+      lifeTwo:setFrame(1)
+      lives = lives - 2
+    else
+      lifeThree:setSequence( "emptyLife" )
+      lifeThree:setFrame(1)
+      lives = lives - 1
+    end
   elseif( lives == 8 ) then
-    lifeTwo:setSequence( "threeQuartersLife" )
-    lifeTwo:setFrame(1)
-    lives = lives - 1
+    if( isPunchHit ) then
+      lifeTwo:setSequence( "twoQuartersLife" )
+      lifeTwo:setFrame(1)
+      lives = lives - 2
+    else
+      lifeTwo:setSequence( "threeQuartersLife" )
+      lifeTwo:setFrame(1)
+      lives = lives - 1
+    end
   elseif( lives == 7 ) then
-    lifeTwo:setSequence( "twoQuartersLife" )
-    lifeTwo:setFrame(1)
-    lives = lives - 1
+    if( isPunchHit ) then
+      lifeTwo:setSequence( "oneQuarterLife" )
+      lifeTwo:setFrame(1)
+      lives = lives - 2
+    else
+      lifeTwo:setSequence( "twoQuartersLife" )
+      lifeTwo:setFrame(1)
+      lives = lives - 1
+    end
   elseif( lives == 6 ) then
-    lifeTwo:setSequence( "oneQuarterLife" )
-    lifeTwo:setFrame(1)
-    lives = lives - 1
+    if( isPunchHit ) then
+      lifeTwo:setSequence( "emptyLife" )
+      lifeTwo:setFrame(1)
+      lives = lives - 2
+    else
+      lifeTwo:setSequence( "oneQuarterLife" )
+      lifeTwo:setFrame(1)
+      lives = lives - 1
+    end
   elseif( lives == 5 ) then
-    lifeTwo:setSequence( "emptyLife" )
-    lifeTwo:setFrame(1)
-    lives = lives - 1
+    if( isPunchHit ) then
+      lifeTwo:setSequence( "emptyLife" )
+      lifeTwo:setFrame(1)
+      lifeOne:setSequence( "threeQuartersLife" )
+      lifeOne:setFrame(1)
+      lives = lives - 2
+    else
+      lifeTwo:setSequence( "emptyLife" )
+      lifeTwo:setFrame(1)
+      lives = lives - 1
+    end
   elseif( lives == 4 ) then
-    lifeOne:setSequence( "threeQuartersLife" )
-    lifeOne:setFrame(1)
-    lives = lives - 1
+    if( isPunchHit ) then
+      lifeOne:setSequence( "twoQuartersLife" )
+      lifeOne:setFrame(1)
+      lives = lives - 2
+    else
+      lifeOne:setSequence( "threeQuartersLife" )
+      lifeOne:setFrame(1)
+      lives = lives - 1
+    end
   elseif( lives == 3 ) then
-    lifeOne:setSequence( "twoQuartersLife" )
-    lifeOne:setFrame(1)
-    lives = lives - 1
+    if( isPunchHit ) then
+      lifeOne:setSequence( "oneQuarterLife" )
+      lifeOne:setFrame(1)
+      lives = lives - 2
+    else
+      lifeOne:setSequence( "twoQuartersLife" )
+      lifeOne:setFrame(1)
+      lives = lives - 1
+    end
   elseif( lives == 2 ) then
-    lifeOne:setSequence( "oneQuarterLife" )
-    lifeOne:setFrame(1)
-    lives = lives - 1
+    if( isPunchHit ) then
+      lifeOne:setSequence( "emptyLife" )
+      lifeOne:setFrame(1)
+      lives = lives - 2
+      died = true
+    else
+      lifeOne:setSequence( "oneQuarterLife" )
+      lifeOne:setFrame(1)
+      lives = lives - 1
+    end
   elseif( lives == 1 ) then
     lifeOne:setSequence( "emptyLife" )
     lifeOne:setFrame(1)
@@ -198,7 +269,6 @@ local function nTsFactory()
     nT = nTentity:getNt( xScale, yScale, -60, math.random( 300 ) )
     mainGroup:insert( nT )
     nT:setFrame( 2 )
-
     table.insert( nTtable, nT )
     physics.addBody( nT, "dynamic", { radius=40, bounce=0.8 } )
     nT:setLinearVelocity( math.random( 120,250 ), math.random( 20,60 ) )
@@ -221,11 +291,13 @@ local function removeDriftedNts()
 end
 
 local function nTsAttack()
-
-end
-
-local function nTsBehavior()
-  removeDriftedNts()
+  if( died ~= true ) then
+    for i = math.random( #nTtable ), 1, -2 do
+      local nT = nTtable[i]
+      nT:setSequence( "attackRight" )
+      nT:play()
+    end
+  end
 end
 
 local function endGame()
@@ -274,12 +346,18 @@ local function onCollision( event )
         end
       else
         if ( died == false ) then
+          local punchHit = false
+
           punchButton:setEnabled( false )
           jumpButton:setEnabled( false )
           moveLeftButton:setEnabled( false )
           moveRightButton:setEnabled( false )
 
-          if ( ( superD.sequence == "static" and superD.frame == 2 ) or
+          if( nT.sequence == "attackRight" and nT.frame ~= 7 ) then
+            punchHit = true
+          end
+
+          if( ( superD.sequence == "static" and superD.frame == 2 ) or
             superD.sequence == "movingRight" or superD.sequence == "attackRight" ) then
             superD:setSequence( "superDtakingDamage" )
             superD:setFrame(1)
@@ -288,7 +366,7 @@ local function onCollision( event )
             superD:setFrame(2)
           end
 
-          takeDamage()
+          takeDamage( punchHit )
           if( died == true ) then
             timer.performWithDelay( 200, endGame )
           else
@@ -303,7 +381,8 @@ end
 
 local function gameLoop()
   nTsFactory()
-  nTsBehavior()
+  nTsAttackLoop = timer.performWithDelay( math.random( 1000, 2000 ), nTsAttack, 0 )
+  removeDriftedNts()
 end
 
 -- -----------------------------------------------------------------------------------
@@ -390,7 +469,7 @@ function scene:show( event )
     pontuation = display.newText( uiGroup, points, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
     pontuation:setFillColor( 255, 255, 0 )
     Runtime:addEventListener( "collision", onCollision )
-    gameLoopTimer = timer.performWithDelay( 1300, gameLoop, 0 )
+    gameLoopTimer = timer.performWithDelay( 1200, gameLoop, 0 )
 
     -- Initialize widget
     widget = require("widget")
@@ -468,6 +547,7 @@ function scene:hide( event )
   if ( phase == "will" ) then
     -- Code here runs when the scene is on screen (but is about to go off screen)
     timer.cancel( gameLoopTimer )
+    timer.cancel( nTsAttackLoop )
     audio.stop()
     display.remove(backGroup)
     display.remove(mainGroup)

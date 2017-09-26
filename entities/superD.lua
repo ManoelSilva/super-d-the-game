@@ -3,8 +3,8 @@ local superDsprite
 local spritesheetSuperD = require("spritesheet.spritesheet-superD")
 local spritesheetSuperDdamaged = require("spritesheet.spritesheet-superD-taking-damage")
 
-local superDobjectSheet = graphics.newImageSheet( "assets/img/spritesheet-superD.png", spritesheetSuperD.getSheet() )
-local superDdamagedObjectSheet = graphics.newImageSheet( "assets/img/spritesheet-superD-taking-damage.png", spritesheetSuperDdamaged.getSheet() )
+local superDobjectSheet = graphics.newImageSheet( "assets/img/spritesheet-superD.png", spritesheetSuperD.getSheet )
+local superDdamagedObjectSheet = graphics.newImageSheet( "assets/img/spritesheet-superD-taking-damage.png", spritesheetSuperDdamaged.getSheet )
 
 local sequencesRunSuperD =
   {
@@ -16,9 +16,8 @@ local sequencesRunSuperD =
     { name = "superDtakingDamage", sheet = superDdamagedObjectSheet, frames = {2, 1} }
   }
 
-function SuperD:getSuperD( xScale, yScale, xScreen, yScreen )
+function SuperD:getSuperD( xScreen, yScreen )
   superDsprite = display.newSprite( superDobjectSheet, sequencesRunSuperD )
-  superDsprite:scale(xScale, yScale)
   superDsprite.x = display.contentCenterX + xScreen
   superDsprite.y = display.contentHeight - yScreen
   superDsprite.myName = "superD"

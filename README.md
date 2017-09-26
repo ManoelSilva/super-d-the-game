@@ -1,7 +1,7 @@
 # Super Disease - The Game
 
 ## Actual Version
-	0.0.4.7
+	0.0.6
 
 ## Game name
  	Super Disease.
@@ -87,4 +87,7 @@
 		Points system development complete.
 		Fixed bug after being hit immediately after dying.
 	**0.0.4.7**
-		N-Ts attack first implementation.	
+		N-Ts attack first implementation.
+	**0.0.6**
+		Better graphics.
+		Nucleum of life development start.	

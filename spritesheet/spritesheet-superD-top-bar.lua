@@ -1,99 +1,15 @@
---
--- created with TexturePacker (http://www.codeandweb.com/texturepacker)
---
--- $TexturePacker:SmartUpdate:71cb991b49aae015a6e9bcb3c67e5169:5c017f47dc1625457b5e93ffcf4387e9:4c700f6557a664a4a9544b5e11d377e8$
---
--- local sheetInfo = require("mysheet")
--- local myImageSheet = graphics.newImageSheet( "mysheet.png", sheetInfo:getSheet() )
--- local sprite = display.newSprite( myImageSheet , {frames={sheetInfo:getFrameIndex("sprite")}} )
---
-
-local SheetInfo = {}
-
-SheetInfo.sheet =
-{
-    frames = {
-    
-        {
-            -- n-T-dead-counter-icon
-            x=1,
-            y=1,
-            width=543,
-            height=637,
-
-        },
-        {
-            -- n-T-right
-            x=546,
-            y=1,
-            width=488,
-            height=461,
-
-        },
-        {
-            -- superDisease-empty-life
-            x=1,
-            y=640,
-            width=224,
-            height=201,
-
-        },
-        {
-            -- superDisease-full-life
-            x=227,
-            y=640,
-            width=224,
-            height=201,
-
-        },
-        {
-            -- superDisease-one-quarter-life
-            x=453,
-            y=640,
-            width=224,
-            height=201,
-
-        },
-        {
-            -- superDisease-three-quarters-life
-            x=679,
-            y=464,
-            width=224,
-            height=201,
-
-        },
-        {
-            -- superDisease-two-quarters-life
-            x=679,
-            y=667,
-            width=224,
-            height=201,
-
-        },
-    },
-    
-    sheetContentWidth = 1035,
-    sheetContentHeight = 869
+local M = {}
+M.getSheet = {
+	frames = {
+		{ name="n-T-dead-counter-icon", x = 0, y = 0, width = 544, height = 643, sourceX=0, sourceY=0, sourceWidth=544 , sourceHeight=643 },
+		{ name="n-T-right-counter", x = 546, y = 0, width = 488, height = 522, sourceX=0, sourceY=0, sourceWidth=488 , sourceHeight=522 },
+		{ name="superDisease-empty-life", x = 0, y = 645, width = 237, height = 217, sourceX=0, sourceY=0, sourceWidth=237 , sourceHeight=217 },
+		{ name="superDisease-full-life", x = 239, y = 645, width = 237, height = 217, sourceX=0, sourceY=0, sourceWidth=237 , sourceHeight=217 },
+		{ name="superDisease-one-quarter-life", x = 717, y = 524, width = 237, height = 217, sourceX=0, sourceY=0, sourceWidth=237 , sourceHeight=217 },
+		{ name="superDisease-three-quarters-life", x = 478, y = 645, width = 237, height = 217, sourceX=0, sourceY=0, sourceWidth=237 , sourceHeight=217 },
+		{ name="superDisease-two-quarters-life", x = 717, y = 743, width = 237, height = 217, sourceX=0, sourceY=0, sourceWidth=237 , sourceHeight=217 }
+	},
+	sheetContentWidth = 2048,
+	sheetContentHeight = 1024
 }
-
-SheetInfo.frameIndex =
-{
-
-    ["n-T-dead-counter-icon"] = 1,
-    ["n-T-right"] = 2,
-    ["superDisease-empty-life"] = 3,
-    ["superDisease-full-life"] = 4,
-    ["superDisease-one-quarter-life"] = 5,
-    ["superDisease-three-quarters-life"] = 6,
-    ["superDisease-two-quarters-life"] = 7,
-}
-
-function SheetInfo:getSheet()
-    return SheetInfo.sheet;
-end
-
-function SheetInfo:getFrameIndex(name)
-    return SheetInfo.frameIndex[name];
-end
-
-return SheetInfo
+return M

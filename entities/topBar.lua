@@ -1,7 +1,7 @@
 local TopBar = {}
 local topBarSprite
 local spritesheetTopBar = require("spritesheet.spritesheet-superD-top-bar")
-local topBarObjectSheet = graphics.newImageSheet( "assets/img/spritesheet-superD-top-bar.png", spritesheetTopBar.getSheet() )
+local topBarObjectSheet = graphics.newImageSheet( "assets/img/spritesheet-superD-top-bar.png", spritesheetTopBar.getSheet )
 local sequencesTopBar =
   {
     { name = "fullLife", frames = {4} },

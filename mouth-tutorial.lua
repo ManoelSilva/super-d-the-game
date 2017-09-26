@@ -16,9 +16,11 @@ physics.start()
 local topBarEntity = require( "entities.topBar" )
 local superDentity = require("entities.superD" )
 local nTentity = require( "entities.nT" )
+local nucleumEntity = require( "entities.nucleum" )
 
 -- Initialize variables
 local superD
+local nucleum
 local points = 0
 local pontuation
 local nT
@@ -40,8 +42,6 @@ local moveRightButton
 local moveLeftButton
 local died = false
 local lives = 12
-local xScale = 0.5
-local yScale = 0.3
 local lifeBarScale = 0.3
 local nTsBarScale = 0.1
 local alpha = 0.8
@@ -308,6 +308,7 @@ local function onCollision( event )
   if ( event.phase == "began" ) then
     local superD
     local nT
+    local nucleum
 
     if ( event.object1.myName == "superD" and event.object2.myName == "nT" ) then
       superD = event.object1
@@ -317,7 +318,15 @@ local function onCollision( event )
       nT = event.object1
     end
 
-    if ( superD ~= nil or nT ~= nil ) then
+    if ( event.object1.myName == "nucleum" and event.object2.myName == "superD" ) then
+      nucleum = event.object1
+      superD = event.object2
+    elseif ( event.object1.myName == "superD" and event.object2.myName == "nucleum" ) then
+      nucleum = event.object2
+      superD = event.object1
+    end
+
+    if ( superD ~= nil and nT ~= nil ) then
       audio.play( hitTrack )
 
       if( ( superD.sequence == "attackRight" or superD.sequence == "attackLeft" ) and superD.frame ~= 7 ) then
@@ -376,6 +385,10 @@ local function onCollision( event )
         end
       end
     end
+    if ( nucleum ~= nil and superD ~= nil ) then
+        nucleum:setSequence( "empty" )
+        nucleum:setFrame(1)
+    end
   end
 end
 
@@ -413,8 +426,12 @@ function scene:create( event )
   background.y = display.contentCenterY
 
   -- Load SuperD
-  superD = superDentity:getSuperD( xScale, yScale, 400, 290 )
+  superD = superDentity:getSuperD( 400, 290 )
   mainGroup:insert( superD )
+
+  -- Load nucleum
+  nucleum = nucleumEntity:getNucleum( -400, 290 )
+  mainGroup:insert( nucleum )
 
   -- Load the ground
   ground = display.newRect( backGroup, display.contentCenterX, display.contentHeight - 280, display.contentWidth * 30, 10)
@@ -446,6 +463,7 @@ function scene:create( event )
   -- Adding physics
   --physics.setGravity( 0, 20 )
   physics.addBody( superD, "dynamic", { radius=40, isSensor=false, bounce=0.1 } )
+  physics.addBody( nucleum, "kinematic", { isSensor=false } )
   physics.addBody( ground, "static", { bounce=0.05 } )
 end
 

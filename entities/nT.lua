@@ -1,7 +1,7 @@
 local Nt = {}
 local nTsprite
 local spritesheetNt = require("spritesheet.spritesheet-nT")
-local nTobjectSheet = graphics.newImageSheet( "assets/img/spritesheet-nT.png", spritesheetNt.getSheet() )
+local nTobjectSheet = graphics.newImageSheet( "assets/img/spritesheet-nT.png", spritesheetNt.getSheet )
 
 local sequencesRunNt =
   {
@@ -14,7 +14,7 @@ local sequencesRunNt =
 
 function Nt:getNt( xScale, yScale, xScreen, yScreen )
   nTsprite = display.newSprite( nTobjectSheet, sequencesRunNt )
-  nTsprite:scale(xScale, yScale)
+  --nTsprite:scale(xScale, yScale)
   nTsprite.x = xScreen
   nTsprite.y = yScreen
   nTsprite.myName = "nT"

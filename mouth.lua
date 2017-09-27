@@ -314,7 +314,11 @@ end
 
 local function nTsAttack()
   if( died ~= true ) then
-    for i = #nTtable, 1, -2 do
+    local attackingNumber = 2
+    if( #nTtable > 0  ) then
+      attackingNumber = math.random( #nTtable )
+    end
+    for i = #nTtable, 1, -attackingNumber do
       local nT = nTtable[i]
       nT:setSequence( "attackRight" )
       nT:play()

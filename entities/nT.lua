@@ -3,18 +3,17 @@ local nTsprite
 local spritesheetNt = require("spritesheet.spritesheet-nT")
 local nTobjectSheet = graphics.newImageSheet( "assets/img/spritesheet-nT.png", spritesheetNt.getSheet )
 
-local sequencesRunNt =
-  {
-    { name = "static", frames = {7, 16} },
-    { name = "movingRight", frames = {9} },
-    { name = "movingLeft", frames = {8} },
-    { name = "attackRight", start = 10, count = 7, time = 260, loopCount = 1 },
-    { name = "attackLeft", start = 1, count = 7, time = 1000, loopCount = 1 }
-  }
+function Nt:getNt( xScreen, yScreen )
+  local sequencesRunNt =
+    {
+      { name = "static", frames = {7, 16} },
+      { name = "movingRight", frames = {9} },
+      { name = "movingLeft", frames = {8} },
+      { name = "attackRight", start = 10, count = 7, time = 260, loopCount = math.random( 1, 10 ) },
+      { name = "attackLeft", start = 1, count = 7, time = 260, loopCount = 1 }
+    }
 
-function Nt:getNt( xScale, yScale, xScreen, yScreen )
   nTsprite = display.newSprite( nTobjectSheet, sequencesRunNt )
-  --nTsprite:scale(xScale, yScale)
   nTsprite.x = xScreen
   nTsprite.y = yScreen
   nTsprite.myName = "nT"

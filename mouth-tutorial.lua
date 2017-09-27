@@ -21,7 +21,10 @@ local nucleumEntity = require( "entities.nucleum" )
 -- Initialize variables
 local superD
 local nucleum
+local nucleumTable = {}
+local hasNucleumFull = true
 local points = 0
+local generatedNucleums = 0
 local pontuation
 local nT
 local nTsNumber
@@ -114,126 +117,116 @@ local function jump()
   superD:applyLinearImpulse( 0, 6, superD.x, superD.y )
 end
 
-local function takeDamage( isPunchHit )
+local function changeLifeBar( lives )
   if ( lives == 12 ) then
-    if( isPunchHit ) then
-      lifeThree:setSequence( "twoQuartersLife" )
-      lifeThree:setFrame(1)
-      lives = lives - 2
-    else
-      lifeThree:setSequence( "threeQuartersLife" )
-      lifeThree:setFrame(1)
-      lives = lives - 1
-    end
+    lifeThree:setSequence( "fullLife" )
+    lifeThree:setFrame(1)
+    lifeTwo:setSequence( "fullLife" )
+    lifeTwo:setFrame(1)
+    lifeOne:setSequence( "fullLife" )
+    lifeOne:setFrame(1)
   elseif( lives == 11 ) then
-    if( isPunchHit ) then
-      lifeThree:setSequence( "oneQuarterLife" )
-      lifeThree:setFrame(1)
-      lives = lives - 2
-    else
-      lifeThree:setSequence( "twoQuartersLife" )
-      lifeThree:setFrame(1)
-      lives = lives - 1
-    end
+    lifeThree:setSequence( "threeQuartersLife" )
+    lifeThree:setFrame(1)
+    lifeTwo:setSequence( "fullLife" )
+    lifeTwo:setFrame(1)
+    lifeOne:setSequence( "fullLife" )
+    lifeOne:setFrame(1)
   elseif( lives == 10 ) then
-    if( isPunchHit ) then
-      lifeThree:setSequence( "emptyLife" )
-      lifeThree:setFrame(1)
-      lives = lives - 2
-    else
-      lifeThree:setSequence( "oneQuarterLife" )
-      lifeThree:setFrame(1)
-      lives = lives - 1
-    end
+    lifeThree:setSequence( "twoQuartersLife" )
+    lifeThree:setFrame(1)
+    lifeTwo:setSequence( "fullLife" )
+    lifeTwo:setFrame(1)
+    lifeOne:setSequence( "fullLife" )
+    lifeOne:setFrame(1)
   elseif( lives == 9 ) then
-    if( isPunchHit ) then
-      lifeThree:setSequence( "emptyLife" )
-      lifeThree:setFrame(1)
-      lifeTwo:setSequence( "threeQuartersLife" )
-      lifeTwo:setFrame(1)
-      lives = lives - 2
-    else
-      lifeThree:setSequence( "emptyLife" )
-      lifeThree:setFrame(1)
-      lives = lives - 1
-    end
+    lifeThree:setSequence( "oneQuarterLife" )
+    lifeThree:setFrame(1)
+    lifeTwo:setSequence( "fullLife" )
+    lifeTwo:setFrame(1)
+    lifeOne:setSequence( "fullLife" )
+    lifeOne:setFrame(1)
   elseif( lives == 8 ) then
-    if( isPunchHit ) then
-      lifeTwo:setSequence( "twoQuartersLife" )
-      lifeTwo:setFrame(1)
-      lives = lives - 2
-    else
-      lifeTwo:setSequence( "threeQuartersLife" )
-      lifeTwo:setFrame(1)
-      lives = lives - 1
-    end
+    lifeThree:setSequence( "emptyLife" )
+    lifeThree:setFrame(1)
+    lifeTwo:setSequence( "fullLife" )
+    lifeTwo:setFrame(1)
+    lifeOne:setSequence( "fullLife" )
+    lifeOne:setFrame(1)
   elseif( lives == 7 ) then
-    if( isPunchHit ) then
-      lifeTwo:setSequence( "oneQuarterLife" )
-      lifeTwo:setFrame(1)
-      lives = lives - 2
-    else
-      lifeTwo:setSequence( "twoQuartersLife" )
-      lifeTwo:setFrame(1)
-      lives = lives - 1
-    end
+    lifeThree:setSequence( "emptyLife" )
+    lifeThree:setFrame(1)
+    lifeTwo:setSequence( "threeQuartersLife" )
+    lifeTwo:setFrame(1)
+    lifeOne:setSequence( "fullLife" )
+    lifeOne:setFrame(1)
   elseif( lives == 6 ) then
-    if( isPunchHit ) then
-      lifeTwo:setSequence( "emptyLife" )
-      lifeTwo:setFrame(1)
-      lives = lives - 2
-    else
-      lifeTwo:setSequence( "oneQuarterLife" )
-      lifeTwo:setFrame(1)
-      lives = lives - 1
-    end
+    lifeThree:setSequence( "emptyLife" )
+    lifeThree:setFrame(1)
+    lifeTwo:setSequence( "twoQuartersLife" )
+    lifeTwo:setFrame(1)
+    lifeOne:setSequence( "fullLife" )
+    lifeOne:setFrame(1)
   elseif( lives == 5 ) then
-    if( isPunchHit ) then
-      lifeTwo:setSequence( "emptyLife" )
-      lifeTwo:setFrame(1)
-      lifeOne:setSequence( "threeQuartersLife" )
-      lifeOne:setFrame(1)
-      lives = lives - 2
-    else
-      lifeTwo:setSequence( "emptyLife" )
-      lifeTwo:setFrame(1)
-      lives = lives - 1
-    end
+    lifeThree:setSequence( "emptyLife" )
+    lifeThree:setFrame(1)
+    lifeTwo:setSequence( "oneQuarterLife" )
+    lifeTwo:setFrame(1)
+    lifeOne:setSequence( "fullLife" )
+    lifeOne:setFrame(1)
   elseif( lives == 4 ) then
-    if( isPunchHit ) then
-      lifeOne:setSequence( "twoQuartersLife" )
-      lifeOne:setFrame(1)
-      lives = lives - 2
-    else
-      lifeOne:setSequence( "threeQuartersLife" )
-      lifeOne:setFrame(1)
-      lives = lives - 1
-    end
+    lifeThree:setSequence( "emptyLife" )
+    lifeThree:setFrame(1)
+    lifeTwo:setSequence( "emptyLife" )
+    lifeTwo:setFrame(1)
+    lifeOne:setSequence( "fullLife" )
+    lifeOne:setFrame(1)
   elseif( lives == 3 ) then
-    if( isPunchHit ) then
-      lifeOne:setSequence( "oneQuarterLife" )
-      lifeOne:setFrame(1)
-      lives = lives - 2
-    else
-      lifeOne:setSequence( "twoQuartersLife" )
-      lifeOne:setFrame(1)
-      lives = lives - 1
-    end
+    lifeThree:setSequence( "emptyLife" )
+    lifeThree:setFrame(1)
+    lifeTwo:setSequence( "emptyLife" )
+    lifeTwo:setFrame(1)
+    lifeOne:setSequence( "threeQuartersLife" )
+    lifeOne:setFrame(1)
   elseif( lives == 2 ) then
-    if( isPunchHit ) then
-      lifeOne:setSequence( "emptyLife" )
-      lifeOne:setFrame(1)
-      lives = lives - 2
-      died = true
-    else
-      lifeOne:setSequence( "oneQuarterLife" )
-      lifeOne:setFrame(1)
-      lives = lives - 1
-    end
+    lifeThree:setSequence( "emptyLife" )
+    lifeThree:setFrame(1)
+    lifeTwo:setSequence( "emptyLife" )
+    lifeTwo:setFrame(1)
+    lifeOne:setSequence( "twoQuartersLife" )
+    lifeOne:setFrame(1)
   elseif( lives == 1 ) then
+    lifeThree:setSequence( "emptyLife" )
+    lifeThree:setFrame(1)
+    lifeTwo:setSequence( "emptyLife" )
+    lifeTwo:setFrame(1)
+    lifeOne:setSequence( "oneQuarterLife" )
+    lifeOne:setFrame(1)
+  elseif( lives == 0 or lives < 0 ) then
+    lifeThree:setSequence( "emptyLife" )
+    lifeThree:setFrame(1)
+    lifeTwo:setSequence( "emptyLife" )
+    lifeTwo:setFrame(1)
     lifeOne:setSequence( "emptyLife" )
     lifeOne:setFrame(1)
+  end
+end
+
+local function increaseLife()
+  if( lives ~= 12 ) then
+    lives = lives + 1
+    changeLifeBar( lives )
+  end
+end
+
+local function takeDamage( isPunchHit )
+  if( isPunchHit ) then
+    lives = lives - 2
+  else
     lives = lives - 1
+  end
+  changeLifeBar( lives )
+  if( lives == 0 or lives < 0) then
     died = true
   end
 end
@@ -261,6 +254,35 @@ local function restoreSuperD()
         died = false
       end
     } )
+  end
+end
+
+local function nucleumsFactory()
+  if( not hasNucleumFull ) then
+    generatedNucleums = generatedNucleums + 1
+
+    if( generatedNucleums < 5 )  then
+      nucleum = nucleumEntity:getNucleum( math.random( -400, 400 ), 290 )
+      mainGroup:insert( nucleum )
+      physics.addBody( nucleum, "kinematic", { isSensor=false } )
+      table.insert( nucleumTable, nucleum )
+      
+      hasNucleumFull = true
+    end
+  end
+end
+
+local function removeNucleumUsed( nucleum )
+  for i = #nucleumTable, 1, -1 do
+    if ( nucleumTable[i] == nucleum ) then
+      transition.to( nucleumTable[i], { alpha=1, time=2000,
+        onComplete = function()
+          display.remove( nucleum )
+        end
+      } )
+      table.remove( nucleumTable, i )
+      break
+    end
   end
 end
 
@@ -385,9 +407,14 @@ local function onCollision( event )
         end
       end
     end
-    if ( nucleum ~= nil and superD ~= nil ) then
-        nucleum:setSequence( "empty" )
-        nucleum:setFrame(1)
+    if( nucleum ~= nil and superD ~= nil ) then
+      if( nucleum.sequence == "full" ) then
+        increaseLife()
+      end
+      nucleum:setSequence( "empty" )
+      nucleum:setFrame(1)
+      removeNucleumUsed( nucleum )
+      hasNucleumFull = false
     end
   end
 end
@@ -395,6 +422,7 @@ end
 local function gameLoop()
   nTsFactory()
   nTsAttackLoop = timer.performWithDelay( math.random( 2000, 3000 ), nTsAttack, 0 )
+  generateNucleumLoop = timer.performWithDelay( math.random( 60000, 90000 ), nucleumsFactory, 0 )
   removeDriftedNts()
 end
 
@@ -432,6 +460,7 @@ function scene:create( event )
   -- Load nucleum
   nucleum = nucleumEntity:getNucleum( -400, 290 )
   mainGroup:insert( nucleum )
+  table.insert( nucleumTable, nucleum )
 
   -- Load the ground
   ground = display.newRect( backGroup, display.contentCenterX, display.contentHeight - 280, display.contentWidth * 30, 10)
@@ -566,6 +595,7 @@ function scene:hide( event )
     -- Code here runs when the scene is on screen (but is about to go off screen)
     timer.cancel( gameLoopTimer )
     timer.cancel( nTsAttackLoop )
+    timer.cancel( generateNucleumLoop )
     audio.stop()
     display.remove(backGroup)
     display.remove(mainGroup)

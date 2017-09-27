@@ -1,7 +1,7 @@
 # Super Disease - The Game
 
 ## Actual Version
-	0.0.7
+	0.1
 
 ## Game name
  	Super Disease.
@@ -94,3 +94,6 @@
 	**0.0.7**
 		Increase life system complete.
 		Factory of Nucleums development start.
+	**0.1**
+		Factory of Nucleums development complete.
+		Level template development complete.

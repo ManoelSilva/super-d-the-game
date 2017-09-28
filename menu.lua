@@ -9,8 +9,13 @@ local composer = require( "composer" )
 -- Creates a variable that holds a Composer scene object
 local scene = composer.newScene()
 
+-- Reserve channel 1 for background music
+audio.reserveChannels( 1 )
+-- Reduce the overall volume of the channel
+audio.setVolume( 0.5, { channel=1 } )
+
 -- Menu music
-local musicTrack = audio.loadSound( "assets/audio/hollywood.mp3" )
+local musicTrack = audio.loadStream( "assets/audio/hollywood.mp3" )
 -- Select option sound effect
 local selected = audio.loadSound( "assets/audio/menuClick.mp3" )
 
@@ -110,7 +115,7 @@ function scene:show( event )
   elseif ( phase == "did" ) then
     -- Code here runs when the scene is entirely on screen
     -- Play music
-    audio.play( musicTrack )
+    audio.play( musicTrack, { channel=1, loops=-1 } )
   end
 end
 
@@ -122,11 +127,11 @@ function scene:hide( event )
 
   if ( phase == "will" ) then
     -- Code here runs when the scene is on screen (but is about to go off screen)
-    audio.stop()
-
+    -- Stop the music!
+    audio.stop( 1 )
   elseif ( phase == "did" ) then
-  -- Code here runs immediately after the scene goes entirely off screen
-
+    -- Code here runs immediately after the scene goes entirely off screen
+    composer.removeScene( "menu" ) 
   end
 end
 

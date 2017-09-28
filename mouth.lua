@@ -2,6 +2,11 @@ local composer = require( "composer" )
 
 local scene = composer.newScene()
 
+-- Reserve channel 1 for background music
+audio.reserveChannels( 1 )
+-- Reduce the overall volume of the channel
+audio.setVolume( 0.5, { channel=1 } )
+
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
@@ -50,7 +55,7 @@ local nTsBarScale = 0.1
 local alpha = 0.8
 --local offsetSuperDParams = { 0,-37, 37,-10, 23,34, -23,34, -37,-10 }
 -- Sound settings
-local musicTrack = audio.loadSound( "assets/audio/youCantHide.mp3" )
+local musicTrack = audio.loadStream( "assets/audio/youCantHide.mp3" )
 local moveTrack = audio.loadSound( "assets/audio/moveSound.mp3" )
 local jumpTrack = audio.loadSound( "assets/audio/jumpSound.mp3" )
 local punchTrack = audio.loadSound( "assets/audio/punchSound.mp3" )
@@ -120,96 +125,60 @@ end
 local function changeLifeBar( lives )
   if ( lives == 12 ) then
     lifeThree:setSequence( "fullLife" )
-    lifeThree:setFrame(1)
     lifeTwo:setSequence( "fullLife" )
-    lifeTwo:setFrame(1)
     lifeOne:setSequence( "fullLife" )
-    lifeOne:setFrame(1)
   elseif( lives == 11 ) then
     lifeThree:setSequence( "threeQuartersLife" )
-    lifeThree:setFrame(1)
     lifeTwo:setSequence( "fullLife" )
-    lifeTwo:setFrame(1)
     lifeOne:setSequence( "fullLife" )
-    lifeOne:setFrame(1)
   elseif( lives == 10 ) then
     lifeThree:setSequence( "twoQuartersLife" )
-    lifeThree:setFrame(1)
     lifeTwo:setSequence( "fullLife" )
-    lifeTwo:setFrame(1)
     lifeOne:setSequence( "fullLife" )
-    lifeOne:setFrame(1)
   elseif( lives == 9 ) then
     lifeThree:setSequence( "oneQuarterLife" )
-    lifeThree:setFrame(1)
     lifeTwo:setSequence( "fullLife" )
-    lifeTwo:setFrame(1)
     lifeOne:setSequence( "fullLife" )
-    lifeOne:setFrame(1)
   elseif( lives == 8 ) then
     lifeThree:setSequence( "emptyLife" )
-    lifeThree:setFrame(1)
     lifeTwo:setSequence( "fullLife" )
-    lifeTwo:setFrame(1)
     lifeOne:setSequence( "fullLife" )
-    lifeOne:setFrame(1)
   elseif( lives == 7 ) then
     lifeThree:setSequence( "emptyLife" )
-    lifeThree:setFrame(1)
     lifeTwo:setSequence( "threeQuartersLife" )
-    lifeTwo:setFrame(1)
     lifeOne:setSequence( "fullLife" )
-    lifeOne:setFrame(1)
   elseif( lives == 6 ) then
     lifeThree:setSequence( "emptyLife" )
-    lifeThree:setFrame(1)
     lifeTwo:setSequence( "twoQuartersLife" )
-    lifeTwo:setFrame(1)
     lifeOne:setSequence( "fullLife" )
-    lifeOne:setFrame(1)
   elseif( lives == 5 ) then
     lifeThree:setSequence( "emptyLife" )
-    lifeThree:setFrame(1)
     lifeTwo:setSequence( "oneQuarterLife" )
-    lifeTwo:setFrame(1)
     lifeOne:setSequence( "fullLife" )
-    lifeOne:setFrame(1)
   elseif( lives == 4 ) then
     lifeThree:setSequence( "emptyLife" )
-    lifeThree:setFrame(1)
     lifeTwo:setSequence( "emptyLife" )
-    lifeTwo:setFrame(1)
     lifeOne:setSequence( "fullLife" )
-    lifeOne:setFrame(1)
   elseif( lives == 3 ) then
     lifeThree:setSequence( "emptyLife" )
-    lifeThree:setFrame(1)
     lifeTwo:setSequence( "emptyLife" )
-    lifeTwo:setFrame(1)
     lifeOne:setSequence( "threeQuartersLife" )
-    lifeOne:setFrame(1)
   elseif( lives == 2 ) then
     lifeThree:setSequence( "emptyLife" )
-    lifeThree:setFrame(1)
     lifeTwo:setSequence( "emptyLife" )
-    lifeTwo:setFrame(1)
     lifeOne:setSequence( "twoQuartersLife" )
-    lifeOne:setFrame(1)
   elseif( lives == 1 ) then
     lifeThree:setSequence( "emptyLife" )
-    lifeThree:setFrame(1)
     lifeTwo:setSequence( "emptyLife" )
-    lifeTwo:setFrame(1)
     lifeOne:setSequence( "oneQuarterLife" )
-    lifeOne:setFrame(1)
   elseif( lives == 0 or lives < 0 ) then
     lifeThree:setSequence( "emptyLife" )
-    lifeThree:setFrame(1)
     lifeTwo:setSequence( "emptyLife" )
-    lifeTwo:setFrame(1)
     lifeOne:setSequence( "emptyLife" )
-    lifeOne:setFrame(1)
   end
+  lifeThree:setFrame(1)
+  lifeTwo:setFrame(1)
+  lifeOne:setFrame(1)
 end
 
 local function increaseLife()
@@ -266,7 +235,7 @@ local function nucleumsFactory()
       backGroup:insert( nucleum )
       physics.addBody( nucleum, "static", { isSensor=true } )
       table.insert( nucleumTable, nucleum )
-      
+
       hasNucleumFull = true
     end
   end
@@ -288,7 +257,7 @@ end
 
 local function nTsFactory()
   if( nTsNumber ~= 0 ) then
-    nT = nTentity:getNt( xScale, yScale, -60, math.random( 300 ) )
+    nT = nTentity:getNt( -60, math.random( 300 ) )
     mainGroup:insert( nT )
     nT:setFrame( 2 )
     table.insert( nTtable, nT )
@@ -420,6 +389,8 @@ local function onCollision( event )
       removeNucleumUsed( nucleum )
       hasNucleumFull = false
     end
+  elseif ( event.phase == "ended" and not died ) then
+    timer.performWithDelay( 100, keepSuperDatScreen )
   end
 end
 
@@ -510,7 +481,7 @@ function scene:show( event )
   elseif ( phase == "did" ) then
     -- Code here runs when the scene is entirely on screen
     system.activate( "multitouch" )
-    audio.play( musicTrack )
+    audio.play( musicTrack, { channel=1, loops=-1 } )
     physics.start()
     nTsNumber = math.random( 40, 60 )
     nTsLeft = display.newText( uiGroup, nTsNumber, display.contentCenterX + 370, display.contentHeight - 640, inputText, 40 )
@@ -600,7 +571,8 @@ function scene:hide( event )
     timer.cancel( gameLoopTimer )
     timer.cancel( nTsAttackLoopTimer )
     timer.cancel( nucleumsFactoryLoopTimer )
-    audio.stop()
+    -- Stop the music!
+    audio.stop( 1 )
     display.remove(backGroup)
     display.remove(mainGroup)
     display.remove(uiGroup)

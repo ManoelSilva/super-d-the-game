@@ -206,7 +206,7 @@ local function restoreSuperD()
     superD.isBodyActive = false
 
     -- Fade in SuperD
-    transition.to( superD, { alpha=1, time=225,
+    transition.to( superD, { alpha=1, time=1,
       onComplete = function()
         superD.isBodyActive = true
         punchButton:setEnabled( true )

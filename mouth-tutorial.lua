@@ -80,10 +80,12 @@ local function punch()
 end
 
 local function keepSuperDatScreen()
-  if superD.x > display.contentWidth then
-    superD.x = display.contentWidth - 10
-  elseif superD.x < 0 then
-    superD.x = 0
+  if( died == false ) then
+    if superD.x > display.contentWidth then
+      superD.x = display.contentWidth - 10
+    elseif superD.x < 0 then
+      superD.x = 0
+    end
   end
 end
 
@@ -182,10 +184,8 @@ local function changeLifeBar( lives )
 end
 
 local function increaseLife()
-  if( lives ~= 12 ) then
-    lives = lives + 1
-    changeLifeBar( lives )
-  end
+  lives = lives + 1
+  changeLifeBar( lives )
 end
 
 local function takeDamage( isPunchHit )
@@ -348,39 +348,33 @@ local function onCollision( event )
             break
           end
         end
-      else
-        if ( died == false ) then
-          local punchHit = false
+      elseif ( died == false ) then
+        local punchHit = false
 
-          punchButton:setEnabled( false )
-          jumpButton:setEnabled( false )
-          moveLeftButton:setEnabled( false )
-          moveRightButton:setEnabled( false )
+        punchButton:setEnabled( false )
+        jumpButton:setEnabled( false )
+        moveLeftButton:setEnabled( false )
+        moveRightButton:setEnabled( false )
 
-          if( nT.sequence == "attackRight" and nT.frame ~= 7 ) then
-            punchHit = true
-          end
-
-          if( ( superD.sequence == "static" and superD.frame == 2 ) or
-            superD.sequence == "movingRight" or superD.sequence == "attackRight" ) then
-            superD:setSequence( "superDtakingDamage" )
-            superD:setFrame(1)
-          else
-            superD:setSequence( "superDtakingDamage" )
-            superD:setFrame(2)
-          end
-
-          takeDamage( punchHit )
-          if( died == true ) then
-            timer.performWithDelay( 200, endGame )
-          else
-            superD.alpha = 0.5
-            timer.performWithDelay( 420, restoreSuperD )
-          end
+        if( nT.sequence == "attackRight" and nT.frame ~= 7 ) then
+          punchHit = true
         end
+
+        if( ( superD.sequence == "static" and superD.frame == 2 ) or
+          superD.sequence == "movingRight" or superD.sequence == "attackRight" ) then
+          superD:setSequence( "superDtakingDamage" )
+          superD:setFrame(1)
+        else
+          superD:setSequence( "superDtakingDamage" )
+          superD:setFrame(2)
+        end
+        takeDamage( punchHit )
+        superD.alpha = 0.5
+        timer.performWithDelay( 100 , restoreSuperD )
       end
     end
-    if( nucleum ~= nil and superD ~= nil ) then
+
+    if( nucleum ~= nil and superD ~= nil and lives ~= 12 ) then
       if( nucleum.sequence == "full" ) then
         increaseLife()
       end
@@ -389,8 +383,12 @@ local function onCollision( event )
       removeNucleumUsed( nucleum )
       hasNucleumFull = false
     end
-  elseif ( event.phase == "ended" and not died ) then
-    timer.performWithDelay( 100, keepSuperDatScreen )
+  elseif ( event.phase == "ended" and superD ~= nil and nT ~= nil ) then
+    if( died == true ) then
+      timer.performWithDelay( 200, endGame )
+    else
+      timer.performWithDelay( 1, keepSuperDatScreen )
+    end
   end
 end
 

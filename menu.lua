@@ -131,7 +131,6 @@ function scene:hide( event )
     audio.stop( 1 )
   elseif ( phase == "did" ) then
     -- Code here runs immediately after the scene goes entirely off screen
-    composer.removeScene( "menu" ) 
   end
 end
 

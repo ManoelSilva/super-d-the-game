@@ -65,12 +65,12 @@
 		http://www6.flamingtext.com
 
 ## Versions Features
-	```
+```
 	These version features are like a development diary to me. I'm not using any 
 	software versioning pattern like major.minor.whatever. Those numbers came out 
 	of my building tests and mostly of my head, after all is my project, my game. 
 	Hope you guys enjoy. :)
-	```
+```
 	
 	**0.0.4**
 		First demostration of game's project.

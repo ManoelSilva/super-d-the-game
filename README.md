@@ -1,7 +1,7 @@
 # Super Disease - The Game
 
 ## Actual Version
-	0.1
+	0.2
 
 ## Game name
  	Super Disease.
@@ -65,6 +65,13 @@
 		http://www6.flamingtext.com
 
 ## Versions Features
+	```
+	These version features are like a development diary to me. I'm not using any 
+	software versioning pattern like major.minor.whatever. Those numbers came out 
+	of my building tests and mostly of my head, after all is my project, my game. 
+	Hope you guys enjoy. :)
+	```
+	
 	**0.0.4**
 		First demostration of game's project.
 		Super D animations almost complete.
@@ -97,3 +104,5 @@
 	**0.1**
 		Factory of Nucleums development complete.
 		Level template development complete.
+	**0.2**
+		Game tutorial development start.

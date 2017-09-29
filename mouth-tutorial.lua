@@ -392,6 +392,27 @@ local function onCollision( event )
   end
 end
 
+local function gameTutorial()
+  print( "Entrei gameTutorial" )
+  superD.isBodyActive = false
+  punchButton:setEnabled( false )
+  jumpButton:setEnabled( false )
+  moveLeftButton:setEnabled( false )
+  moveRightButton:setEnabled( false )
+
+  -- Load tutorial textbox
+  local tutorialTextBox = display.newRect( backGroup, display.contentCenterX, display.contentCenterY-100, 400, 200 )
+  tutorialTextBox:setFillColor( 0, 0, 1 )
+  tutorialTextBox:setStrokeColor( 1, 1, 0 )
+  tutorialTextBox.strokeWidth = 1
+  tutorialTextBox.isHitTestable = true
+  tutorialTextBox.myName = "tutorialTextBox"
+
+  local contentText =  "Hello, welcome to inside human's body! Your mission here its simple: you have to kill all N-Ts that may come."
+  local contentTextEntity = display.newText( backGroup, contentText, display.contentCenterX+05, display.contentHeight-505, 300, 0, inputText, 20 )
+  contentTextEntity:setFillColor( 1, 1, 0 )
+end
+
 local function gameLoop()
   nTsFactory()
   removeDriftedNts()
@@ -479,17 +500,13 @@ function scene:show( event )
   elseif ( phase == "did" ) then
     -- Code here runs when the scene is entirely on screen
     system.activate( "multitouch" )
-    audio.play( musicTrack, { channel=1, loops=-1 } )
+    --audio.play( musicTrack, { channel=1, loops=-1 } )
     physics.start()
     nTsNumber = math.random( 40, 60 )
     nTsLeft = display.newText( uiGroup, nTsNumber, display.contentCenterX + 370, display.contentHeight - 640, inputText, 40 )
     nTsLeft:setFillColor( 255, 255, 0 )
     pontuation = display.newText( uiGroup, points, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
     pontuation:setFillColor( 255, 255, 0 )
-    Runtime:addEventListener( "collision", onCollision )
-    gameLoopTimer = timer.performWithDelay( 1200, gameLoop, 0 )
-    nucleumsFactoryLoopTimer = timer.performWithDelay( math.random( 60000, 90000 ), nucleumsFactory, 0 )
-    nTsAttackLoopTimer = timer.performWithDelay( math.random( 1000, 3000 ), nTsAttack, 0 )
 
     -- Initialize widget
     widget = require("widget")
@@ -555,6 +572,14 @@ function scene:show( event )
     uiGroup:insert( moveLeftButton )
     uiGroup:insert( moveRightButton )
     -- Load gamepad end
+
+    -- Start tutorial
+    gameTutorial()
+
+    Runtime:addEventListener( "collision", onCollision )
+    gameLoopTimer = timer.performWithDelay( 1200, gameLoop, 0 )
+    nucleumsFactoryLoopTimer = timer.performWithDelay( math.random( 60000, 90000 ), nucleumsFactory, 0 )
+    nTsAttackLoopTimer = timer.performWithDelay( math.random( 1000, 3000 ), nTsAttack, 0 )
   end
 end
 

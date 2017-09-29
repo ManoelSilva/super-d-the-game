@@ -22,7 +22,7 @@ local selected = audio.loadSound( "assets/audio/menuClick.mp3" )
 local function gotoMouthTutorialLevel()
   print("tapped mouthTutorial level button")
   audio.play( selected )
-  composer.gotoScene( "mouth-tutorial", { time=800, effect="crossFade" } )
+  composer.gotoScene( "mouth", { time=800, effect="crossFade" } )
 end
 
 local function gotoLevels()

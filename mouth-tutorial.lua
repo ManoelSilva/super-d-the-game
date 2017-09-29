@@ -201,13 +201,13 @@ local function takeDamage( isPunchHit )
 end
 
 local function restoreSuperD()
-  if( died == false ) then
-    superD:setLinearVelocity( 0,0 )
-    superD.isBodyActive = false
+  superD:setLinearVelocity( 0,0 )
+  superD.isBodyActive = false
 
-    -- Fade in SuperD
-    transition.to( superD, { alpha=1, time=1,
-      onComplete = function()
+  -- Fade in SuperD
+  transition.to( superD, { alpha=1, time=225,
+    onComplete = function()
+      if( died == false ) then
         superD.isBodyActive = true
         punchButton:setEnabled( true )
         jumpButton:setEnabled( true )
@@ -222,8 +222,8 @@ local function restoreSuperD()
         end
         died = false
       end
-    } )
-  end
+    end
+  } )
 end
 
 local function nucleumsFactory()

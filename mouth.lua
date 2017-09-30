@@ -62,10 +62,10 @@ local punchTrack = audio.loadSound( "assets/audio/punchSound.mp3" )
 local hitTrack = audio.loadSound( "assets/audio/hitSound.mp3" )
 -- Font
 local inputText = native.newFont( "Starjedi.ttf" )
--- Set up display groups
-local backGroup = display.newGroup()  -- Display group for the background image
-local mainGroup = display.newGroup()  -- Display group for Super D, N-Ts etc
-local uiGroup = display.newGroup()    -- Display group for UI objects
+-- Set up display groups variables
+local backGroup
+local mainGroup
+local uiGroup
 
 local function punch()
   audio.play( punchTrack )
@@ -263,7 +263,7 @@ local function nTsFactory()
     mainGroup:insert( nT )
     nT:setFrame( 2 )
     table.insert( nTtable, nT )
-    physics.addBody( nT, "dynamic", { radius=40, bounce=0.8 } )
+    physics.addBody( nT, "dynamic", { radius=80, bounce=0.8 } )
     nT:setLinearVelocity( math.random( 120,250 ), math.random( 20,60 ) )
   end
 end
@@ -483,6 +483,7 @@ function scene:show( event )
     system.activate( "multitouch" )
     audio.play( musicTrack, { channel=1, loops=-1 } )
     physics.start()
+    --physics.setDrawMode( "hybrid" )
     nTsNumber = math.random( 40, 60 )
     nTsLeft = display.newText( uiGroup, nTsNumber, display.contentCenterX + 370, display.contentHeight - 640, inputText, 40 )
     nTsLeft:setFillColor( 255, 255, 0 )

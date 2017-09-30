@@ -24,6 +24,8 @@ local nTentity = require( "entities.nT" )
 local nucleumEntity = require( "entities.nucleum" )
 
 -- Initialize variables
+local stillInTutorial = true
+local passTutorialText = true
 local superD
 local nucleum
 local nucleumTable = {}
@@ -41,8 +43,6 @@ local lifeThree
 local nTsToKill
 local nTsKilled
 local ground
-local wallRight
-local wallLeft
 local widget
 local punchButton
 local jumpButton
@@ -62,10 +62,10 @@ local punchTrack = audio.loadSound( "assets/audio/punchSound.mp3" )
 local hitTrack = audio.loadSound( "assets/audio/hitSound.mp3" )
 -- Font
 local inputText = native.newFont( "Starjedi.ttf" )
--- Set up display groups
-local backGroup = display.newGroup()  -- Display group for the background image
-local mainGroup = display.newGroup()  -- Display group for Super D, N-Ts etc
-local uiGroup = display.newGroup()    -- Display group for UI objects
+-- Set up display groups variables
+local backGroup
+local mainGroup
+local uiGroup
 
 local function punch()
   audio.play( punchTrack )
@@ -263,7 +263,7 @@ local function nTsFactory()
     mainGroup:insert( nT )
     nT:setFrame( 2 )
     table.insert( nTtable, nT )
-    physics.addBody( nT, "dynamic", { radius=40, bounce=0.8 } )
+    physics.addBody( nT, "dynamic", { radius=80, bounce=0.8 } )
     nT:setLinearVelocity( math.random( 120,250 ), math.random( 20,60 ) )
   end
 end
@@ -394,8 +394,25 @@ local function onCollision( event )
   end
 end
 
+local function gameLoop()
+  nTsFactory()
+  removeDriftedNts()
+end
+
+local function afterGameTutorial()
+  superD.isBodyActive = true
+  punchButton:setEnabled( true )
+  jumpButton:setEnabled( true )
+  moveLeftButton:setEnabled( true )
+  moveRightButton:setEnabled( true )
+
+  Runtime:addEventListener( "collision", onCollision )
+  gameLoopTimer = timer.performWithDelay( 1200, gameLoop, 0 )
+  nucleumsFactoryLoopTimer = timer.performWithDelay( math.random( 60000, 90000 ), nucleumsFactory, 0 )
+  nTsAttackLoopTimer = timer.performWithDelay( math.random( 1000, 3000 ), nTsAttack, 0 )
+end
+
 local function gameTutorial()
-  print( "Entrei gameTutorial" )
   superD.isBodyActive = false
   punchButton:setEnabled( false )
   jumpButton:setEnabled( false )
@@ -407,17 +424,94 @@ local function gameTutorial()
   tutorialTextBox:setFillColor( 0, 0, 1 )
   tutorialTextBox:setStrokeColor( 1, 1, 0 )
   tutorialTextBox.strokeWidth = 1
-  tutorialTextBox.isHitTestable = true
-  tutorialTextBox.myName = "tutorialTextBox"
 
-  local contentText =  "Hello, welcome to inside human's body! Your mission here its simple: you have to kill all N-Ts that may come."
-  local contentTextEntity = display.newText( backGroup, contentText, display.contentCenterX+05, display.contentHeight-505, 300, 0, inputText, 20 )
+  -- Load pass text button
+  local passText = display.newImageRect(mainGroup, "assets/img/move-right-button.png", 50, 50);
+  passText.x = display.contentCenterX + 160
+  passText.y = display.contentHeight - 415
+
+  local contentTextOne = "Welcome to inside human's body! You're SuperD, the strongest virus of the universe."
+  local startTextTwo = true
+  local startTextThree = false
+  local animationOne = false
+  local animationTwo = false
+  local animationThree = false
+  local startTextFour = false
+  local contentTextEntity = display.newText( backGroup, contentTextOne, display.contentCenterX+05, display.contentHeight-505, 300, 0, inputText, 20 )
   contentTextEntity:setFillColor( 1, 1, 0 )
-end
 
-local function gameLoop()
-  nTsFactory()
-  removeDriftedNts()
+  passText:addEventListener( "tap", function( event )
+    local contentText
+
+    if( passTutorialText == true ) then
+      if( startTextTwo == true ) then
+        contentText = "Your mission here is simple: kill all N-Ts and dominate human's body."
+        startTextThree = true
+        startTextTwo = false
+      elseif( startTextThree == true ) then
+        contentText = "To achieve such a task, Super D has some skills that may help."
+        startTextThree = false
+        animationOne = true
+      elseif( animationOne == true ) then
+        contentText = "Jump for example."
+        superD.isBodyActive = true
+        passTutorialText = false
+        jump()
+        transition.to( superD, { time=2500,
+          onComplete = function()
+            passTutorialText = true
+            animationOne = false
+            animationTwo = true
+          end
+        } )
+      elseif( animationTwo == true ) then
+        contentText = "Move arround fast!"
+        passTutorialText = false
+        audio.play( moveTrack )
+        superD:setSequence( "movingLeft" )
+        superD:setFrame(1)
+        transition.to( superD, { time=500, x=( display.contentWidth-600 ),
+          onComplete = function()
+            superD:setSequence( "static" )
+            superD:setFrame(2)
+            audio.play( moveTrack )
+            superD:setSequence( "movingRight" )
+            superD:setFrame(1)
+            transition.to( superD, { time=500, x=( display.contentWidth-80 ),
+              onComplete = function()
+                superD:setSequence( "static" )
+                superD:setFrame(1)
+                passTutorialText = true
+                animationTwo = false
+                animationThree = true
+              end
+            } )
+          end
+        } )
+      elseif( animationThree == true ) then
+        passTutorialText = false
+        contentText = "And your strongest weapon, your boxing glove!!!"
+        transition.to( superD, { time=260,
+          onComplete = function()
+            audio.play( punchTrack )
+            punch()
+            passTutorialText = true
+            animationThree = false
+            startTextFour = true
+          end
+        } )
+      elseif( startTextFour == true ) then
+        contentText = "That blue orbit is a core of life that will increase one point of life, if you need it."
+        startTextFour = false
+      end
+      display.remove( contentTextEntity )
+      contentTextEntity = display.newText( backGroup, contentText, display.contentCenterX+05, display.contentHeight-505, 300, 0, inputText, 20 )
+      contentTextEntity:setFillColor( 1, 1, 0 )
+    end
+  end
+  );
+
+--afterGameTutorial()
 end
 
 -- -----------------------------------------------------------------------------------
@@ -577,11 +671,6 @@ function scene:show( event )
 
     -- Start tutorial
     gameTutorial()
-
-    Runtime:addEventListener( "collision", onCollision )
-    gameLoopTimer = timer.performWithDelay( 1200, gameLoop, 0 )
-    nucleumsFactoryLoopTimer = timer.performWithDelay( math.random( 60000, 90000 ), nucleumsFactory, 0 )
-    nTsAttackLoopTimer = timer.performWithDelay( math.random( 1000, 3000 ), nTsAttack, 0 )
   end
 end
 

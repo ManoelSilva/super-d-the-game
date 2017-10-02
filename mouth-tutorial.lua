@@ -426,7 +426,7 @@ local function gameTutorial()
   tutorialTextBox.strokeWidth = 1
 
   -- Load pass text button
-  local passText = display.newImageRect(mainGroup, "assets/img/move-right-button.png", 50, 50);
+  local passText = display.newImageRect(mainGroup, "assets/img/arrow-right.png", 30, 26);
   passText.x = display.contentCenterX + 160
   passText.y = display.contentHeight - 415
 
@@ -437,11 +437,15 @@ local function gameTutorial()
   local animationTwo = false
   local animationThree = false
   local startTextFour = false
+  local startTextFive = false
+  local startTextSix = false
+  local startTextSeven = false
   local contentTextEntity = display.newText( backGroup, contentTextOne, display.contentCenterX+05, display.contentHeight-505, 300, 0, inputText, 20 )
   contentTextEntity:setFillColor( 1, 1, 0 )
 
   passText:addEventListener( "tap", function( event )
     local contentText
+    local infoPointer
 
     if( passTutorialText == true ) then
       if( startTextTwo == true ) then
@@ -454,11 +458,15 @@ local function gameTutorial()
         animationOne = true
       elseif( animationOne == true ) then
         contentText = "Jump for example."
+        infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
+        infoPointer.x = display.contentCenterX + 450
+        infoPointer.y = display.contentHeight - 300
         superD.isBodyActive = true
         passTutorialText = false
         jump()
         transition.to( superD, { time=2500,
           onComplete = function()
+            display.remove( infoPointer )
             passTutorialText = true
             animationOne = false
             animationTwo = true
@@ -466,6 +474,9 @@ local function gameTutorial()
         } )
       elseif( animationTwo == true ) then
         contentText = "Move arround fast!"
+        infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
+        infoPointer.x = display.contentCenterX - 395
+        infoPointer.y = display.contentHeight - 250
         passTutorialText = false
         audio.play( moveTrack )
         superD:setSequence( "movingLeft" )
@@ -481,6 +492,7 @@ local function gameTutorial()
               onComplete = function()
                 superD:setSequence( "static" )
                 superD:setFrame(1)
+                display.remove( infoPointer )
                 passTutorialText = true
                 animationTwo = false
                 animationThree = true
@@ -491,18 +503,62 @@ local function gameTutorial()
       elseif( animationThree == true ) then
         passTutorialText = false
         contentText = "And your strongest weapon, your boxing glove!!!"
-        transition.to( superD, { time=260,
+        infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
+        infoPointer.x = display.contentCenterX + 320
+        infoPointer.y = display.contentHeight - 300
+        transition.to( superD, { time=1600,
           onComplete = function()
             audio.play( punchTrack )
             punch()
             passTutorialText = true
             animationThree = false
             startTextFour = true
+            display.remove( infoPointer )
           end
         } )
       elseif( startTextFour == true ) then
-        contentText = "That blue orbit is a core of life that will increase one point of life, if you need it."
-        startTextFour = false
+        passTutorialText = false
+        contentText = "This is your life bar"
+        infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-up.png", 50, 57);
+        infoPointer.x = display.contentCenterX - 400
+        infoPointer.y = display.contentHeight - 550
+        transition.to( infoPointer, { time=1600,
+          onComplete = function()
+            passTutorialText = true
+            startTextFour = false
+            startTextFive = true
+            display.remove( infoPointer )
+          end
+        } )
+      elseif( startTextFive == true ) then
+        passTutorialText = false
+        contentText = "The counter that shows how many N-Ts you have to kill to go to another sub-level or level"
+        infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-up.png", 50, 57);
+        infoPointer.x = display.contentCenterX + 370
+        infoPointer.y = display.contentHeight - 550
+        transition.to( infoPointer, { time=2900,
+          onComplete = function()
+            passTutorialText = true
+            startTextFive = false
+            startTextSix = true
+            display.remove( infoPointer )
+          end
+        } )
+      elseif( startTextSix == true ) then
+        --contentText = "That blue orbit is a core of life that will increase one point of life, if you need it."
+        passTutorialText = false
+        contentText = "The counter that shows how many N-Ts you have already killed"
+        infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-up.png", 50, 57);
+        infoPointer.x = display.contentCenterX + 490
+        infoPointer.y = display.contentHeight - 550
+        transition.to( infoPointer, { time=1600,
+          onComplete = function()
+            passTutorialText = true
+            startTextSix = false
+            startTextSeven = true
+            display.remove( infoPointer )
+          end
+        } )
       end
       display.remove( contentTextEntity )
       contentTextEntity = display.newText( backGroup, contentText, display.contentCenterX+05, display.contentHeight-505, 300, 0, inputText, 20 )

@@ -430,6 +430,7 @@ local function gameTutorial()
   passText.x = display.contentCenterX + 160
   passText.y = display.contentHeight - 415
 
+  local endTutorial = false
   local contentTextOne = "Welcome to inside human's body! You're SuperD, the strongest virus of the universe."
   local startTextTwo = true
   local startTextThree = false
@@ -440,6 +441,7 @@ local function gameTutorial()
   local startTextFive = false
   local startTextSix = false
   local startTextSeven = false
+  local startTextEight = false
   local contentTextEntity = display.newText( backGroup, contentTextOne, display.contentCenterX+05, display.contentHeight-505, 300, 0, inputText, 20 )
   contentTextEntity:setFillColor( 1, 1, 0 )
 
@@ -506,7 +508,7 @@ local function gameTutorial()
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
         infoPointer.x = display.contentCenterX + 320
         infoPointer.y = display.contentHeight - 300
-        transition.to( superD, { time=1600,
+        transition.to( superD, { time=2900,
           onComplete = function()
             audio.play( punchTrack )
             punch()
@@ -522,7 +524,7 @@ local function gameTutorial()
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-up.png", 50, 57);
         infoPointer.x = display.contentCenterX - 400
         infoPointer.y = display.contentHeight - 550
-        transition.to( infoPointer, { time=1600,
+        transition.to( infoPointer, { time=2900,
           onComplete = function()
             passTutorialText = true
             startTextFour = false
@@ -545,13 +547,12 @@ local function gameTutorial()
           end
         } )
       elseif( startTextSix == true ) then
-        --contentText = "That blue orbit is a core of life that will increase one point of life, if you need it."
         passTutorialText = false
         contentText = "The counter that shows how many N-Ts you have already killed"
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-up.png", 50, 57);
         infoPointer.x = display.contentCenterX + 490
         infoPointer.y = display.contentHeight - 550
-        transition.to( infoPointer, { time=1600,
+        transition.to( infoPointer, { time=2900,
           onComplete = function()
             passTutorialText = true
             startTextSix = false
@@ -559,15 +560,41 @@ local function gameTutorial()
             display.remove( infoPointer )
           end
         } )
+      elseif( startTextSeven == true ) then
+        passTutorialText = false
+        contentText = "This is a core of life that will increase one point of life, if you need it. it appears four times randomly."
+        infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
+        infoPointer.x = display.contentCenterX - 395
+        infoPointer.y = display.contentHeight - 350
+        transition.to( infoPointer, { time=2900,
+          onComplete = function()
+            passTutorialText = true
+            startTextSeven = false
+            startTextEight = true
+            display.remove( infoPointer )
+          end
+        } )
+      elseif( startTextEight == true ) then
+        contentText = "Let's get started!"
+        startTextEight = false
+        endTutorial = true
+        display.remove( contentTextEntity )
+        contentTextEntity = display.newText( backGroup, contentText, display.contentCenterX+05, display.contentHeight-505, 300, 0, inputText, 20 )
+        contentTextEntity:setFillColor( 1, 1, 0 )
+      elseif( endTutorial == true ) then
+        display.remove( contentTextEntity )
+        display.remove( tutorialTextBox )
+        display.remove( passText )
+        afterGameTutorial()
       end
-      display.remove( contentTextEntity )
-      contentTextEntity = display.newText( backGroup, contentText, display.contentCenterX+05, display.contentHeight-505, 300, 0, inputText, 20 )
-      contentTextEntity:setFillColor( 1, 1, 0 )
+      if( endTutorial == false ) then
+        display.remove( contentTextEntity )
+        contentTextEntity = display.newText( backGroup, contentText, display.contentCenterX+05, display.contentHeight-505, 300, 0, inputText, 20 )
+        contentTextEntity:setFillColor( 1, 1, 0 )
+      end
     end
   end
   );
-
---afterGameTutorial()
 end
 
 -- -----------------------------------------------------------------------------------
@@ -652,7 +679,7 @@ function scene:show( event )
   elseif ( phase == "did" ) then
     -- Code here runs when the scene is entirely on screen
     system.activate( "multitouch" )
-    --audio.play( musicTrack, { channel=1, loops=-1 } )
+    audio.play( musicTrack, { channel=1, loops=-1 } )
     physics.start()
     nTsNumber = math.random( 40, 60 )
     nTsLeft = display.newText( uiGroup, nTsNumber, display.contentCenterX + 370, display.contentHeight - 640, inputText, 40 )

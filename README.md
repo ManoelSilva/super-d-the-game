@@ -1,7 +1,7 @@
 # Super Disease - The Game
 
 ## Actual Version
-	0.2
+	0.3
 
 ## Game name
  	Super Disease.
@@ -106,3 +106,5 @@
 		Level template development complete.
 	**0.2**
 		Game tutorial development start.
+	**0.3**
+		Game tutorial development complete.

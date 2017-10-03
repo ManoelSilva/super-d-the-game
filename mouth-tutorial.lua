@@ -620,7 +620,7 @@ function scene:create( event )
   sceneGroup:insert( uiGroup )    -- Insert into the scene's view group
 
   -- Load the background
-  local background = display.newImageRect( backGroup, "assets/img/background.jpg", display.actualContentWidth, display.actualContentHeight )
+  local background = display.newImageRect( backGroup, "assets/img/mouth-background.jpg", display.actualContentWidth, display.actualContentHeight )
   background.x = display.contentCenterX
   background.y = display.contentCenterY
 
@@ -675,7 +675,7 @@ function scene:show( event )
 
   if ( phase == "will" ) then
   -- Code here runs when the scene is still off screen (but is about to come on screen)
-
+  audio.stop( 1 )
   elseif ( phase == "did" ) then
     -- Code here runs when the scene is entirely on screen
     system.activate( "multitouch" )

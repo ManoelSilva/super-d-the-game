@@ -22,13 +22,12 @@ local selected = audio.loadSound( "assets/audio/menuClick.mp3" )
 local function gotoMouthTutorialLevel()
   print("tapped mouthTutorial level button")
   audio.play( selected )
-  composer.gotoScene( "mouth", { time=800, effect="crossFade" } )
+  composer.gotoScene( "mouth-tutorial", { time=800, effect="crossFade" } )
 end
 
 local function gotoLevels()
-  print("tapped levels button")
   audio.play( selected )
-  --composer.gotoScene( "levels" )
+  composer.gotoScene( "levels" )
 end
 
 local function gotoCredits()
@@ -127,8 +126,7 @@ function scene:hide( event )
 
   if ( phase == "will" ) then
     -- Code here runs when the scene is on screen (but is about to go off screen)
-    -- Stop the music!
-    audio.stop( 1 )
+
   elseif ( phase == "did" ) then
     -- Code here runs immediately after the scene goes entirely off screen
   end

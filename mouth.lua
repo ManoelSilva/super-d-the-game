@@ -12,6 +12,10 @@ audio.setVolume( 0.5, { channel=1 } )
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
 -- -----------------------------------------------------------------------------------
 
+-- Initialize player data lib
+local loadsave
+loadsave = require("loadsave")
+
 -- Initialize physics
 local physics
 physics = require("physics")
@@ -24,6 +28,7 @@ local nTentity = require( "entities.nT" )
 local nucleumEntity = require( "entities.nucleum" )
 
 -- Initialize variables
+local playerDataTable = {}
 local superD
 local nucleum
 local nucleumTable = {}
@@ -301,6 +306,14 @@ local function endGame()
   composer.gotoScene( "menu", { time=800, effect="crossFade" } )
 end
 
+local function passSubLevel()
+  playerDataTable.isLungSubLevel = true
+  playerDataTable.mouthPontuation = points
+  
+  loadsave.saveTable( playerDataTable, "playerData.json" )
+  endGame()
+end
+
 local function onCollision( event )
   if ( event.phase == "began" ) then
     local superD
@@ -338,7 +351,7 @@ local function onCollision( event )
           pontuation:setFillColor( 255, 255, 0 )
         elseif( nTsNumber == 0 ) then
           died = true
-          timer.performWithDelay( 200, endGame )
+          timer.performWithDelay( 200, passSubLevel )
         end
 
         nT.isSensor = true

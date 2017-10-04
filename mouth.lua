@@ -14,7 +14,7 @@ audio.setVolume( 0.5, { channel=1 } )
 
 -- Initialize player data lib
 local loadsave
-loadsave = require("loadsave")
+loadsave = require( "loadsave" ) 
 
 -- Initialize physics
 local physics

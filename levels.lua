@@ -6,7 +6,7 @@
 
 -- Initialize player data lib
 local loadsave
-loadsave = require("loadsave")
+loadsave = require( "loadsave" )
 
 local composer = require( "composer" )
 local widget = require( "widget" )
@@ -52,44 +52,46 @@ end
 
 local function goToLungSubLevel()
   audio.play( selected )
-  composer.gotoScene( "lung" )
+  --composer.gotoScene( "lung" )
 end
 
 local function goToBossSubLevel()
   audio.play( selected )
-  composer.gotoScene( "rs-boss" )
+  --composer.gotoScene( "rs-boss" )
 end
 
 local function goToNextLevel()
   audio.play( selected )
-  composer.gotoScene( "levels-two" )
+  --composer.gotoScene( "levels-two" )
 end
 
 local function checkPlayerData()
   print( "loading data" )
   playerDataTable = loadsave.loadTable( "playerData.json" )
-  if( playerDataTable.isLoungSubLevel == true ) then
-    display.remove( padLock )
-    lungSubLevel.alpha = 1
-    lungSubLevel:addEventListener( "tap", goToLungSubLevel )
-  end
-  
-  if( playerDataTable.isLungSubLevel == true ) then
-    display.remove( padLock )
-    lungSubLevel.alpha = 1
-    lungSubLevel:addEventListener( "tap", goToLungSubLevel )
-  end
-  
-  if( playerDataTable.isRsBossSubLevel == true ) then
-    display.remove( padLockTwo )
-    bossSubLevel.alpha = 1
-    bossSubLevel:addEventListener( "tap", goToBossSubLevel )
-  end
-  
-  if( playerDataTable.isDigestiveLevel == true ) then
-    display.remove( padLockThree )
-    passLevelButton.alpha = alpha
-    passLevelButton:setEnabled( true )
+  if( playerDataTable ~= nil ) then
+    if( playerDataTable.isLoungSubLevel == true ) then
+      display.remove( padLock )
+      lungSubLevel.alpha = 1
+      lungSubLevel:addEventListener( "tap", goToLungSubLevel )
+    end
+
+    if( playerDataTable.isLungSubLevel == true ) then
+      display.remove( padLock )
+      lungSubLevel.alpha = 1
+      lungSubLevel:addEventListener( "tap", goToLungSubLevel )
+    end
+
+    if( playerDataTable.isRsBossSubLevel == true ) then
+      display.remove( padLockTwo )
+      bossSubLevel.alpha = 1
+      bossSubLevel:addEventListener( "tap", goToBossSubLevel )
+    end
+
+    if( playerDataTable.isDigestiveLevel == true ) then
+      display.remove( padLockThree )
+      passLevelButton.alpha = alpha
+      passLevelButton:setEnabled( true )
+    end
   end
 end
 
@@ -223,8 +225,10 @@ function scene:hide( event )
   elseif ( phase == "did" ) then
     -- Code here runs immediately after the scene goes entirely off screen
     mouthSubLevel:removeEventListener( "tap", gotoMouthSubLevel )
-    if ( playerDataTable.isLoungSubLevel ) then
-      lungSubLevel:removeEventListener( "tap", goToLungSubLevel )
+    if( playerDataTable ~= nil ) then
+      if ( playerDataTable.isLoungSubLevel ) then
+        lungSubLevel:removeEventListener( "tap", goToLungSubLevel )
+      end
     end
     composer.removeScene( "levels" )
   end

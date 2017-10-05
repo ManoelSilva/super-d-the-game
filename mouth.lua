@@ -235,7 +235,6 @@ end
 
 local function nucleumsFactory()
   if( not hasNucleumFull ) then
-    generatedNucleums = generatedNucleums + 1
 
     if( generatedNucleums < 5 )  then
       nucleum = nucleumEntity:getNucleum( math.random( -400, 400 ), 290 )
@@ -307,8 +306,19 @@ local function endGame()
 end
 
 local function passSubLevel()
-  playerDataTable.isLungSubLevel = true
-  playerDataTable.mouthPontuation = points
+  playerDataTable = loadsave.loadTable( "playerData.json" )
+
+  if( playerDataTable == nil ) then
+    playerDataTable = {}
+    playerDataTable.isLungSubLevel = true
+    playerDataTable.mouthPontuation = points
+    playerDataTable.mouthLifePoints = lives
+    playerDataTable.mouthUsedNucleums = generatedNucleums
+  elseif( playerDataTable.mouthPontuation < points ) then
+    playerDataTable.mouthPontuation = points
+    playerDataTable.mouthLifePoints = lives
+    playerDataTable.mouthUsedNucleums = generatedNucleums
+  end
   
   loadsave.saveTable( playerDataTable, "playerData.json" )
   endGame()
@@ -397,6 +407,7 @@ local function onCollision( event )
       nucleum:setFrame(1)
       removeNucleumUsed( nucleum )
       hasNucleumFull = false
+      generatedNucleums = generatedNucleums + 1
     end
   elseif ( event.phase == "ended" and superD ~= nil and nT ~= nil ) then
     if( died == true ) then

@@ -30,6 +30,9 @@ local lungText
 local lungTextEntity
 local bossText
 local bossTextEntity
+local star
+local starsTable = {}
+local starVertices = { 0,-8,1.763,-2.427,7.608,-2.472,2.853,0.927,4.702,6.472,0.0,3.0,-4.702,6.472,-2.853,0.927,-7.608,-2.472,-1.763,-2.427 }
 local inputText = native.newFont( "Starjedi.ttf" )
 local alpha = 0.8
 local alphaToLocked = 0.3
@@ -65,29 +68,71 @@ local function goToNextLevel()
   --composer.gotoScene( "levels-two" )
 end
 
+local function rankSublevel( playerData, subLevel )
+  local iterationsNumber = 0
+  local subLevelPontuation
+  local subLevelLifePoints
+  local subLevelUsedNucleums
+  local xPosition = -80
+
+  if( subLevel == "mouth" ) then
+    subLevel = mouthSubLevel
+    subLevelPontuation = playerData.mouthPontuation
+    subLevelLifePoints = playerData.mouthLifePoints
+    subLevelUsedNucleums = playerData.mouthUsedNucleums
+  elseif( subLevel == "lung" ) then
+    subLevel = lungSubLevel
+    subLevelPontuation = playerData.lungPontuation
+    subLevelLifePoints = playerData.lungLifePoints
+    subLevelUsedNucleums = playerData.lungUsedNucleums
+  elseif( subLevel == "boss" ) then
+    subLevel = bossSubLevel
+    subLevelPontuation = playerData.rsBossPontuation
+    subLevelLifePoints = playerData.rsBossLifePoints
+    subLevelUsedNucleums = playerData.rsBossUsedNucleums
+  end
+
+  if( subLevelPontuation == 60 and subLevelLifePoints == 12 and subLevelUsedNucleums == 0 ) then
+    iterationsNumber = 3
+  elseif( ( subLevelPontuation < 60 and subLevelPontuation >= 45 ) and subLevelLifePoints == 12 and subLevelUsedNucleums == 0 ) then
+    iterationsNumber = 2
+  else
+    iterationsNumber = 1
+  end
+
+  for i = 1, iterationsNumber, 1 do
+    xPosition = xPosition + 30
+    -- Load Star and add to starsTable
+    star = display.newImageRect( uiGroup, "assets/img/star.png", 30, 30 )
+    star.x = subLevel.x + (1 * 16) + ( xPosition )
+    star.y = subLevel.y - 55
+
+    table.insert( starsTable, star )
+  end
+end
+
+
 local function checkPlayerData()
   print( "loading data" )
   playerDataTable = loadsave.loadTable( "playerData.json" )
-  if( playerDataTable ~= nil ) then
-    if( playerDataTable.isLoungSubLevel == true ) then
-      display.remove( padLock )
-      lungSubLevel.alpha = 1
-      lungSubLevel:addEventListener( "tap", goToLungSubLevel )
-    end
 
+  if( playerDataTable ~= nil ) then
     if( playerDataTable.isLungSubLevel == true ) then
+      rankSublevel( playerDataTable, "mouth" )
       display.remove( padLock )
       lungSubLevel.alpha = 1
       lungSubLevel:addEventListener( "tap", goToLungSubLevel )
     end
 
     if( playerDataTable.isRsBossSubLevel == true ) then
+      rankSublevel( playerDataTable, "lung" )
       display.remove( padLockTwo )
       bossSubLevel.alpha = 1
       bossSubLevel:addEventListener( "tap", goToBossSubLevel )
     end
 
     if( playerDataTable.isDigestiveLevel == true ) then
+      rankSublevel( playerDataTable, "boss" )
       display.remove( padLockThree )
       passLevelButton.alpha = alpha
       passLevelButton:setEnabled( true )

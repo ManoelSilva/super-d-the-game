@@ -1,7 +1,7 @@
 # Super Disease - The Game
 
 ## Actual Version
-	0.5
+	0.6
 
 ## Game name
  	Super Disease.
@@ -113,3 +113,5 @@
 		New game takes to tutorial now. Mouth option on levels menu takes direct to the game.
 	**0.5**
 		Levels menu development complete.
+	**0.6**
+		Ranking system complete.

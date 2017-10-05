@@ -55,7 +55,7 @@ end
 
 local function goToLungSubLevel()
   audio.play( selected )
-  --composer.gotoScene( "lung" )
+  composer.gotoScene( "lung" )
 end
 
 local function goToBossSubLevel()
@@ -70,6 +70,7 @@ end
 
 local function rankSublevel( playerData, subLevel )
   local iterationsNumber = 0
+  local rankReferenceMaxPontuation = 60
   local subLevelPontuation
   local subLevelLifePoints
   local subLevelUsedNucleums
@@ -86,15 +87,16 @@ local function rankSublevel( playerData, subLevel )
     subLevelLifePoints = playerData.lungLifePoints
     subLevelUsedNucleums = playerData.lungUsedNucleums
   elseif( subLevel == "boss" ) then
-    subLevel = bossSubLevel
+    subLevel = bossSubLevel 
+    rankReferenceMaxPontuation = 0
     subLevelPontuation = playerData.rsBossPontuation
     subLevelLifePoints = playerData.rsBossLifePoints
     subLevelUsedNucleums = playerData.rsBossUsedNucleums
   end
 
-  if( subLevelPontuation == 60 and subLevelLifePoints == 12 and subLevelUsedNucleums == 0 ) then
+  if( subLevelPontuation == rankReferenceMaxPontuation and subLevelLifePoints == 12 and subLevelUsedNucleums == 0 ) then
     iterationsNumber = 3
-  elseif( ( subLevelPontuation < 60 and subLevelPontuation >= 45 ) and subLevelLifePoints == 12 and subLevelUsedNucleums == 0 ) then
+  elseif( ( subLevelPontuation < rankReferenceMaxPontuation and subLevelPontuation >= rankReferenceMaxPontuation - 15 ) and subLevelLifePoints == 12 and subLevelUsedNucleums == 0 ) then
     iterationsNumber = 2
   else
     iterationsNumber = 1
@@ -177,7 +179,7 @@ function scene:create( event )
   lungTextEntity:setFillColor( 255, 255, 0 )
 
   -- Load Lung sub-level image
-  lungSubLevel = display.newImageRect( backGroup, "assets/img/lung-background.jpg", 200, 150 )
+  lungSubLevel = display.newImageRect( backGroup, "assets/img/lung-background.png", 200, 150 )
   lungSubLevel.x = display.contentCenterX
   lungSubLevel.y = display.contentCenterY
   lungSubLevel:setStrokeColor( 1, 1, 0 )

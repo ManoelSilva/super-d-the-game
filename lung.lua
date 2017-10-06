@@ -339,8 +339,7 @@ end
 local function passSubLevel()
   playerDataTable = loadsave.loadTable( "playerData.json" )
 
-  if( playerDataTable == nil ) then
-    playerDataTable = {}
+  if( playerDataTable.lungPontuation == nil ) then
     playerDataTable.isRsBossSubLevel = true
     playerDataTable.lungPontuation = points
     playerDataTable.lungLifePoints = lives

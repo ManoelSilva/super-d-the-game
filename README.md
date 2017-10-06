@@ -1,7 +1,7 @@
 # Super Disease - The Game
 
 ## Actual Version
-	0.6
+	0.7
 
 ## Game name
  	Super Disease.
@@ -115,3 +115,5 @@
 		Levels menu development complete.
 	**0.6**
 		Ranking system complete.
+	**0.7**
+		Lung sublevel complete.

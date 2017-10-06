@@ -319,7 +319,7 @@ local function passSubLevel()
     playerDataTable.mouthLifePoints = lives
     playerDataTable.mouthUsedNucleums = generatedNucleums
   end
-
+  
   loadsave.saveTable( playerDataTable, "playerData.json" )
   composer.gotoScene( "lung", { time=800, effect="crossFade" } )
 end
@@ -395,7 +395,7 @@ local function onCollision( event )
         end
         takeDamage( punchHit )
         superD.alpha = 0.5
-        timer.performWithDelay( 100 , restoreSuperD )
+        timer.performWithDelay( 420 , restoreSuperD )
       end
     end
 
@@ -410,7 +410,7 @@ local function onCollision( event )
       generatedNucleums = generatedNucleums + 1
     end
   elseif ( event.phase == "ended" and superD ~= nil and nT ~= nil ) then
-    if( died == true and lives == 0 or lives < 0 ) then
+    if( died == true ) then
       timer.performWithDelay( 200, endGame )
     else
       timer.performWithDelay( 1, keepSuperDatScreen )
@@ -689,71 +689,6 @@ function scene:create( event )
   physics.addBody( superD, "dynamic", { radius=40, isSensor=false, bounce=0.1 } )
   physics.addBody( nucleum, "static", { isSensor=true } )
   physics.addBody( ground, "static", { bounce=0.05 } )
-
-  -- Initialize widget
-  widget = require("widget")
-
-  -- Load gamepad start
-  punchButton = widget.newButton( {
-    -- The id can be used to tell you what button was pressed in your button event
-    id = "punchButton",
-    -- Size of the button
-    width = 130,
-    height = 150,
-    -- This is the default button image
-    defaultFile = "assets/img/punch-button.png",
-    -- This is the pressed button image
-    overFile = "assets/img/punch-button-pressed.png",
-    -- Position of the button
-    left = 760,
-    top = 520,
-    -- This tells it what function to call when you press the button
-    onPress = punch
-  } )
-
-  jumpButton = widget.newButton( {
-    id = "jumpButton",
-    width = 120,
-    height = 150,
-    defaultFile = "assets/img/jump-button.png",
-    overFile = "assets/img/jump-button-pressed.png",
-    left = 900,
-    top = 520,
-    onPress = jump
-  } )
-
-  moveRightButton = widget.newButton( {
-    id = "moveRightButton",
-    width = 100,
-    height = 150,
-    defaultFile = "assets/img/move-right-button.png",
-    overFile = "assets/img/move-right-button-pressed.png",
-    left = 120,
-    top = 520,
-    onEvent = moveRight
-  } )
-
-  moveLeftButton = widget.newButton( {
-    id = "moveLeftButton",
-    width = 100,
-    height = 150,
-    defaultFile = "assets/img/move-left-button.png",
-    overFile = "assets/img/move-left-button-pressed.png",
-    left = 10,
-    top = 520,
-    onEvent = moveLeft
-  } )
-
-  punchButton.alpha = alpha;
-  jumpButton.alpha = alpha;
-  moveLeftButton.alpha = alpha;
-  moveRightButton.alpha = alpha;
-
-  uiGroup:insert( punchButton )
-  uiGroup:insert( jumpButton )
-  uiGroup:insert( moveLeftButton )
-  uiGroup:insert( moveRightButton )
-  -- Load gamepad end
 end
 
 -- show()
@@ -763,18 +698,84 @@ function scene:show( event )
   local phase = event.phase
 
   if ( phase == "will" ) then
-    -- Code here runs when the scene is still off screen (but is about to come on screen)
-    audio.stop( 1 )
+  -- Code here runs when the scene is still off screen (but is about to come on screen)
+  audio.stop( 1 )
   elseif ( phase == "did" ) then
     -- Code here runs when the scene is entirely on screen
     system.activate( "multitouch" )
     audio.play( musicTrack, { channel=1, loops=-1 } )
     physics.start()
-    nTsNumber = math.random( 40, 60 )
+    nTsNumber = 1
     nTsLeft = display.newText( uiGroup, nTsNumber, display.contentCenterX + 370, display.contentHeight - 640, inputText, 40 )
     nTsLeft:setFillColor( 255, 255, 0 )
     pontuation = display.newText( uiGroup, points, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
     pontuation:setFillColor( 255, 255, 0 )
+
+    -- Initialize widget
+    widget = require("widget")
+
+    -- Load gamepad start
+    punchButton = widget.newButton( {
+      -- The id can be used to tell you what button was pressed in your button event
+      id = "punchButton",
+      -- Size of the button
+      width = 130,
+      height = 150,
+      -- This is the default button image
+      defaultFile = "assets/img/punch-button.png",
+      -- This is the pressed button image
+      overFile = "assets/img/punch-button-pressed.png",
+      -- Position of the button
+      left = 760,
+      top = 520,
+      -- This tells it what function to call when you press the button
+      onPress = punch
+    } )
+
+    jumpButton = widget.newButton( {
+      id = "jumpButton",
+      width = 120,
+      height = 150,
+      defaultFile = "assets/img/jump-button.png",
+      overFile = "assets/img/jump-button-pressed.png",
+      left = 900,
+      top = 520,
+      onPress = jump
+    } )
+
+    moveRightButton = widget.newButton( {
+      id = "moveRightButton",
+      width = 100,
+      height = 150,
+      defaultFile = "assets/img/move-right-button.png",
+      overFile = "assets/img/move-right-button-pressed.png",
+      left = 120,
+      top = 520,
+      onEvent = moveRight
+    } )
+
+    moveLeftButton = widget.newButton( {
+      id = "moveLeftButton",
+      width = 100,
+      height = 150,
+      defaultFile = "assets/img/move-left-button.png",
+      overFile = "assets/img/move-left-button-pressed.png",
+      left = 10,
+      top = 520,
+      onEvent = moveLeft
+    } )
+
+    punchButton.alpha = alpha;
+    jumpButton.alpha = alpha;
+    moveLeftButton.alpha = alpha;
+    moveRightButton.alpha = alpha;
+
+     
+    uiGroup:insert( jumpButton )
+    uiGroup:insert( moveLeftButton )
+    uiGroup:insert( moveRightButton )
+    -- Load gamepad end
+
     -- Start tutorial
     gameTutorial()
   end
@@ -801,7 +802,7 @@ function scene:hide( event )
     -- Code here runs immediately after the scene goes entirely off screen
     Runtime:removeEventListener( "collision", onCollision )
     physics.pause()
-    composer.removeScene( "mouth-tutorial" )
+    composer.removeScene( "tutorial" )
   end
 end
 

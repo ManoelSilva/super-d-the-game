@@ -410,7 +410,7 @@ local function onCollision( event )
       generatedNucleums = generatedNucleums + 1
     end
   elseif ( event.phase == "ended" and superD ~= nil and nT ~= nil ) then
-    if( died == true ) then
+    if( died == true and lives == 0 or lives < 0 ) then
       timer.performWithDelay( 200, endGame )
     else
       timer.performWithDelay( 1, keepSuperDatScreen )

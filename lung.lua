@@ -266,18 +266,18 @@ local function nTsFactory()
   local rightOrLeft = math.random( 0, 1 )
   if( nTsNumber ~= 0 ) then
     if( rightOrLeft == 0 ) then
-      nT = nTentity:getNt( math.random( 800, 1000 ), math.random( 300 ) )
+      nT = nTentity:getNt( math.random( 900, 1200 ), math.random( 200, 400 ) )
       mainGroup:insert( nT )
       nT:setFrame( 1 )
       table.insert( nTtableRight, nT )
-      physics.addBody( nT, "dynamic", { radius=80, bounce=0.8 } )
+      physics.addBody( nT, "dynamic", { radius=80, bounce=0.8, filter={ groupIndex=-2 } } )
       nT:setLinearVelocity( math.random( -250,-120 ), math.random( 20,60 ) )
     else
       nT = nTentity:getNt( -60, math.random( 300 ) )
       mainGroup:insert( nT )
       nT:setFrame( 2 )
       table.insert( nTtableLeft, nT )
-      physics.addBody( nT, "dynamic", { radius=80, bounce=0.8 } )
+      physics.addBody( nT, "dynamic", { radius=80, bounce=0.8, filter={ groupIndex=-2 } } )
       nT:setLinearVelocity( math.random( 120,250 ), math.random( 20,60 ) )
     end
   end
@@ -341,14 +341,14 @@ local function passSubLevel()
 
   if( playerDataTable == nil ) then
     playerDataTable = {}
-    playerDataTable.isLungSubLevel = true
-    playerDataTable.mouthPontuation = points
-    playerDataTable.mouthLifePoints = lives
-    playerDataTable.mouthUsedNucleums = generatedNucleums
-  elseif( playerDataTable.mouthPontuation < points ) then
-    playerDataTable.mouthPontuation = points
-    playerDataTable.mouthLifePoints = lives
-    playerDataTable.mouthUsedNucleums = generatedNucleums
+    playerDataTable.isRsBossSubLevel = true
+    playerDataTable.lungPontuation = points
+    playerDataTable.lungLifePoints = lives
+    playerDataTable.lungUsedNucleums = generatedNucleums
+  elseif( playerDataTable.lungPontuation < points ) then
+    playerDataTable.lungPontuation = points
+    playerDataTable.lungLifePoints = lives
+    playerDataTable.lungUsedNucleums = generatedNucleums
   end
 
   loadsave.saveTable( playerDataTable, "playerData.json" )

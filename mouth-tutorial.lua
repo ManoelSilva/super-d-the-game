@@ -321,7 +321,7 @@ local function passSubLevel()
   end
   
   loadsave.saveTable( playerDataTable, "playerData.json" )
-  endGame()
+  composer.gotoScene( "lung", { time=800, effect="crossFade" } )
 end
 
 local function onCollision( event )

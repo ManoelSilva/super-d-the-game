@@ -60,7 +60,7 @@ end
 
 local function goToBossSubLevel()
   audio.play( selected )
-  --composer.gotoScene( "rs-boss" )
+  composer.gotoScene( "rs-boss" )
 end
 
 local function goToNextLevel()
@@ -192,7 +192,7 @@ function scene:create( event )
   bossTextEntity:setFillColor( 255, 255, 0 )
 
   -- Load Boss sub-level image
-  bossSubLevel = display.newImageRect( backGroup, "assets/img/boss-background.JPG", 200, 150 )
+  bossSubLevel = display.newImageRect( backGroup, "assets/img/rs-boss-background.png", 200, 150 )
   bossSubLevel.x = display.contentCenterX + 300
   bossSubLevel.y = display.contentCenterY
   bossSubLevel:setStrokeColor( 1, 1, 0 )

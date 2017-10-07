@@ -96,10 +96,10 @@ function scene:create( event )
   exitOption.isHitTestable = true
   exitOption.myName = "exit"
 
-  newGameOption:addEventListener( "touch", gotoMouthTutorialLevel )
-  levelsOption:addEventListener( "touch", gotoLevels )
-  creditsOption:addEventListener( "touch", gotoCredits )
-  exitOption:addEventListener( "touch", exitGame )
+  newGameOption:addEventListener( "tap", gotoMouthTutorialLevel )
+  levelsOption:addEventListener( "tap", gotoLevels )
+  creditsOption:addEventListener( "tap", gotoCredits )
+  exitOption:addEventListener( "tap", exitGame )
 end
 
 -- show()

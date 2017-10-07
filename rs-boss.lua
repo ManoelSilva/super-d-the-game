@@ -14,7 +14,7 @@ audio.setVolume( 0.5, { channel=1 } )
 
 -- Initialize player data lib
 local loadsave
-loadsave = require("loadsave")
+loadsave = require( "loadsave" )
 
 -- Initialize physics
 local physics
@@ -24,13 +24,13 @@ physics.start()
 -- Sprite sheet entities
 local topBarEntity = require( "entities.topBar" )
 local superDentity = require("entities.superD" )
+local bossEntity = require("entities.boss" )
+local mainCellEntity = require("entities.main-cell" )
 local nTentity = require( "entities.nT" )
 local nucleumEntity = require( "entities.nucleum" )
 
 -- Initialize variables
 local playerDataTable = {}
-local stillInTutorial = true
-local passTutorialText = true
 local superD
 local nucleum
 local nucleumTable = {}
@@ -38,6 +38,8 @@ local hasNucleumFull = true
 local points = 0
 local generatedNucleums = 0
 local pontuation
+local boss
+local mainCell
 local nT
 local nTsNumber
 local nTsLeft
@@ -48,6 +50,7 @@ local lifeThree
 local nTsToKill
 local nTsKilled
 local ground
+local platform
 local widget
 local punchButton
 local jumpButton
@@ -236,8 +239,8 @@ end
 local function nucleumsFactory()
   if( not hasNucleumFull ) then
 
-    if( generatedNucleums < 5 )  then
-      nucleum = nucleumEntity:getNucleum( math.random( -400, 400 ), 290 )
+    if( generatedNucleums < 2 )  then
+      nucleum = nucleumEntity:getNucleum( math.random( -400, 400 ), 270 )
       backGroup:insert( nucleum )
       physics.addBody( nucleum, "static", { isSensor=true } )
       table.insert( nucleumTable, nucleum )
@@ -319,9 +322,9 @@ local function passSubLevel()
     playerDataTable.mouthLifePoints = lives
     playerDataTable.mouthUsedNucleums = generatedNucleums
   end
-
+  
   loadsave.saveTable( playerDataTable, "playerData.json" )
-  composer.gotoScene( "lung", { time=800, effect="crossFade" } )
+  endGame()
 end
 
 local function onCollision( event )
@@ -423,204 +426,6 @@ local function gameLoop()
   removeDriftedNts()
 end
 
-local function afterGameTutorial()
-  superD.isBodyActive = true
-  punchButton:setEnabled( true )
-  jumpButton:setEnabled( true )
-  moveLeftButton:setEnabled( true )
-  moveRightButton:setEnabled( true )
-
-  Runtime:addEventListener( "collision", onCollision )
-  gameLoopTimer = timer.performWithDelay( 1200, gameLoop, 0 )
-  nucleumsFactoryLoopTimer = timer.performWithDelay( math.random( 60000, 90000 ), nucleumsFactory, 0 )
-  nTsAttackLoopTimer = timer.performWithDelay( math.random( 1000, 3000 ), nTsAttack, 0 )
-end
-
-local function gameTutorial()
-  superD.isBodyActive = false
-  punchButton:setEnabled( false )
-  jumpButton:setEnabled( false )
-  moveLeftButton:setEnabled( false )
-  moveRightButton:setEnabled( false )
-
-  -- Load tutorial textbox
-  local tutorialTextBox = display.newRect( backGroup, display.contentCenterX, display.contentCenterY-100, 400, 200 )
-  tutorialTextBox:setFillColor( 0, 0, 1 )
-  tutorialTextBox:setStrokeColor( 1, 1, 0 )
-  tutorialTextBox.strokeWidth = 1
-
-  -- Load pass text button
-  local passText = display.newImageRect(mainGroup, "assets/img/arrow-right.png", 30, 26);
-  passText.x = display.contentCenterX + 160
-  passText.y = display.contentHeight - 415
-
-  local endTutorial = false
-  local contentTextOne = "Welcome to inside human's body! You're SuperD, the strongest virus of the universe."
-  local startTextTwo = true
-  local startTextThree = false
-  local animationOne = false
-  local animationTwo = false
-  local animationThree = false
-  local startTextFour = false
-  local startTextFive = false
-  local startTextSix = false
-  local startTextSeven = false
-  local startTextEight = false
-  local contentTextEntity = display.newText( backGroup, contentTextOne, display.contentCenterX+05, display.contentHeight-505, 300, 0, inputText, 20 )
-  contentTextEntity:setFillColor( 1, 1, 0 )
-
-  passText:addEventListener( "tap", function( event )
-    local contentText
-    local infoPointer
-
-    if( passTutorialText == true ) then
-      if( startTextTwo == true ) then
-        contentText = "Your mission here is simple: kill all N-Ts and dominate human's body."
-        startTextThree = true
-        startTextTwo = false
-      elseif( startTextThree == true ) then
-        contentText = "To achieve such a task, Super D has some skills that may help."
-        startTextThree = false
-        animationOne = true
-      elseif( animationOne == true ) then
-        contentText = "Jump for example."
-        infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
-        infoPointer.x = display.contentCenterX + 450
-        infoPointer.y = display.contentHeight - 300
-        superD.isBodyActive = true
-        passTutorialText = false
-        jump()
-        transition.to( superD, { time=2500,
-          onComplete = function()
-            display.remove( infoPointer )
-            passTutorialText = true
-            animationOne = false
-            animationTwo = true
-          end
-        } )
-      elseif( animationTwo == true ) then
-        contentText = "Move arround fast!"
-        infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
-        infoPointer.x = display.contentCenterX - 395
-        infoPointer.y = display.contentHeight - 250
-        passTutorialText = false
-        audio.play( moveTrack )
-        superD:setSequence( "movingLeft" )
-        superD:setFrame(1)
-        transition.to( superD, { time=500, x=( display.contentWidth-600 ),
-          onComplete = function()
-            superD:setSequence( "static" )
-            superD:setFrame(2)
-            audio.play( moveTrack )
-            superD:setSequence( "movingRight" )
-            superD:setFrame(1)
-            transition.to( superD, { time=500, x=( display.contentWidth-80 ),
-              onComplete = function()
-                superD:setSequence( "static" )
-                superD:setFrame(1)
-                display.remove( infoPointer )
-                passTutorialText = true
-                animationTwo = false
-                animationThree = true
-              end
-            } )
-          end
-        } )
-      elseif( animationThree == true ) then
-        passTutorialText = false
-        contentText = "And your strongest weapon, your boxing glove!!!"
-        infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
-        infoPointer.x = display.contentCenterX + 320
-        infoPointer.y = display.contentHeight - 300
-        transition.to( superD, { time=2900,
-          onComplete = function()
-            audio.play( punchTrack )
-            punch()
-            passTutorialText = true
-            animationThree = false
-            startTextFour = true
-            display.remove( infoPointer )
-          end
-        } )
-      elseif( startTextFour == true ) then
-        passTutorialText = false
-        contentText = "This is your life bar"
-        infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-up.png", 50, 57);
-        infoPointer.x = display.contentCenterX - 400
-        infoPointer.y = display.contentHeight - 550
-        transition.to( infoPointer, { time=2900,
-          onComplete = function()
-            passTutorialText = true
-            startTextFour = false
-            startTextFive = true
-            display.remove( infoPointer )
-          end
-        } )
-      elseif( startTextFive == true ) then
-        passTutorialText = false
-        contentText = "The counter that shows how many N-Ts you have to kill to go to another sub-level or level"
-        infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-up.png", 50, 57);
-        infoPointer.x = display.contentCenterX + 370
-        infoPointer.y = display.contentHeight - 550
-        transition.to( infoPointer, { time=2900,
-          onComplete = function()
-            passTutorialText = true
-            startTextFive = false
-            startTextSix = true
-            display.remove( infoPointer )
-          end
-        } )
-      elseif( startTextSix == true ) then
-        passTutorialText = false
-        contentText = "The counter that shows how many N-Ts you have already killed"
-        infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-up.png", 50, 57);
-        infoPointer.x = display.contentCenterX + 490
-        infoPointer.y = display.contentHeight - 550
-        transition.to( infoPointer, { time=2900,
-          onComplete = function()
-            passTutorialText = true
-            startTextSix = false
-            startTextSeven = true
-            display.remove( infoPointer )
-          end
-        } )
-      elseif( startTextSeven == true ) then
-        passTutorialText = false
-        contentText = "This is a core of life that will increase one point of life, if you need it. it appears four times randomly."
-        infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
-        infoPointer.x = display.contentCenterX - 395
-        infoPointer.y = display.contentHeight - 350
-        transition.to( infoPointer, { time=2900,
-          onComplete = function()
-            passTutorialText = true
-            startTextSeven = false
-            startTextEight = true
-            display.remove( infoPointer )
-          end
-        } )
-      elseif( startTextEight == true ) then
-        contentText = "Let's get started!"
-        startTextEight = false
-        endTutorial = true
-        display.remove( contentTextEntity )
-        contentTextEntity = display.newText( backGroup, contentText, display.contentCenterX+05, display.contentHeight-505, 300, 0, inputText, 20 )
-        contentTextEntity:setFillColor( 1, 1, 0 )
-      elseif( endTutorial == true ) then
-        display.remove( contentTextEntity )
-        display.remove( tutorialTextBox )
-        display.remove( passText )
-        afterGameTutorial()
-      end
-      if( endTutorial == false ) then
-        display.remove( contentTextEntity )
-        contentTextEntity = display.newText( backGroup, contentText, display.contentCenterX+05, display.contentHeight-505, 300, 0, inputText, 20 )
-        contentTextEntity:setFillColor( 1, 1, 0 )
-      end
-    end
-  end
-  );
-end
-
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
 -- -----------------------------------------------------------------------------------
@@ -644,16 +449,27 @@ function scene:create( event )
   sceneGroup:insert( uiGroup )    -- Insert into the scene's view group
 
   -- Load the background
-  local background = display.newImageRect( backGroup, "assets/img/mouth-background.jpg", display.actualContentWidth, display.actualContentHeight )
+  local background = display.newImageRect( backGroup, "assets/img/rs-boss-background.png", display.actualContentWidth, display.actualContentHeight )
   background.x = display.contentCenterX
   background.y = display.contentCenterY
 
   -- Load SuperD
-  superD = superDentity:getSuperD( 400, 290 )
+  superD = superDentity:getSuperD( -320, 400 )
+  superD:setFrame( 2 )
   mainGroup:insert( superD )
+  
+  -- Load Boss
+  boss = bossEntity:getBoss( 900, 390 )
+  mainGroup:insert( boss )
+  --boss:setSequence( "attackLeft" )
+  --boss:play()
+  -- Load Main Cell
+  mainCell = mainCellEntity:getMainCell( 700, 120 )
+  backGroup:insert( mainCell )
+  mainCell.alpha = alpha
 
   -- Load nucleum
-  nucleum = nucleumEntity:getNucleum( -400, 290 )
+  nucleum = nucleumEntity:getNucleum( -400, 270 )
   backGroup:insert( nucleum )
   table.insert( nucleumTable, nucleum )
 
@@ -663,6 +479,13 @@ function scene:create( event )
   ground.strokeWidth = 0
   ground:setStrokeColor(0)
   ground.myName = "ground"
+  
+  -- Load platform
+  platform = display.newRect( sceneGroup, display.contentCenterX-297, display.contentCenterY-13, 190, 30 )
+  platform.strokeWidth = 30
+  platform:setFillColor( 0,0,0,0 )
+  platform:setStrokeColor( 0, 0, 0, 0 )
+  platform.myName = "platform"
 
   -- Load LifeBar
   lifeOne = topBarEntity:getTopBar( lifeBarScale, lifeBarScale, 470, false )
@@ -674,11 +497,6 @@ function scene:create( event )
   lifeThree = topBarEntity:getTopBar( lifeBarScale, lifeBarScale, 330, false )
   uiGroup:insert( lifeThree )
 
-  nTsToKill = topBarEntity:getTopBar( nTsBarScale, nTsBarScale, 320, true )
-  uiGroup:insert( nTsToKill )
-  nTsToKill:setSequence( "nTs" )
-  nTsToKill:setFrame( 1 )
-
   nTsKilled = topBarEntity:getTopBar( nTsBarScale, nTsBarScale, 430, true )
   uiGroup:insert( nTsKilled )
   nTsKilled:setSequence( "nTs" )
@@ -687,73 +505,10 @@ function scene:create( event )
   -- Adding physics
   --physics.setGravity( 0, 20 )
   physics.addBody( superD, "dynamic", { radius=40, isSensor=false, bounce=0.1 } )
+  physics.addBody( boss, "dynamic", { radius=40, isSensor=false, bounce=0.1 } )
   physics.addBody( nucleum, "static", { isSensor=true } )
   physics.addBody( ground, "static", { bounce=0.05 } )
-
-  -- Initialize widget
-  widget = require("widget")
-
-  -- Load gamepad start
-  punchButton = widget.newButton( {
-    -- The id can be used to tell you what button was pressed in your button event
-    id = "punchButton",
-    -- Size of the button
-    width = 130,
-    height = 150,
-    -- This is the default button image
-    defaultFile = "assets/img/punch-button.png",
-    -- This is the pressed button image
-    overFile = "assets/img/punch-button-pressed.png",
-    -- Position of the button
-    left = 760,
-    top = 520,
-    -- This tells it what function to call when you press the button
-    onPress = punch
-  } )
-
-  jumpButton = widget.newButton( {
-    id = "jumpButton",
-    width = 120,
-    height = 150,
-    defaultFile = "assets/img/jump-button.png",
-    overFile = "assets/img/jump-button-pressed.png",
-    left = 900,
-    top = 520,
-    onPress = jump
-  } )
-
-  moveRightButton = widget.newButton( {
-    id = "moveRightButton",
-    width = 100,
-    height = 150,
-    defaultFile = "assets/img/move-right-button.png",
-    overFile = "assets/img/move-right-button-pressed.png",
-    left = 120,
-    top = 520,
-    onEvent = moveRight
-  } )
-
-  moveLeftButton = widget.newButton( {
-    id = "moveLeftButton",
-    width = 100,
-    height = 150,
-    defaultFile = "assets/img/move-left-button.png",
-    overFile = "assets/img/move-left-button-pressed.png",
-    left = 10,
-    top = 520,
-    onEvent = moveLeft
-  } )
-
-  punchButton.alpha = alpha;
-  jumpButton.alpha = alpha;
-  moveLeftButton.alpha = alpha;
-  moveRightButton.alpha = alpha;
-
-  uiGroup:insert( punchButton )
-  uiGroup:insert( jumpButton )
-  uiGroup:insert( moveLeftButton )
-  uiGroup:insert( moveRightButton )
-  -- Load gamepad end
+  physics.addBody( platform, "static", { bounce=0.05 } )
 end
 
 -- show()
@@ -770,13 +525,78 @@ function scene:show( event )
     system.activate( "multitouch" )
     audio.play( musicTrack, { channel=1, loops=-1 } )
     physics.start()
-    nTsNumber = math.random( 40, 60 )
-    nTsLeft = display.newText( uiGroup, nTsNumber, display.contentCenterX + 370, display.contentHeight - 640, inputText, 40 )
-    nTsLeft:setFillColor( 255, 255, 0 )
+    --physics.setDrawMode( "hybrid" )
     pontuation = display.newText( uiGroup, points, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
     pontuation:setFillColor( 255, 255, 0 )
-    -- Start tutorial
-    gameTutorial()
+    Runtime:addEventListener( "collision", onCollision )
+    --gameLoopTimer = timer.performWithDelay( 1200, gameLoop, 0 )
+    nucleumsFactoryLoopTimer = timer.performWithDelay( math.random( 60000, 90000 ), nucleumsFactory, 0 )
+    --nTsAttackLoopTimer = timer.performWithDelay( math.random( 1000, 3000 ), nTsAttack, 0 )
+
+    -- Initialize widget
+    widget = require("widget")
+
+    -- Load gamepad start
+    punchButton = widget.newButton( {
+      -- The id can be used to tell you what button was pressed in your button event
+      id = "punchButton",
+      -- Size of the button
+      width = 130,
+      height = 150,
+      -- This is the default button image
+      defaultFile = "assets/img/punch-button.png",
+      -- This is the pressed button image
+      overFile = "assets/img/punch-button-pressed.png",
+      -- Position of the button
+      left = 760,
+      top = 520,
+      -- This tells it what function to call when you press the button
+      onPress = punch
+    } )
+
+    jumpButton = widget.newButton( {
+      id = "jumpButton",
+      width = 120,
+      height = 150,
+      defaultFile = "assets/img/jump-button.png",
+      overFile = "assets/img/jump-button-pressed.png",
+      left = 900,
+      top = 520,
+      onPress = jump
+    } )
+
+    moveRightButton = widget.newButton( {
+      id = "moveRightButton",
+      width = 100,
+      height = 150,
+      defaultFile = "assets/img/move-right-button.png",
+      overFile = "assets/img/move-right-button-pressed.png",
+      left = 120,
+      top = 520,
+      onEvent = moveRight
+    } )
+
+    moveLeftButton = widget.newButton( {
+      id = "moveLeftButton",
+      width = 100,
+      height = 150,
+      defaultFile = "assets/img/move-left-button.png",
+      overFile = "assets/img/move-left-button-pressed.png",
+      left = 10,
+      top = 520,
+      onEvent = moveLeft
+    } )
+
+    punchButton.alpha = alpha;
+    jumpButton.alpha = alpha;
+    moveLeftButton.alpha = alpha;
+    moveRightButton.alpha = alpha;
+
+    uiGroup:insert( punchButton )
+    uiGroup:insert( jumpButton )
+    uiGroup:insert( moveLeftButton )
+    uiGroup:insert( moveRightButton )
+    -- Load gamepad end
   end
 end
 
@@ -801,7 +621,7 @@ function scene:hide( event )
     -- Code here runs immediately after the scene goes entirely off screen
     Runtime:removeEventListener( "collision", onCollision )
     physics.pause()
-    composer.removeScene( "mouth-tutorial" )
+    composer.removeScene( "rs-boss" )
   end
 end
 

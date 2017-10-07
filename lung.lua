@@ -351,7 +351,7 @@ local function passSubLevel()
   end
 
   loadsave.saveTable( playerDataTable, "playerData.json" )
-  endGame()
+  composer.gotoScene( "rs-boss", { time=800, effect="crossFade" } )
 end
 
 local function onCollision( event )

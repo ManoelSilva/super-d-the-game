@@ -39,6 +39,7 @@ local points = 0
 local generatedNucleums = 0
 local pontuation
 local boss
+local isBossAttacking = false
 local mainCell
 local nT
 local nTsNumber
@@ -47,7 +48,8 @@ local nTtable = {}
 local lifeOne
 local lifeTwo
 local lifeThree
-local nTsToKill
+local superDxPosition
+local superDxReference = 192
 local nTsKilled
 local ground
 local platform
@@ -110,6 +112,7 @@ local function moveRight( event )
     superD:setFrame(2)
     -- stop moving SuperD
     superD:setLinearVelocity( 0,0 )
+    superDxPosition = superD.x
   end
 end
 
@@ -124,6 +127,7 @@ local function moveLeft( event )
     superD:setSequence( "static" )
     superD:setFrame(1)
     superD:setLinearVelocity( 0,0 )
+    superDxPosition = superD.x
   end
 end
 
@@ -304,6 +308,43 @@ local function nTsAttack()
   end
 end
 
+local function bossMoveLeft()
+  print("Entrei")
+  --boss:applyLinearImpulse( -0.8, 0, superD.x, boss.y )
+  --timer.performWithDelay( 1000, bossStopMovement )
+  boss.x = boss.x - 10;
+end
+
+local function bossMoveRight()
+  boss.x = boss.x + superD.x;
+end
+
+local function bossStopAttack()
+  if( boss ~= nil and isBossAttacking == true ) then
+    boss:setSequence( "static" )
+    boss:setFrame(1)
+    timer.performWithDelay( math.random( 3000, 5000 ), function() isBossAttacking = false end, 1 )
+  end
+end
+
+local function bossAttack()
+  if( isBossAttacking == false and boss ~= nil ) then
+    boss:setSequence( "attackLeft" )
+    boss:play()
+    isBossAttacking = true
+  end
+end
+
+local function bossStartAttackRange()
+  if died == false then
+    superDxReference = superDxPosition
+    local bossAndSuperDdistance = boss.x - superDxReference
+    if bossAndSuperDdistance <= 450 or bossAndSuperDdistance <= -450 then
+      bossAttack()
+    end
+  end
+end
+
 local function endGame()
   composer.gotoScene( "menu", { time=800, effect="crossFade" } )
 end
@@ -322,7 +363,7 @@ local function passSubLevel()
     playerDataTable.mouthLifePoints = lives
     playerDataTable.mouthUsedNucleums = generatedNucleums
   end
-  
+
   loadsave.saveTable( playerDataTable, "playerData.json" )
   endGame()
 end
@@ -455,9 +496,10 @@ function scene:create( event )
 
   -- Load SuperD
   superD = superDentity:getSuperD( -320, 400 )
+  superDxPosition = superD.x
   superD:setFrame( 2 )
   mainGroup:insert( superD )
-  
+
   -- Load Boss
   boss = bossEntity:getBoss( 900, 390 )
   mainGroup:insert( boss )
@@ -479,7 +521,7 @@ function scene:create( event )
   ground.strokeWidth = 0
   ground:setStrokeColor(0)
   ground.myName = "ground"
-  
+
   -- Load platform
   platform = display.newRect( sceneGroup, display.contentCenterX-297, display.contentCenterY-13, 190, 30 )
   platform.strokeWidth = 30
@@ -529,8 +571,10 @@ function scene:show( event )
     pontuation = display.newText( uiGroup, points, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
     pontuation:setFillColor( 255, 255, 0 )
     Runtime:addEventListener( "collision", onCollision )
+    Runtime:addEventListener( "enterFrame", bossStartAttackRange )
     --gameLoopTimer = timer.performWithDelay( 1200, gameLoop, 0 )
     nucleumsFactoryLoopTimer = timer.performWithDelay( math.random( 60000, 90000 ), nucleumsFactory, 0 )
+    bossStopAttackLoopTimer = timer.performWithDelay( math.random( 9000, 12000 ), bossStopAttack, 0 )
     --nTsAttackLoopTimer = timer.performWithDelay( math.random( 1000, 3000 ), nTsAttack, 0 )
 
     -- Initialize widget
@@ -611,6 +655,7 @@ function scene:hide( event )
     timer.cancel( gameLoopTimer )
     timer.cancel( nTsAttackLoopTimer )
     timer.cancel( nucleumsFactoryLoopTimer )
+    timer.cancel( bossStopAttackLoopTimer )
     -- Stop the music!
     audio.stop( 1 )
     display.remove(backGroup)

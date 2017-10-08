@@ -8,8 +8,8 @@ local sequencesRunBoss =
       { name = "static", frames = {10, 21} },
       { name = "takingDamageRight", frames = {22} },
       { name = "takingDamageLeft", frames = {11} },
-      { name = "attackRight", start = 12, count = 8, time = 290, loopCount = math.random( 1, 10 ) },
-      { name = "attackLeft", start = 1, count = 8, time = 350 }
+      { name = "attackRight", start = 12, count = 10, time = 350, loopCount = math.random( 15, 20 ) },
+      { name = "attackLeft", start = 1, count = 10, time = 350, loopCount = math.random( 15, 20 ) }
     }
 
 function Boss:getBoss( xScreen, yScreen )

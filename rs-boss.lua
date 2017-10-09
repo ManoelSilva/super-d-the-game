@@ -35,9 +35,10 @@ local superD
 local nucleum
 local nucleumTable = {}
 local hasNucleumFull = true
-local points = 0
+local enemyPoints = 20
+local bossMovingLeft = false
 local generatedNucleums = 0
-local pontuation
+local enemyLifePoints
 local boss
 local isBossAttacking = false
 local mainCell
@@ -50,7 +51,8 @@ local lifeTwo
 local lifeThree
 local superDxPosition
 local superDxReference = 192
-local nTsKilled
+local bossPointsLife
+local points = 0
 local ground
 local platform
 local widget
@@ -308,27 +310,57 @@ local function nTsAttack()
   end
 end
 
-local function bossMoveLeft()
-  print("Entrei")
-  --boss:applyLinearImpulse( -0.8, 0, superD.x, boss.y )
-  --timer.performWithDelay( 1000, bossStopMovement )
-  boss.x = boss.x - 10;
+local function bossStopMovement()
+  boss:setLinearVelocity( 0,0 )
 end
 
-local function bossMoveRight()
-  boss.x = boss.x + superD.x;
+local function bossMoveRight( timeToMove )
+  if boss ~= nil and bossMovingLeft == false then
+    boss:setSequence( "static" )
+    boss:setFrame(2)
+    timer.performWithDelay( timeToMove, function()
+      transition.to( boss, { time=timeToMove, x=( display.contentWidth-150 ),
+        onComplete = function()
+          bossStopMovement()
+          bossMovingLeft = true
+        end } )
+    end )
+  end
+end
+
+local function bossMoveLeft()
+  if boss ~= nil and isBossAttacking == false then
+    local timeToMove = math.random( 600, 1000 )
+    boss:setSequence( "static" )
+    boss:setFrame(1)
+    bossMovingLeft = true
+    timer.performWithDelay( timeToMove, function()
+      transition.to( boss, { time=timeToMove, x=( display.contentWidth-450 ),
+        onComplete = function()
+          bossStopMovement()
+          bossMovingLeft = false
+          bossMoveRight( timeToMove )
+        end
+      } )
+    end )
+  end
 end
 
 local function bossStopAttack()
   if( boss ~= nil and isBossAttacking == true ) then
     boss:setSequence( "static" )
-    boss:setFrame(1)
-    timer.performWithDelay( math.random( 3000, 5000 ), function() isBossAttacking = false end, 1 )
+    if( bossMovingLeft ) then
+      boss:setFrame(1)
+    else
+      boss:setFrame(2)
+    end
+    isBossAttacking = false
   end
 end
 
 local function bossAttack()
   if( isBossAttacking == false and boss ~= nil ) then
+    bossStopMovement()
     boss:setSequence( "attackLeft" )
     boss:play()
     isBossAttacking = true
@@ -345,6 +377,12 @@ local function bossStartAttackRange()
   end
 end
 
+local function bossMovimentantion()
+  if boss ~= nil and isBossAttacking == false then
+    bossMoveLeft()
+  end
+end
+
 local function endGame()
   composer.gotoScene( "menu", { time=800, effect="crossFade" } )
 end
@@ -355,11 +393,11 @@ local function passSubLevel()
   if( playerDataTable == nil ) then
     playerDataTable = {}
     playerDataTable.isLungSubLevel = true
-    playerDataTable.mouthPontuation = points
+    playerDataTable.mouthenemyLifePoints = points
     playerDataTable.mouthLifePoints = lives
     playerDataTable.mouthUsedNucleums = generatedNucleums
-  elseif( playerDataTable.mouthPontuation < points ) then
-    playerDataTable.mouthPontuation = points
+  elseif( playerDataTable.mouthenemyLifePoints < points ) then
+    playerDataTable.mouthenemyLifePoints = points
     playerDataTable.mouthLifePoints = lives
     playerDataTable.mouthUsedNucleums = generatedNucleums
   end
@@ -398,11 +436,11 @@ local function onCollision( event )
         points = points + 1
         if( nTsNumber > 0 ) then
           display.remove( nTsLeft )
-          display.remove( pontuation )
+          display.remove( enemyLifePoints )
           nTsLeft = display.newText( uiGroup, nTsNumber, display.contentCenterX + 370, display.contentHeight - 640, inputText, 40 )
           nTsLeft:setFillColor( 255, 255, 0 )
-          pontuation = display.newText( uiGroup, points, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
-          pontuation:setFillColor( 255, 255, 0 )
+          enemyLifePoints = display.newText( uiGroup, points, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
+          enemyLifePoints:setFillColor( 255, 255, 0 )
         elseif( nTsNumber == 0 ) then
           died = true
           timer.performWithDelay( 200, passSubLevel )
@@ -539,10 +577,10 @@ function scene:create( event )
   lifeThree = topBarEntity:getTopBar( lifeBarScale, lifeBarScale, 330, false )
   uiGroup:insert( lifeThree )
 
-  nTsKilled = topBarEntity:getTopBar( nTsBarScale, nTsBarScale, 430, true )
-  uiGroup:insert( nTsKilled )
-  nTsKilled:setSequence( "nTs" )
-  nTsKilled:setFrame( 2 )
+  bossPointsLife = topBarEntity:getTopBar( 0, 0, -430, false )
+  uiGroup:insert( bossPointsLife )
+  bossPointsLife:setSequence( "bossSubLevelBoss" )
+  bossPointsLife:setFrame( 1 )
 
   -- Adding physics
   --physics.setGravity( 0, 20 )
@@ -568,13 +606,14 @@ function scene:show( event )
     audio.play( musicTrack, { channel=1, loops=-1 } )
     physics.start()
     --physics.setDrawMode( "hybrid" )
-    pontuation = display.newText( uiGroup, points, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
-    pontuation:setFillColor( 255, 255, 0 )
+    enemyLifePoints = display.newText( uiGroup, enemyPoints, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
+    enemyLifePoints:setFillColor( 255, 255, 0 )
     Runtime:addEventListener( "collision", onCollision )
     Runtime:addEventListener( "enterFrame", bossStartAttackRange )
     --gameLoopTimer = timer.performWithDelay( 1200, gameLoop, 0 )
     nucleumsFactoryLoopTimer = timer.performWithDelay( math.random( 60000, 90000 ), nucleumsFactory, 0 )
-    bossStopAttackLoopTimer = timer.performWithDelay( math.random( 9000, 12000 ), bossStopAttack, 0 )
+    bossStopAttackLoopTimer = timer.performWithDelay( math.random( 2000, 4000 ), bossStopAttack, 0 )
+    bossMovimentantionLoopTimer = timer.performWithDelay( math.random( 900, 1000 ), bossMovimentantion, 0 )
     --nTsAttackLoopTimer = timer.performWithDelay( math.random( 1000, 3000 ), nTsAttack, 0 )
 
     -- Initialize widget
@@ -656,6 +695,7 @@ function scene:hide( event )
     timer.cancel( nTsAttackLoopTimer )
     timer.cancel( nucleumsFactoryLoopTimer )
     timer.cancel( bossStopAttackLoopTimer )
+    timer.cancel( bossMovimentantionLoopTimer )
     -- Stop the music!
     audio.stop( 1 )
     display.remove(backGroup)

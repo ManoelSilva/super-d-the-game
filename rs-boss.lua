@@ -41,6 +41,7 @@ local generatedNucleums = 0
 local enemyLifePoints
 local boss
 local isBossAttacking = false
+local isBossTakingDamage = false
 local mainCell
 local nT
 local nTsNumber
@@ -202,9 +203,11 @@ local function increaseLife()
   changeLifeBar( lives )
 end
 
-local function takeDamage( isPunchHit )
+local function takeDamage( isPunchHit, isBossHit )
   if( isPunchHit ) then
     lives = lives - 2
+  elseif( isBossHit ) then
+    lives = lives - 3
   else
     lives = lives - 1
   end
@@ -315,21 +318,23 @@ local function bossStopMovement()
 end
 
 local function bossMoveRight( timeToMove )
-  if boss ~= nil and bossMovingLeft == false then
+  if boss ~= nil and bossMovingLeft == false and isBossTakingDamage == false then
     boss:setSequence( "static" )
     boss:setFrame(2)
     timer.performWithDelay( timeToMove, function()
       transition.to( boss, { time=timeToMove, x=( display.contentWidth-150 ),
         onComplete = function()
-          bossStopMovement()
-          bossMovingLeft = true
+          if boss ~= nil and died == false then
+            bossStopMovement()
+            bossMovingLeft = true
+          end
         end } )
     end )
   end
 end
 
 local function bossMoveLeft()
-  if boss ~= nil and isBossAttacking == false then
+  if boss ~= nil and isBossAttacking == false and isBossTakingDamage == false then
     local timeToMove = math.random( 600, 1000 )
     boss:setSequence( "static" )
     boss:setFrame(1)
@@ -337,9 +342,11 @@ local function bossMoveLeft()
     timer.performWithDelay( timeToMove, function()
       transition.to( boss, { time=timeToMove, x=( display.contentWidth-450 ),
         onComplete = function()
-          bossStopMovement()
-          bossMovingLeft = false
-          bossMoveRight( timeToMove )
+          if boss ~= nil and died == false and isBossTakingDamage == false then
+            bossStopMovement()
+            bossMovingLeft = false
+            bossMoveRight( timeToMove )
+          end
         end
       } )
     end )
@@ -359,7 +366,7 @@ local function bossStopAttack()
 end
 
 local function bossAttack()
-  if( isBossAttacking == false and boss ~= nil ) then
+  if( isBossAttacking == false and boss ~= nil and isBossTakingDamage == false ) then
     bossStopMovement()
     boss:setSequence( "attackLeft" )
     boss:play()
@@ -368,7 +375,7 @@ local function bossAttack()
 end
 
 local function bossStartAttackRange()
-  if died == false then
+  if died == false and isBossTakingDamage == false then
     superDxReference = superDxPosition
     local bossAndSuperDdistance = boss.x - superDxReference
     if bossAndSuperDdistance <= 450 or bossAndSuperDdistance <= -450 then
@@ -378,8 +385,32 @@ local function bossStartAttackRange()
 end
 
 local function bossMovimentantion()
-  if boss ~= nil and isBossAttacking == false then
+  if boss ~= nil and isBossAttacking == false and isBossTakingDamage == false then
     bossMoveLeft()
+  end
+end
+
+local function restoreBoss()
+  if( boss ~= false ) then
+    boss:setLinearVelocity( 0,0 )
+    boss.isBodyActive = false
+
+    -- Fade in Boss
+    transition.to( boss, { alpha=1, time=500,
+      onComplete = function()
+        if( boss ~= nil and died == false ) then
+          if( enemyPoints == 0 ) then
+            display.remove( boss )
+          else
+            isBossTakingDamage = false
+            boss.isBodyActive = true
+            boss:setSequence( "static" )
+            boss:setFrame ("1")
+            bossAttack()
+          end
+        end
+      end
+    } )
   end
 end
 
@@ -409,6 +440,7 @@ end
 local function onCollision( event )
   if ( event.phase == "began" ) then
     local superD
+    local boss
     local nT
     local nucleum
 
@@ -426,6 +458,49 @@ local function onCollision( event )
     elseif ( event.object1.myName == "superD" and event.object2.myName == "nucleum" ) then
       nucleum = event.object2
       superD = event.object1
+    end
+
+    if ( event.object1.myName == "boss" and event.object2.myName == "superD" ) then
+      boss = event.object1
+      superD = event.object2
+    elseif ( event.object1.myName == "superD" and event.object2.myName == "boss" ) then
+      boss = event.object2
+      superD = event.object1
+    end
+
+    if ( superD ~= nil and boss ~= nil ) then
+      audio.play( hitTrack )
+      if( ( superD.sequence == "attackRight" or superD.sequence == "attackLeft" ) and superD.frame ~= 7 and boss.sequence == "static" ) then
+        isBossTakingDamage = true
+        boss:setSequence( "takingDamageLeft" )
+        boss:setFrame(1)
+        boss.alpha = 0.5
+        enemyPoints = enemyPoints - 1
+        display.remove( enemyLifePoints )
+        enemyLifePoints = display.newText( uiGroup, enemyPoints, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
+        enemyLifePoints:setFillColor( 255, 255, 0 )
+        timer.performWithDelay( 1000 , restoreBoss )
+      end
+
+      if( boss.sequence == "attackLeft" and died == false ) then
+        punchButton:setEnabled( false )
+        jumpButton:setEnabled( false )
+        moveLeftButton:setEnabled( false )
+        moveRightButton:setEnabled( false )
+
+        if( ( superD.sequence == "static" and superD.frame == 2 ) or
+          superD.sequence == "movingRight" or superD.sequence == "attackRight" ) then
+          superD:setSequence( "superDtakingDamage" )
+          superD:setFrame(1)
+        else
+          superD:setSequence( "superDtakingDamage" )
+          superD:setFrame(2)
+        end
+
+        takeDamage( false, true )
+        superD.alpha = 0.5
+        timer.performWithDelay( 600, restoreSuperD )
+      end
     end
 
     if ( superD ~= nil and nT ~= nil ) then
@@ -491,7 +566,7 @@ local function onCollision( event )
       hasNucleumFull = false
       generatedNucleums = generatedNucleums + 1
     end
-  elseif ( event.phase == "ended" and superD ~= nil and nT ~= nil ) then
+  elseif ( event.phase == "ended" and ( superD ~= nil and nT ~= nil ) or ( superD ~= nil and boss ~= nil ) ) then
     if( died == true and lives == 0 or lives < 0 ) then
       timer.performWithDelay( 200, endGame )
     else
@@ -543,6 +618,7 @@ function scene:create( event )
   mainGroup:insert( boss )
   --boss:setSequence( "attackLeft" )
   --boss:play()
+
   -- Load Main Cell
   mainCell = mainCellEntity:getMainCell( 700, 120 )
   backGroup:insert( mainCell )
@@ -585,7 +661,7 @@ function scene:create( event )
   -- Adding physics
   --physics.setGravity( 0, 20 )
   physics.addBody( superD, "dynamic", { radius=40, isSensor=false, bounce=0.1 } )
-  physics.addBody( boss, "dynamic", { radius=40, isSensor=false, bounce=0.1 } )
+  physics.addBody( boss, "dynamic", { radius=90, isSensor=false, bounce=0.5 } )
   physics.addBody( nucleum, "static", { isSensor=true } )
   physics.addBody( ground, "static", { bounce=0.05 } )
   physics.addBody( platform, "static", { bounce=0.05 } )
@@ -612,7 +688,7 @@ function scene:show( event )
     Runtime:addEventListener( "enterFrame", bossStartAttackRange )
     --gameLoopTimer = timer.performWithDelay( 1200, gameLoop, 0 )
     nucleumsFactoryLoopTimer = timer.performWithDelay( math.random( 60000, 90000 ), nucleumsFactory, 0 )
-    bossStopAttackLoopTimer = timer.performWithDelay( math.random( 2000, 4000 ), bossStopAttack, 0 )
+    bossStopAttackLoopTimer = timer.performWithDelay( math.random( 1000, 1500 ), bossStopAttack, 0 )
     bossMovimentantionLoopTimer = timer.performWithDelay( math.random( 900, 1000 ), bossMovimentantion, 0 )
     --nTsAttackLoopTimer = timer.performWithDelay( math.random( 1000, 3000 ), nTsAttack, 0 )
 
@@ -691,8 +767,8 @@ function scene:hide( event )
 
   if ( phase == "will" ) then
     -- Code here runs when the scene is on screen (but is about to go off screen)
-    timer.cancel( gameLoopTimer )
-    timer.cancel( nTsAttackLoopTimer )
+    --timer.cancel( gameLoopTimer )
+    --timer.cancel( nTsAttackLoopTimer )
     timer.cancel( nucleumsFactoryLoopTimer )
     timer.cancel( bossStopAttackLoopTimer )
     timer.cancel( bossMovimentantionLoopTimer )
@@ -705,6 +781,7 @@ function scene:hide( event )
   elseif ( phase == "did" ) then
     -- Code here runs immediately after the scene goes entirely off screen
     Runtime:removeEventListener( "collision", onCollision )
+    Runtime:removeEventListener( "enterFrame", bossStartAttackRange )
     physics.pause()
     composer.removeScene( "rs-boss" )
   end

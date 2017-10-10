@@ -313,64 +313,98 @@ local function nTsAttack()
   end
 end
 
+local function moveMainCellAfterBossDeath()
+  timer.performWithDelay( 1, function()
+    transition.to( mainCell, { time=4000, x=( display.contentCenterX + 100 ),
+      onComplete = function()
+        if mainCell ~= nil then
+          transition.to( mainCell, { time=4000, y=( display.contentHeight - 560 ),
+            onComplete = function()
+              if mainCell ~= nil then
+                mainCell.alpha = 1
+              end
+            end } )
+        end
+      end } )
+  end )
+end
+
 local function bossStopMovement()
-  boss:setLinearVelocity( 0,0 )
+  if( boss ~= nil ) then
+    boss:setLinearVelocity( 0,0 )
+  end
 end
 
 local function bossMoveRight( timeToMove )
-  if boss ~= nil and bossMovingLeft == false and isBossTakingDamage == false then
-    boss:setSequence( "static" )
-    boss:setFrame(2)
-    timer.performWithDelay( timeToMove, function()
-      transition.to( boss, { time=timeToMove, x=( display.contentWidth-150 ),
-        onComplete = function()
-          if boss ~= nil and died == false then
-            bossStopMovement()
-            bossMovingLeft = true
-          end
-        end } )
-    end )
+  if boss ~= nil then
+    if( bossMovingLeft == false and isBossTakingDamage == false ) then
+      if( isBossAttacking == false ) then
+        boss:setSequence( "static" )
+        boss:setFrame(2)
+      end
+      timer.performWithDelay( timeToMove, function()
+        transition.to( boss, { time=timeToMove, x=( display.contentWidth-150 ),
+          onComplete = function()
+            if boss ~= nil then
+              if( isBossAttacking == false and died == false ) then
+                bossStopMovement()
+                bossMovingLeft = true
+              end
+            end
+          end } )
+      end )
+    end
   end
 end
 
 local function bossMoveLeft()
-  if boss ~= nil and isBossAttacking == false and isBossTakingDamage == false then
-    local timeToMove = math.random( 600, 1000 )
-    boss:setSequence( "static" )
-    boss:setFrame(1)
-    bossMovingLeft = true
-    timer.performWithDelay( timeToMove, function()
-      transition.to( boss, { time=timeToMove, x=( display.contentWidth-450 ),
-        onComplete = function()
-          if boss ~= nil and died == false and isBossTakingDamage == false then
-            bossStopMovement()
-            bossMovingLeft = false
-            bossMoveRight( timeToMove )
+  if boss ~= nil then
+    if( isBossAttacking == false and isBossTakingDamage == false  ) then
+      local timeToMove = math.random( 600, 1000 )
+      if( isBossAttacking == false ) then
+        boss:setSequence( "static" )
+        boss:setFrame(1)
+      end
+      bossMovingLeft = true
+      timer.performWithDelay( timeToMove, function()
+        transition.to( boss, { time=timeToMove, x=( display.contentWidth-450 ),
+          onComplete = function()
+            if boss ~= nil then
+              if died == false and isBossTakingDamage == false then
+                bossStopMovement()
+                bossMovingLeft = false
+                bossMoveRight( timeToMove )
+              end
+            end
           end
-        end
-      } )
-    end )
+        } )
+      end )
+    end
   end
 end
 
 local function bossStopAttack()
-  if( boss ~= nil and isBossAttacking == true ) then
-    boss:setSequence( "static" )
-    if( bossMovingLeft ) then
-      boss:setFrame(1)
-    else
-      boss:setFrame(2)
+  if( boss ~= nil ) then
+    if( isBossAttacking == true ) then
+      boss:setSequence( "static" )
+      if( bossMovingLeft ) then
+        boss:setFrame(1)
+      else
+        boss:setFrame(2)
+      end
+      isBossAttacking = false
     end
-    isBossAttacking = false
   end
 end
 
 local function bossAttack()
-  if( isBossAttacking == false and boss ~= nil and isBossTakingDamage == false ) then
-    bossStopMovement()
-    boss:setSequence( "attackLeft" )
-    boss:play()
-    isBossAttacking = true
+  if( boss ~= nil ) then
+    if( isBossAttacking == false and isBossTakingDamage == false ) then
+      bossStopMovement()
+      boss:setSequence( "attackLeft" )
+      boss:play()
+      isBossAttacking = true
+    end
   end
 end
 
@@ -385,8 +419,10 @@ local function bossStartAttackRange()
 end
 
 local function bossMovimentantion()
-  if boss ~= nil and isBossAttacking == false and isBossTakingDamage == false then
-    bossMoveLeft()
+  if boss ~= nil then
+    if( isBossTakingDamage == false ) then
+      bossMoveLeft()
+    end
   end
 end
 
@@ -401,6 +437,7 @@ local function restoreBoss()
         if( boss ~= nil and died == false ) then
           if( enemyPoints == 0 ) then
             display.remove( boss )
+            moveMainCellAfterBossDeath()
           else
             isBossTakingDamage = false
             boss.isBodyActive = true
@@ -688,8 +725,8 @@ function scene:show( event )
     Runtime:addEventListener( "enterFrame", bossStartAttackRange )
     --gameLoopTimer = timer.performWithDelay( 1200, gameLoop, 0 )
     nucleumsFactoryLoopTimer = timer.performWithDelay( math.random( 60000, 90000 ), nucleumsFactory, 0 )
-    bossStopAttackLoopTimer = timer.performWithDelay( math.random( 1000, 1500 ), bossStopAttack, 0 )
-    bossMovimentantionLoopTimer = timer.performWithDelay( math.random( 900, 1000 ), bossMovimentantion, 0 )
+    bossStopAttackLoopTimer = timer.performWithDelay( math.random( 500, 800 ), bossStopAttack, 0 )
+    bossMovimentantionLoopTimer = timer.performWithDelay( math.random( 200, 1000 ), bossMovimentantion, 0 )
     --nTsAttackLoopTimer = timer.performWithDelay( math.random( 1000, 3000 ), nTsAttack, 0 )
 
     -- Initialize widget

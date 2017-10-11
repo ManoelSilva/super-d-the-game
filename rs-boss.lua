@@ -367,57 +367,6 @@ local function gameLoop()
   removeDriftedNts()
 end
 
-local function restoreMainCell()
-  if( mainCell ~= false ) then
-    mainCell:setLinearVelocity( 0,0 )
-    mainCell.isBodyActive = false
-
-    -- Fade in Main Cell
-    transition.to( mainCell, { alpha=1, time=500,
-      onComplete = function()
-        if( mainCell ~= nil ) then
-          -- Tests
-          if( enemyPoints == 19 ) then
-            isMainCellFirstHit = true
-            gameLoopTimer = timer.performWithDelay( 1200, gameLoop, 0 )
-            nTsAttackLoopTimer = timer.performWithDelay( math.random( 1000, 3000 ), nTsAttack, 0 )
-          end
-          mainCell.isBodyActive = true
-          if( isMainCellAlive ) then
-            mainCell:setSequence( "static" )
-            mainCell:setFrame("1")
-          end
-        end
-      end
-    } )
-  end
-end
-
-local function moveMainCellAfterBossDeath()
-  timer.performWithDelay( 1, function()
-    transition.to( mainCell, { time=4000, x=( display.contentCenterX + 100 ),
-      onComplete = function()
-        if mainCell ~= nil then
-          transition.to( mainCell, { time=4000, y=( display.contentHeight - 560 ),
-            onComplete = function()
-              if mainCell ~= nil then
-                mainCell.alpha = 1
-                physics.addBody( mainCell, "static", { isSensor = false, bounce=0.1, filter={ groupIndex=-2 } } )
-                mainCell.gravityScale = 0
-                bossPointsLife:setSequence( "bossSubLevelMainCell" )
-                bossPointsLife:setFrame( 1 )
-                bossPointsLife.x = display.contentCenterX + 415
-                enemyPoints = 20
-                display.remove( enemyLifePoints )
-                enemyLifePoints = display.newText( uiGroup, enemyPoints, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
-                enemyLifePoints:setFillColor( 255, 255, 0 )
-              end
-            end } )
-        end
-      end } )
-  end )
-end
-
 local function bossStopMovement()
   if( boss ~= nil ) then
     boss:setLinearVelocity( 0,0 )
@@ -519,6 +468,31 @@ local function bossMovimentantion()
   end
 end
 
+local function moveMainCellAfterBossDeath()
+  timer.performWithDelay( 1, function()
+    transition.to( mainCell, { time=4000, x=( display.contentCenterX + 100 ),
+      onComplete = function()
+        if mainCell ~= nil then
+          transition.to( mainCell, { time=4000, y=( display.contentHeight - 560 ),
+            onComplete = function()
+              if mainCell ~= nil then
+                mainCell.alpha = 1
+                physics.addBody( mainCell, "static", { isSensor = false, bounce=0.1, filter={ groupIndex=-2 } } )
+                mainCell.gravityScale = 0
+                bossPointsLife:setSequence( "bossSubLevelMainCell" )
+                bossPointsLife:setFrame( 1 )
+                bossPointsLife.x = display.contentCenterX + 415
+                enemyPoints = 20
+                display.remove( enemyLifePoints )
+                enemyLifePoints = display.newText( uiGroup, enemyPoints, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
+                enemyLifePoints:setFillColor( 255, 255, 0 )
+              end
+            end } )
+        end
+      end } )
+  end )
+end
+
 local function restoreBoss()
   if( boss ~= false ) then
     boss:setLinearVelocity( 0,0 )
@@ -590,6 +564,34 @@ local function afterMainCellDeath()
   timer.performWithDelay( 15000, function()
     passSubLevel()
   end )
+end
+
+local function restoreMainCell()
+  if( mainCell ~= false ) then
+    mainCell:setLinearVelocity( 0,0 )
+    mainCell.isBodyActive = false
+
+    -- Fade in Main Cell
+    transition.to( mainCell, { alpha=1, time=500,
+      onComplete = function()
+        if( mainCell ~= nil ) then
+          -- Tests
+          if( enemyPoints == 19 ) then
+            isMainCellFirstHit = true
+            gameLoopTimer = timer.performWithDelay( 1200, gameLoop, 0 )
+            nTsAttackLoopTimer = timer.performWithDelay( math.random( 1000, 3000 ), nTsAttack, 0 )
+          elseif( enemyPoints == 0 ) then
+            afterMainCellDeath()
+          end
+          mainCell.isBodyActive = true
+          if( isMainCellAlive ) then
+            mainCell:setSequence( "static" )
+            mainCell:setFrame("1")
+          end
+        end
+      end
+    } )
+  end
 end
 
 local function onCollision( event )
@@ -767,8 +769,6 @@ local function onCollision( event )
   elseif ( event.phase == "ended" and ( superD ~= nil and nT ~= nil ) or ( superD ~= nil and boss ~= nil ) or ( superD ~= nil and mainCell ~= nil ) ) then
     if( died == true and lives == 0 or lives < 0 ) then
       timer.performWithDelay( 200, endGame )
-    elseif( mainCell ~= nil and enemyPoints == 0 ) then
-      afterMainCellDeath()
     else
       timer.performWithDelay( 1, keepSuperDatScreen )
     end

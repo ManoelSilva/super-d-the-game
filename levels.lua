@@ -70,7 +70,7 @@ end
 
 local function rankSublevel( playerData, subLevel )
   local iterationsNumber = 0
-  local rankReferenceMaxPontuation = 60
+  local rankReferenceMaxPontuation = 12
   local subLevelPontuation
   local subLevelLifePoints
   local subLevelUsedNucleums
@@ -87,16 +87,15 @@ local function rankSublevel( playerData, subLevel )
     subLevelLifePoints = playerData.lungLifePoints
     subLevelUsedNucleums = playerData.lungUsedNucleums
   elseif( subLevel == "boss" ) then
-    subLevel = bossSubLevel 
-    rankReferenceMaxPontuation = 0
+    subLevel = bossSubLevel
     subLevelPontuation = playerData.rsBossPontuation
     subLevelLifePoints = playerData.rsBossLifePoints
     subLevelUsedNucleums = playerData.rsBossUsedNucleums
   end
 
-  if( subLevelPontuation == rankReferenceMaxPontuation and subLevelLifePoints == 12 and subLevelUsedNucleums == 0 ) then
+  if( subLevelLifePoints == rankReferenceMaxPontuation ) then
     iterationsNumber = 3
-  elseif( ( subLevelPontuation < rankReferenceMaxPontuation and subLevelPontuation >= rankReferenceMaxPontuation - 15 ) and subLevelLifePoints == 12 and subLevelUsedNucleums == 0 ) then
+  elseif( subLevelLifePoints >= 8 ) then
     iterationsNumber = 2
   else
     iterationsNumber = 1

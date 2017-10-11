@@ -1,7 +1,10 @@
 local Nt = {}
 local nTsprite
 local spritesheetNt = require("spritesheet.spritesheet-nT")
+local spritesheetSuperD = require("spritesheet.spritesheet-superD")
+
 local nTobjectSheet = graphics.newImageSheet( "assets/img/spritesheet-nT.png", spritesheetNt.getSheet )
+local superDobjectSheet = graphics.newImageSheet( "assets/img/spritesheet-superD.png", spritesheetSuperD.getSheet )
 
 function Nt:getNt( xScreen, yScreen )
   local sequencesRunNt =
@@ -10,7 +13,11 @@ function Nt:getNt( xScreen, yScreen )
       { name = "movingRight", frames = {9} },
       { name = "movingLeft", frames = {8} },
       { name = "attackRight", start = 10, count = 7, time = 260, loopCount = math.random( 1, 10 ) },
-      { name = "attackLeft", start = 1, count = 7, time = 260, loopCount = 1 }
+      { name = "attackLeft", start = 1, count = 7, time = 260, loopCount = 1 },
+      { name = "superDmovingRight", sheet = superDobjectSheet, frames = {9} },
+      { name = "superDmovingLeft", sheet = superDobjectSheet, frames = {8} },
+      { name = "superDattackRight", sheet = superDobjectSheet, start = 10, count = 7, time = 260, loopCount = 1 },
+      { name = "superDattackLeft", sheet = superDobjectSheet, start = 1, count = 7, time = 260, loopCount = 1 }
     }
 
   nTsprite = display.newSprite( nTobjectSheet, sequencesRunNt )

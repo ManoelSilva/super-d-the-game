@@ -346,7 +346,7 @@ local function passSubLevel()
     playerDataTable.lungPontuation = points
     playerDataTable.lungLifePoints = lives
     playerDataTable.lungUsedNucleums = generatedNucleums
-  elseif( playerDataTable.lungPontuation < points ) then
+  elseif( playerDataTable.lungLifePoints <= lives ) then
     playerDataTable.lungPontuation = points
     playerDataTable.lungLifePoints = lives
     playerDataTable.lungUsedNucleums = generatedNucleums

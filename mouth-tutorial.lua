@@ -314,7 +314,7 @@ local function passSubLevel()
     playerDataTable.mouthPontuation = points
     playerDataTable.mouthLifePoints = lives
     playerDataTable.mouthUsedNucleums = generatedNucleums
-  elseif( playerDataTable.mouthPontuation < points ) then
+  elseif( playerDataTable.mouthLifePoints <= lives ) then
     playerDataTable.mouthPontuation = points
     playerDataTable.mouthLifePoints = lives
     playerDataTable.mouthUsedNucleums = generatedNucleums

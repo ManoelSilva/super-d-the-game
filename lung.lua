@@ -286,26 +286,28 @@ end
 local function removeDriftedNts()
   for i = #nTtableRight, 1, -1 do
     local nT = nTtableRight[i]
-
-    if ( nT.x < -100 or
-      nT.x > display.contentWidth + 100 or
-      nT.y < -100 or
-      nT.y > display.contentHeight + 100 )
-    then
-      display.remove( nT )
-      table.remove( nTtableRight, i )
+    if nT ~= nil then
+      if ( nT.x < -100 or
+        nT.x > display.contentWidth + 100 or
+        nT.y < -100 or
+        nT.y > display.contentHeight + 100 )
+      then
+        display.remove( nT )
+        table.remove( nTtableRight, i )
+      end
     end
   end
   for i = #nTtableLeft, 1, -1 do
     local nT = nTtableLeft[i]
-
-    if ( nT.x < -100 or
-      nT.x > display.contentWidth + 100 or
-      nT.y < -100 or
-      nT.y > display.contentHeight + 100 )
-    then
-      display.remove( nT )
-      table.remove( nTtableLeft, i )
+    if nT ~= nil then
+      if ( nT.x < -100 or
+        nT.x > display.contentWidth + 100 or
+        nT.y < -100 or
+        nT.y > display.contentHeight + 100 )
+      then
+        display.remove( nT )
+        table.remove( nTtableLeft, i )
+      end
     end
   end
 end

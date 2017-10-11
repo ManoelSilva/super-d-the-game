@@ -15,8 +15,8 @@ local sequencesTopBar =
     { name = "emptyLife", frames = {3} },
     { name = "nTs", frames = {2, 1} },
     { name = "bossSubLevelBoss", sheet = topBarBossSublevelObjectSheet, frames = {1} },
-    { name = "bossSubLevelMainCell", sheet = topBarBossSublevelObjectSheet, frames = {2} },
-    { name = "bossSubLevelMainCellDominated", sheet = topBarBossSublevelObjectSheet, frames = {3} }
+    { name = "bossSubLevelMainCell", sheet = topBarBossSublevelObjectSheet, frames = {3} },
+    { name = "bossSubLevelMainCellDominated", sheet = topBarBossSublevelObjectSheet, frames = {2} }
   }
 local alpha = 0.8
 

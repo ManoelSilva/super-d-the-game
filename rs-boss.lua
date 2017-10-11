@@ -43,10 +43,11 @@ local boss
 local isBossAttacking = false
 local isBossTakingDamage = false
 local mainCell
+local isMainCellAlive = true
+local isMainCellFirstHit = false
 local nT
-local nTsNumber
-local nTsLeft
-local nTtable = {}
+local nTtableRight = {}
+local nTtableLeft = {}
 local lifeOne
 local lifeTwo
 local lifeThree
@@ -66,7 +67,7 @@ local lives = 12
 local lifeBarScale = 0.3
 local nTsBarScale = 0.1
 local alpha = 0.8
---local offsetSuperDParams = { 0,-37, 37,-10, 23,34, -23,34, -37,-10 }
+
 -- Sound settings
 local musicTrack = audio.loadStream( "assets/audio/youCantHide.mp3" )
 local moveTrack = audio.loadSound( "assets/audio/moveSound.mp3" )
@@ -274,19 +275,29 @@ local function removeNucleumUsed( nucleum )
 end
 
 local function nTsFactory()
-  if( nTsNumber ~= 0 ) then
-    nT = nTentity:getNt( -60, math.random( 300 ) )
-    mainGroup:insert( nT )
-    nT:setFrame( 2 )
-    table.insert( nTtable, nT )
-    physics.addBody( nT, "dynamic", { radius=80, bounce=0.8 } )
-    nT:setLinearVelocity( math.random( 120,250 ), math.random( 20,60 ) )
+  local rightOrLeft = math.random( 0, 1 )
+  if( isMainCellFirstHit and isMainCellAlive ) then
+    if( rightOrLeft == 0 ) then
+      nT = nTentity:getNt( math.random( 900, 1200 ), math.random( 200, 400 ) )
+      mainGroup:insert( nT )
+      nT:setFrame( 1 )
+      table.insert( nTtableRight, nT )
+      physics.addBody( nT, "dynamic", { radius=80, bounce=0.8, filter={ groupIndex=-2 } } )
+      nT:setLinearVelocity( math.random( -250,-120 ), math.random( 20,60 ) )
+    else
+      nT = nTentity:getNt( -60, math.random( 300 ) )
+      mainGroup:insert( nT )
+      nT:setFrame( 2 )
+      table.insert( nTtableLeft, nT )
+      physics.addBody( nT, "dynamic", { radius=80, bounce=0.8, filter={ groupIndex=-2 } } )
+      nT:setLinearVelocity( math.random( 120,250 ), math.random( 20,60 ) )
+    end
   end
 end
 
 local function removeDriftedNts()
-  for i = #nTtable, 1, -1 do
-    local nT = nTtable[i]
+  for i = #nTtableRight, 1, -1 do
+    local nT = nTtableRight[i]
 
     if ( nT.x < -100 or
       nT.x > display.contentWidth + 100 or
@@ -294,7 +305,19 @@ local function removeDriftedNts()
       nT.y > display.contentHeight + 100 )
     then
       display.remove( nT )
-      table.remove( nTtable, i )
+      table.remove( nTtableRight, i )
+    end
+  end
+  for i = #nTtableLeft, 1, -1 do
+    local nT = nTtableLeft[i]
+
+    if ( nT.x < -100 or
+      nT.x > display.contentWidth + 100 or
+      nT.y < -100 or
+      nT.y > display.contentHeight + 100 )
+    then
+      display.remove( nT )
+      table.remove( nTtableLeft, i )
     end
   end
 end
@@ -302,14 +325,50 @@ end
 local function nTsAttack()
   if( died ~= true ) then
     local attackingNumber = 2
-    if( #nTtable > 0  ) then
-      attackingNumber = math.random( #nTtable )
+    if( #nTtableRight > 0  ) then
+      attackingNumber = math.random( #nTtableRight )
     end
-    for i = #nTtable, 1, -attackingNumber do
-      local nT = nTtable[i]
+    for i = #nTtableRight, 1, -attackingNumber do
+      local nT = nTtableRight[i]
+      nT:setSequence( "attackLeft" )
+      nT:play()
+    end
+    if( #nTtableLeft > 0  ) then
+      attackingNumber = math.random( #nTtableLeft )
+    end
+    for i = #nTtableLeft, 1, -attackingNumber do
+      local nT = nTtableLeft[i]
       nT:setSequence( "attackRight" )
       nT:play()
     end
+  end
+end
+
+local function gameLoop()
+  nTsFactory()
+  removeDriftedNts()
+end
+
+local function restoreMainCell()
+  if( mainCell ~= false ) then
+    mainCell:setLinearVelocity( 0,0 )
+    mainCell.isBodyActive = false
+
+    -- Fade in Boss
+    transition.to( mainCell, { alpha=1, time=500,
+      onComplete = function()
+        if( mainCell ~= nil and died == false ) then
+          if( enemyPoints == 19 ) then
+            isMainCellFirstHit = true
+            gameLoopTimer = timer.performWithDelay( 1200, gameLoop, 0 )
+            nTsAttackLoopTimer = timer.performWithDelay( math.random( 1000, 3000 ), nTsAttack, 0 )
+          end
+          mainCell.isBodyActive = true
+          mainCell:setSequence( "static" )
+          mainCell:setFrame ("1")
+        end
+      end
+    } )
   end
 end
 
@@ -322,6 +381,15 @@ local function moveMainCellAfterBossDeath()
             onComplete = function()
               if mainCell ~= nil then
                 mainCell.alpha = 1
+                physics.addBody( mainCell, "static", { isSensor = false, bounce=0.1, filter={ groupIndex=-2 } } )
+                mainCell.gravityScale = 0
+                bossPointsLife:setSequence( "bossSubLevelMainCell" )
+                bossPointsLife:setFrame( 1 )
+                bossPointsLife.x = display.contentCenterX + 415
+                enemyPoints = 20
+                display.remove( enemyLifePoints )
+                enemyLifePoints = display.newText( uiGroup, enemyPoints, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
+                enemyLifePoints:setFillColor( 255, 255, 0 )
               end
             end } )
         end
@@ -343,15 +411,17 @@ local function bossMoveRight( timeToMove )
         boss:setFrame(2)
       end
       timer.performWithDelay( timeToMove, function()
-        transition.to( boss, { time=timeToMove, x=( display.contentWidth-150 ),
-          onComplete = function()
-            if boss ~= nil then
-              if( isBossAttacking == false and died == false ) then
-                bossStopMovement()
-                bossMovingLeft = true
+        if boss ~= nil then
+          transition.to( boss, { time=timeToMove, x=( display.contentWidth-150 ),
+            onComplete = function()
+              if boss ~= nil then
+                if( died == false ) then
+                  bossStopMovement()
+                  bossMovingLeft = true
+                end
               end
-            end
-          end } )
+            end } )
+        end
       end )
     end
   end
@@ -359,7 +429,7 @@ end
 
 local function bossMoveLeft()
   if boss ~= nil then
-    if( isBossAttacking == false and isBossTakingDamage == false  ) then
+    if( isBossTakingDamage == false ) then
       local timeToMove = math.random( 600, 1000 )
       if( isBossAttacking == false ) then
         boss:setSequence( "static" )
@@ -409,11 +479,14 @@ local function bossAttack()
 end
 
 local function bossStartAttackRange()
-  if died == false and isBossTakingDamage == false then
-    superDxReference = superDxPosition
-    local bossAndSuperDdistance = boss.x - superDxReference
-    if bossAndSuperDdistance <= 450 or bossAndSuperDdistance <= -450 then
-      bossAttack()
+  if( boss ~= nil ) then
+    print(boss)
+    if( died == false and isBossTakingDamage == false ) then
+      superDxReference = superDxPosition
+      local bossAndSuperDdistance = boss.x - superDxReference
+      if bossAndSuperDdistance <= 450 or bossAndSuperDdistance <= -450 then
+        bossAttack()
+      end
     end
   end
 end
@@ -435,8 +508,10 @@ local function restoreBoss()
     transition.to( boss, { alpha=1, time=500,
       onComplete = function()
         if( boss ~= nil and died == false ) then
+        -- Tests
           if( enemyPoints == 0 ) then
             display.remove( boss )
+            boss = nil
             moveMainCellAfterBossDeath()
           else
             isBossTakingDamage = false
@@ -478,6 +553,7 @@ local function onCollision( event )
   if ( event.phase == "began" ) then
     local superD
     local boss
+    local mainCell
     local nT
     local nucleum
 
@@ -503,6 +579,54 @@ local function onCollision( event )
     elseif ( event.object1.myName == "superD" and event.object2.myName == "boss" ) then
       boss = event.object2
       superD = event.object1
+    end
+
+    if ( event.object1.myName == "mainCell" and event.object2.myName == "superD" ) then
+      mainCell = event.object1
+      superD = event.object2
+    elseif ( event.object1.myName == "superD" and event.object2.myName == "mainCell" ) then
+      mainCell = event.object2
+      superD = event.object1
+    end
+
+    if ( superD ~= nil and mainCell ~= nil ) then
+      audio.play( hitTrack )
+      if( ( superD.sequence == "attackRight" ) and superD.frame ~= 7 ) then
+        mainCell:setSequence( "takingDamageRight" )
+        mainCell:setFrame(1)
+        mainCell.alpha = 0.5
+        enemyPoints = enemyPoints - 1
+        display.remove( enemyLifePoints )
+        enemyLifePoints = display.newText( uiGroup, enemyPoints, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
+        enemyLifePoints:setFillColor( 255, 255, 0 )
+        timer.performWithDelay( 1000 , restoreMainCell )
+      elseif( ( superD.sequence == "attackLeft" ) and superD.frame ~= 7 ) then
+        mainCell:setSequence( "takingDamageLeft" )
+        mainCell:setFrame(1)
+        mainCell.alpha = 0.5
+        enemyPoints = enemyPoints - 1
+        display.remove( enemyLifePoints )
+        enemyLifePoints = display.newText( uiGroup, enemyPoints, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
+        enemyLifePoints:setFillColor( 255, 255, 0 )
+        timer.performWithDelay( 1000 , restoreMainCell )
+      elseif ( died == false ) then
+        punchButton:setEnabled( false )
+        jumpButton:setEnabled( false )
+        moveLeftButton:setEnabled( false )
+        moveRightButton:setEnabled( false )
+
+        if( ( superD.sequence == "static" and superD.frame == 2 ) or
+          superD.sequence == "movingRight" or superD.sequence == "attackRight" ) then
+          superD:setSequence( "superDtakingDamage" )
+          superD:setFrame(1)
+        else
+          superD:setSequence( "superDtakingDamage" )
+          superD:setFrame(2)
+        end
+        takeDamage( false, false )
+        superD.alpha = 0.5
+        timer.performWithDelay( 420 , restoreSuperD )
+      end
     end
 
     if ( superD ~= nil and boss ~= nil ) then
@@ -544,26 +668,18 @@ local function onCollision( event )
       audio.play( hitTrack )
 
       if( ( superD.sequence == "attackRight" or superD.sequence == "attackLeft" ) and superD.frame ~= 7 ) then
-        nTsNumber = nTsNumber - 1
-        points = points + 1
-        if( nTsNumber > 0 ) then
-          display.remove( nTsLeft )
-          display.remove( enemyLifePoints )
-          nTsLeft = display.newText( uiGroup, nTsNumber, display.contentCenterX + 370, display.contentHeight - 640, inputText, 40 )
-          nTsLeft:setFillColor( 255, 255, 0 )
-          enemyLifePoints = display.newText( uiGroup, points, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
-          enemyLifePoints:setFillColor( 255, 255, 0 )
-        elseif( nTsNumber == 0 ) then
-          died = true
-          timer.performWithDelay( 200, passSubLevel )
-        end
-
         nT.isSensor = true
         display.remove( nT )
 
-        for i = #nTtable, 1, -1 do
-          if ( nTtable[i] == nT ) then
-            table.remove( nTtable, i )
+        for i = #nTtableRight, 1, -1 do
+          if ( nTtableRight[i] == nT ) then
+            table.remove( nTtableRight, i )
+            break
+          end
+        end
+        for i = #nTtableLeft, 1, -1 do
+          if ( nTtableLeft[i] == nT ) then
+            table.remove( nTtableLeft, i )
             break
           end
         end
@@ -603,18 +719,13 @@ local function onCollision( event )
       hasNucleumFull = false
       generatedNucleums = generatedNucleums + 1
     end
-  elseif ( event.phase == "ended" and ( superD ~= nil and nT ~= nil ) or ( superD ~= nil and boss ~= nil ) ) then
+  elseif ( event.phase == "ended" and ( superD ~= nil and nT ~= nil ) or ( superD ~= nil and boss ~= nil ) or ( superD ~= nil and mainCell ~= nil ) ) then
     if( died == true and lives == 0 or lives < 0 ) then
       timer.performWithDelay( 200, endGame )
     else
       timer.performWithDelay( 1, keepSuperDatScreen )
     end
   end
-end
-
-local function gameLoop()
-  nTsFactory()
-  removeDriftedNts()
 end
 
 -- -----------------------------------------------------------------------------------
@@ -701,7 +812,7 @@ function scene:create( event )
   physics.addBody( boss, "dynamic", { radius=90, isSensor=false, bounce=0.5 } )
   physics.addBody( nucleum, "static", { isSensor=true } )
   physics.addBody( ground, "static", { bounce=0.05 } )
-  physics.addBody( platform, "static", { bounce=0.05 } )
+  physics.addBody( platform, "static", { bounce=0.05, filter={ groupIndex=-2 } } )
 end
 
 -- show()
@@ -723,11 +834,9 @@ function scene:show( event )
     enemyLifePoints:setFillColor( 255, 255, 0 )
     Runtime:addEventListener( "collision", onCollision )
     Runtime:addEventListener( "enterFrame", bossStartAttackRange )
-    --gameLoopTimer = timer.performWithDelay( 1200, gameLoop, 0 )
     nucleumsFactoryLoopTimer = timer.performWithDelay( math.random( 60000, 90000 ), nucleumsFactory, 0 )
     bossStopAttackLoopTimer = timer.performWithDelay( math.random( 500, 800 ), bossStopAttack, 0 )
-    bossMovimentantionLoopTimer = timer.performWithDelay( math.random( 200, 1000 ), bossMovimentantion, 0 )
-    --nTsAttackLoopTimer = timer.performWithDelay( math.random( 1000, 3000 ), nTsAttack, 0 )
+    bossMovimentantionLoopTimer = timer.performWithDelay( math.random( 700, 1000 ), bossMovimentantion, 0 )
 
     -- Initialize widget
     widget = require("widget")
@@ -804,8 +913,11 @@ function scene:hide( event )
 
   if ( phase == "will" ) then
     -- Code here runs when the scene is on screen (but is about to go off screen)
-    --timer.cancel( gameLoopTimer )
-    --timer.cancel( nTsAttackLoopTimer )
+    if( isMainCellFirstHit ) then
+      timer.cancel( gameLoopTimer )
+      timer.cancel( nTsAttackLoopTimer )
+    end
+
     timer.cancel( nucleumsFactoryLoopTimer )
     timer.cancel( bossStopAttackLoopTimer )
     timer.cancel( bossMovimentantionLoopTimer )

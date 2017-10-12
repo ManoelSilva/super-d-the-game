@@ -335,7 +335,7 @@ local function nTsAttack()
 end
 
 local function endGame()
-  composer.gotoScene( "menu", { time=800, effect="crossFade" } )
+  composer.gotoScene( "game-over", { time=800, effect="crossFade" } )
 end
 
 local function passSubLevel()

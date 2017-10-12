@@ -539,7 +539,7 @@ local function passSubLevel()
   end
 
   loadsave.saveTable( playerDataTable, "playerData.json" )
-  endGame()
+  composer.gotoScene( "menu", { time=800, effect="crossFade" } )
 end
 
 local function afterMainCellDeath()

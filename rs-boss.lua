@@ -200,7 +200,10 @@ local function changeLifeBar( lives )
 end
 
 local function increaseLife()
-  lives = lives + 1
+  lives = lives + 4
+  if( lives > 12 ) then
+    lives = 12
+  end
   changeLifeBar( lives )
 end
 

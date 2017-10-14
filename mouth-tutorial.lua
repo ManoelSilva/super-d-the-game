@@ -189,7 +189,10 @@ local function changeLifeBar( lives )
 end
 
 local function increaseLife()
-  lives = lives + 1
+  lives = lives + 4
+  if( lives > 12 ) then
+    lives = 12
+  end
   changeLifeBar( lives )
 end
 
@@ -236,7 +239,7 @@ end
 local function nucleumsFactory()
   if( not hasNucleumFull ) then
 
-    if( generatedNucleums < 5 )  then
+    if( generatedNucleums < 3 )  then
       nucleum = nucleumEntity:getNucleum( math.random( -400, 400 ), 290 )
       backGroup:insert( nucleum )
       physics.addBody( nucleum, "static", { isSensor=true } )

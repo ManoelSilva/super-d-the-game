@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------------------
 --
--- game-over.lua
+-- pause-menu.lua
 --
 -----------------------------------------------------------------------------------------
 
@@ -24,10 +24,9 @@ local function goBacktoMenu()
   composer.gotoScene( "menu", { time=800, effect="crossFade" } )
 end
 
-local function goTryAgain()
+local function goResumeGame()
   audio.play( selected )
-  composer.removeScene( composer.getSceneName( "previous" ) )
-  composer.gotoScene( composer.getSceneName( "previous" ) )
+  composer.hideOverlay( "fade", 400 )
 end
 
 -- create()
@@ -38,30 +37,30 @@ function scene:create( event )
   local inputText = native.newFont( "Starjedi.ttf" )
 
   -- Load background
-  local background = display.newImageRect( sceneGroup, "assets/img/gameover.png", display.actualContentWidth, display.actualContentHeight )
+  local background = display.newImageRect( sceneGroup, "assets/img/pause.png", display.actualContentWidth, display.actualContentHeight )
   background.x = display.contentCenterX
   background.y = display.contentCenterY
 
   -- Load Try Again text
-  local tryAgainText = "Try Again"
-  local tryAgainTextEntity = display.newText( sceneGroup, tryAgainText, display.contentCenterX, display.contentHeight - 425, inputText, 40 )
-  tryAgainTextEntity:setFillColor( 255, 255, 0 )
+  local resumeText = "Resume"
+  local resumeTextEntity = display.newText( sceneGroup, resumeText, display.contentCenterX, display.contentHeight - 425, inputText, 40 )
+  resumeTextEntity:setFillColor( 255, 255, 0 )
 
   -- Load Main Menu text
   local mainMenuText = "Menu"
   local mainMenuTextEntity = display.newText( sceneGroup, mainMenuText, display.contentCenterX, display.contentHeight - 350, inputText, 40 )
   mainMenuTextEntity:setFillColor( 255, 255, 0 )
 
-  local tryAgainButton = display.newRect( sceneGroup, display.contentCenterX, display.contentHeight - 420, 200, 10 )
-  tryAgainButton.strokeWidth = 30
-  --tryAgainButton:setFillColor( 1, 0 )
-  tryAgainButton:setFillColor( 0,0,0,0 )
-  --tryAgainButton:setStrokeColor( 1, 0, 0 )
-  tryAgainButton:setStrokeColor( 0, 0, 0, 0 )
-  tryAgainButton.myName = "TryAgainButton"
+  local resumeButton = display.newRect( sceneGroup, display.contentCenterX, display.contentHeight - 420, 200, 10 )
+  resumeButton.strokeWidth = 30
+  --resumeButton:setFillColor( 1, 0 )
+  resumeButton:setFillColor( 0,0,0,0 )
+  --resumeButton:setStrokeColor( 1, 0, 0 )
+  resumeButton:setStrokeColor( 0, 0, 0, 0 )
+  resumeButton.myName = "TryAgainButton"
 
-  tryAgainButton:addEventListener( "tap", goTryAgain )
-  tryAgainButton.isHitTestable = true
+  resumeButton:addEventListener( "tap", goResumeGame )
+  resumeButton.isHitTestable = true
 
   local mainMenuButton = display.newRect( sceneGroup, display.contentCenterX - 2, display.contentHeight - 350, 200, 20 )
   mainMenuButton.strokeWidth = 30
@@ -95,10 +94,12 @@ function scene:hide( event )
 
   local sceneGroup = self.view
   local phase = event.phase
-
+  local parent = event.parent  --reference to the parent scene object
+  
   if ( phase == "will" ) then
   -- Code here runs when the scene is on screen (but is about to go off screen)
-
+  parent:resumeGame()
+  
   elseif ( phase == "did" ) then
   -- Code here runs immediately after the scene goes entirely off screen
   end

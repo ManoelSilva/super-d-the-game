@@ -2,6 +2,15 @@ local composer = require( "composer" )
 
 local scene = composer.newScene()
 
+function scene:resumeGame()
+  print( "Entrei resumeGame" )
+
+  physics.start()
+  timer.resume( gameLoopTimer )
+  timer.resume( nTsAttackLoopTimer )
+  timer.resume( nucleumsFactoryLoopTimer )
+end
+
 -- Reserve channel 1 for background music
 audio.reserveChannels( 1 )
 -- Reduce the overall volume of the channel
@@ -14,7 +23,7 @@ audio.setVolume( 0.5, { channel=1 } )
 
 -- Initialize player data lib
 local loadsave
-loadsave = require( "loadsave" ) 
+loadsave = require( "loadsave" )
 
 -- Initialize physics
 local physics
@@ -49,6 +58,7 @@ local ground
 local wallRight
 local wallLeft
 local widget
+local pauseButton
 local punchButton
 local jumpButton
 local moveRightButton
@@ -71,6 +81,21 @@ local inputText = native.newFont( "Starjedi.ttf" )
 local backGroup
 local mainGroup
 local uiGroup
+
+local function pauseMenu()
+  -- Pause game
+  physics.pause()
+  timer.pause( gameLoopTimer )
+  timer.pause( nTsAttackLoopTimer )
+  timer.pause( nucleumsFactoryLoopTimer )
+
+  local options = {
+    isModal = true,
+    effect = "fade",
+    time = 400,
+  }
+  composer.showOverlay( "pause-menu", options )
+end
 
 local function punch()
   audio.play( punchTrack )
@@ -189,7 +214,10 @@ local function changeLifeBar( lives )
 end
 
 local function increaseLife()
-  lives = lives + 1
+  lives = lives + 4
+  if( lives > 12 ) then
+    lives = 12
+  end
   changeLifeBar( lives )
 end
 
@@ -236,7 +264,7 @@ end
 local function nucleumsFactory()
   if( not hasNucleumFull ) then
 
-    if( generatedNucleums < 5 )  then
+    if( generatedNucleums < 3 )  then
       nucleum = nucleumEntity:getNucleum( math.random( -400, 400 ), 290 )
       backGroup:insert( nucleum )
       physics.addBody( nucleum, "static", { isSensor=true } )
@@ -319,7 +347,7 @@ local function passSubLevel()
     playerDataTable.mouthLifePoints = lives
     playerDataTable.mouthUsedNucleums = generatedNucleums
   end
-  
+
   loadsave.saveTable( playerDataTable, "playerData.json" )
   composer.gotoScene( "lung", { time=800, effect="crossFade" } )
 end
@@ -500,8 +528,8 @@ function scene:show( event )
   local phase = event.phase
 
   if ( phase == "will" ) then
-  -- Code here runs when the scene is still off screen (but is about to come on screen)
-  audio.stop( 1 )
+    -- Code here runs when the scene is still off screen (but is about to come on screen)
+    audio.stop( 1 )
   elseif ( phase == "did" ) then
     -- Code here runs when the scene is entirely on screen
     system.activate( "multitouch" )
@@ -522,6 +550,23 @@ function scene:show( event )
     widget = require("widget")
 
     -- Load gamepad start
+    pauseButton = widget.newButton( {
+      -- The id can be used to tell you what button was pressed in your button event
+      id = "pauseButton",
+      -- Size of the button
+      width = 71,
+      height = 65,
+      -- This is the default button image
+      defaultFile = "assets/img/pause-menu-button.png",
+      -- This is the pressed button image
+      overFile = "assets/img/pause-menu-button-pressed.png",
+      -- Position of the button
+      left = display.contentCenterX,
+      top = 100,
+      -- This tells it what function to call when you press the button
+      onPress = pauseMenu
+    } )
+
     punchButton = widget.newButton( {
       -- The id can be used to tell you what button was pressed in your button event
       id = "punchButton",
@@ -572,11 +617,13 @@ function scene:show( event )
       onEvent = moveLeft
     } )
 
+    pauseButton.alpha = alpha;
     punchButton.alpha = alpha;
     jumpButton.alpha = alpha;
     moveLeftButton.alpha = alpha;
     moveRightButton.alpha = alpha;
 
+    uiGroup:insert( pauseButton )
     uiGroup:insert( punchButton )
     uiGroup:insert( jumpButton )
     uiGroup:insert( moveLeftButton )

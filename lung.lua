@@ -2,6 +2,14 @@ local composer = require( "composer" )
 
 local scene = composer.newScene()
 
+function scene:resumeGame()
+  physics.start()
+  transition.resume( "animationPause" )
+  timer.resume( gameLoopTimer )
+  timer.resume( nTsAttackLoopTimer )
+  timer.resume( nucleumsFactoryLoopTimer )
+end
+
 -- Reserve channel 1 for background music
 audio.reserveChannels( 1 )
 -- Reduce the overall volume of the channel
@@ -50,6 +58,7 @@ local ground
 local wallRight
 local wallLeft
 local widget
+local pauseButton
 local punchButton
 local jumpButton
 local moveRightButton
@@ -58,7 +67,7 @@ local died = false
 local lives = 12
 local lifeBarScale = 0.3
 local nTsBarScale = 0.1
-local alpha = 0.8
+local alpha = 0.6
 --local offsetSuperDParams = { 0,-37, 37,-10, 23,34, -23,34, -37,-10 }
 -- Sound settings
 local musicTrack = audio.loadStream( "assets/audio/youCantHide.mp3" )
@@ -72,6 +81,22 @@ local inputText = native.newFont( "Starjedi.ttf" )
 local backGroup
 local mainGroup
 local uiGroup
+
+local function pauseMenu()
+  -- Pause game
+  physics.pause()
+  transition.pause("animationPause")
+  timer.pause( gameLoopTimer )
+  timer.pause( nTsAttackLoopTimer )
+  timer.pause( nucleumsFactoryLoopTimer )
+
+  local options = {
+    isModal = true,
+    effect = "fade",
+    time = 100,
+  }
+  composer.showOverlay( "pause-menu", options )
+end
 
 local function punch()
   audio.play( punchTrack )
@@ -210,14 +235,14 @@ local function takeDamage( isPunchHit )
 end
 
 local function restoreSuperD()
-  if( died == false ) then
+  if( died == false and superD ~= nil ) then
     superD:setLinearVelocity( 0,0 )
     superD.isBodyActive = false
 
     -- Fade in SuperD
-    transition.to( superD, { alpha=1, time=225,
+    transition.to( superD, { tag="animationPause", alpha=1, time=225,
       onComplete = function()
-        if( died == false ) then
+        if( died == false and superD ~= nil ) then
           superD.isBodyActive = true
           punchButton:setEnabled( true )
           jumpButton:setEnabled( true )
@@ -254,7 +279,7 @@ end
 local function removeNucleumUsed( nucleum )
   for i = #nucleumTable, 1, -1 do
     if ( nucleumTable[i] == nucleum ) then
-      transition.to( nucleumTable[i], { alpha=1, time=2000,
+      transition.to( nucleumTable[i], { tag="animationPause", alpha=1, time=2000,
         onComplete = function()
           display.remove( nucleum )
         end
@@ -564,6 +589,23 @@ function scene:show( event )
     widget = require("widget")
 
     -- Load gamepad start
+    pauseButton = widget.newButton( {
+      -- The id can be used to tell you what button was pressed in your button event
+      id = "pauseButton",
+      -- Size of the button
+      width = 130,
+      height = 150,
+      -- This is the default button image
+      defaultFile = "assets/img/pause-menu-button.png",
+      -- This is the pressed button image
+      overFile = "assets/img/pause-menu-button-pressed.png",
+      -- Position of the button
+      left = display.contentCenterX - 70,
+      top = 520,
+      -- This tells it what function to call when you press the button
+      onPress = pauseMenu
+    } )
+    
     punchButton = widget.newButton( {
       -- The id can be used to tell you what button was pressed in your button event
       id = "punchButton",
@@ -613,12 +655,14 @@ function scene:show( event )
       top = 520,
       onEvent = moveLeft
     } )
-
+    
+    pauseButton.alpha = alpha;
     punchButton.alpha = alpha;
     jumpButton.alpha = alpha;
     moveLeftButton.alpha = alpha;
     moveRightButton.alpha = alpha;
-
+  
+    uiGroup:insert( pauseButton )
     uiGroup:insert( punchButton )
     uiGroup:insert( jumpButton )
     uiGroup:insert( moveLeftButton )

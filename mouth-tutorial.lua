@@ -1,6 +1,18 @@
 local composer = require( "composer" )
 
 local scene = composer.newScene()
+  
+local stillInTutorial = true 
+  
+function scene:resumeGame()
+  physics.start()
+  transition.resume( "animationPause" )
+  if( stillInTutorial == false ) then
+    timer.resume( gameLoopTimer )
+    timer.resume( nTsAttackLoopTimer )
+    timer.resume( nucleumsFactoryLoopTimer )
+  end
+end
 
 -- Reserve channel 1 for background music
 audio.reserveChannels( 1 )
@@ -29,7 +41,6 @@ local nucleumEntity = require( "entities.nucleum" )
 
 -- Initialize variables
 local playerDataTable = {}
-local stillInTutorial = true
 local passTutorialText = true
 local superD
 local nucleum
@@ -49,6 +60,7 @@ local nTsToKill
 local nTsKilled
 local ground
 local widget
+local pauseButton
 local punchButton
 local jumpButton
 local moveRightButton
@@ -57,7 +69,7 @@ local died = false
 local lives = 12
 local lifeBarScale = 0.3
 local nTsBarScale = 0.1
-local alpha = 0.8
+local alpha = 0.6
 --local offsetSuperDParams = { 0,-37, 37,-10, 23,34, -23,34, -37,-10 }
 -- Sound settings
 local musicTrack = audio.loadStream( "assets/audio/youCantHide.mp3" )
@@ -71,6 +83,24 @@ local inputText = native.newFont( "Starjedi.ttf" )
 local backGroup
 local mainGroup
 local uiGroup
+
+local function pauseMenu()
+  -- Pause game
+  physics.pause()
+  transition.pause("animationPause")
+  if( stillInTutorial == false ) then
+    timer.pause( gameLoopTimer )
+    timer.pause( nTsAttackLoopTimer )
+    timer.pause( nucleumsFactoryLoopTimer )
+  end
+
+  local options = {
+    isModal = true,
+    effect = "fade",
+    time = 100,
+  }
+  composer.showOverlay( "pause-menu", options )
+end
 
 local function punch()
   audio.play( punchTrack )
@@ -209,14 +239,14 @@ local function takeDamage( isPunchHit )
 end
 
 local function restoreSuperD()
-  if( died == false ) then
+  if( died == false and superD ~= nil ) then
     superD:setLinearVelocity( 0,0 )
     superD.isBodyActive = false
 
     -- Fade in SuperD
-    transition.to( superD, { alpha=1, time=225,
+    transition.to( superD, { tag="animationPause", alpha=1, time=225,
       onComplete = function()
-        if( died == false ) then
+        if( died == false and superD ~= nil ) then
           superD.isBodyActive = true
           punchButton:setEnabled( true )
           jumpButton:setEnabled( true )
@@ -253,7 +283,7 @@ end
 local function removeNucleumUsed( nucleum )
   for i = #nucleumTable, 1, -1 do
     if ( nucleumTable[i] == nucleum ) then
-      transition.to( nucleumTable[i], { alpha=1, time=2000,
+      transition.to( nucleumTable[i], { tag="animationPause", alpha=1, time=2000,
         onComplete = function()
           display.remove( nucleum )
         end
@@ -437,6 +467,8 @@ local function afterGameTutorial()
   gameLoopTimer = timer.performWithDelay( 1200, gameLoop, 0 )
   nucleumsFactoryLoopTimer = timer.performWithDelay( math.random( 60000, 90000 ), nucleumsFactory, 0 )
   nTsAttackLoopTimer = timer.performWithDelay( math.random( 1000, 3000 ), nTsAttack, 0 )
+
+  stillInTutorial = false
 end
 
 local function gameTutorial()
@@ -493,7 +525,7 @@ local function gameTutorial()
         superD.isBodyActive = true
         passTutorialText = false
         jump()
-        transition.to( superD, { time=2500,
+        transition.to( superD, { tag="animationPause", time=2500,
           onComplete = function()
             display.remove( infoPointer )
             passTutorialText = true
@@ -510,14 +542,14 @@ local function gameTutorial()
         audio.play( moveTrack )
         superD:setSequence( "movingLeft" )
         superD:setFrame(1)
-        transition.to( superD, { time=500, x=( display.contentWidth-600 ),
+        transition.to( superD, { tag="animationPause", time=500, x=( display.contentWidth-600 ),
           onComplete = function()
             superD:setSequence( "static" )
             superD:setFrame(2)
             audio.play( moveTrack )
             superD:setSequence( "movingRight" )
             superD:setFrame(1)
-            transition.to( superD, { time=500, x=( display.contentWidth-80 ),
+            transition.to( superD, { tag="animationPause", time=500, x=( display.contentWidth-80 ),
               onComplete = function()
                 superD:setSequence( "static" )
                 superD:setFrame(1)
@@ -535,7 +567,7 @@ local function gameTutorial()
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
         infoPointer.x = display.contentCenterX + 320
         infoPointer.y = display.contentHeight - 300
-        transition.to( superD, { time=2900,
+        transition.to( superD, { tag="animationPause", time=2900,
           onComplete = function()
             audio.play( punchTrack )
             punch()
@@ -551,7 +583,7 @@ local function gameTutorial()
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-up.png", 50, 57);
         infoPointer.x = display.contentCenterX - 400
         infoPointer.y = display.contentHeight - 550
-        transition.to( infoPointer, { time=2900,
+        transition.to( infoPointer, { tag="animationPause", time=2900,
           onComplete = function()
             passTutorialText = true
             startTextFour = false
@@ -565,7 +597,7 @@ local function gameTutorial()
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-up.png", 50, 57);
         infoPointer.x = display.contentCenterX + 370
         infoPointer.y = display.contentHeight - 550
-        transition.to( infoPointer, { time=2900,
+        transition.to( infoPointer, { tag="animationPause", time=2900,
           onComplete = function()
             passTutorialText = true
             startTextFive = false
@@ -579,7 +611,7 @@ local function gameTutorial()
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-up.png", 50, 57);
         infoPointer.x = display.contentCenterX + 490
         infoPointer.y = display.contentHeight - 550
-        transition.to( infoPointer, { time=2900,
+        transition.to( infoPointer, { tag="animationPause", time=2900,
           onComplete = function()
             passTutorialText = true
             startTextSix = false
@@ -593,7 +625,7 @@ local function gameTutorial()
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
         infoPointer.x = display.contentCenterX - 395
         infoPointer.y = display.contentHeight - 350
-        transition.to( infoPointer, { time=2900,
+        transition.to( infoPointer, { tag="animationPause", time=2900,
           onComplete = function()
             passTutorialText = true
             startTextSeven = false
@@ -697,6 +729,23 @@ function scene:create( event )
   widget = require("widget")
 
   -- Load gamepad start
+  pauseButton = widget.newButton( {
+    -- The id can be used to tell you what button was pressed in your button event
+    id = "pauseButton",
+    -- Size of the button
+    width = 130,
+    height = 150,
+    -- This is the default button image
+    defaultFile = "assets/img/pause-menu-button.png",
+    -- This is the pressed button image
+    overFile = "assets/img/pause-menu-button-pressed.png",
+    -- Position of the button
+    left = display.contentCenterX - 70,
+    top = 520,
+    -- This tells it what function to call when you press the button
+    onPress = pauseMenu
+  } )
+
   punchButton = widget.newButton( {
     -- The id can be used to tell you what button was pressed in your button event
     id = "punchButton",
@@ -747,11 +796,13 @@ function scene:create( event )
     onEvent = moveLeft
   } )
 
+  pauseButton.alpha = alpha;
   punchButton.alpha = alpha;
   jumpButton.alpha = alpha;
   moveLeftButton.alpha = alpha;
   moveRightButton.alpha = alpha;
 
+  uiGroup:insert( pauseButton )
   uiGroup:insert( punchButton )
   uiGroup:insert( jumpButton )
   uiGroup:insert( moveLeftButton )
@@ -791,9 +842,11 @@ function scene:hide( event )
 
   if ( phase == "will" ) then
     -- Code here runs when the scene is on screen (but is about to go off screen)
-    timer.cancel( gameLoopTimer )
-    timer.cancel( nTsAttackLoopTimer )
-    timer.cancel( nucleumsFactoryLoopTimer )
+    if( stillInTutorial == false ) then
+      timer.cancel( gameLoopTimer )
+      timer.cancel( nTsAttackLoopTimer )
+      timer.cancel( nucleumsFactoryLoopTimer )
+    end
     -- Stop the music!
     audio.stop( 1 )
     display.remove(backGroup)

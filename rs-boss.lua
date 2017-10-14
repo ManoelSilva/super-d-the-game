@@ -2,6 +2,20 @@ local composer = require( "composer" )
 
 local scene = composer.newScene()
 
+local isMainCellFirstHit = false
+
+function scene:resumeGame()
+  physics.start()
+  transition.resume( "animationPause" )
+  timer.resume( bossMovimentantionLoopTimer )
+  timer.resume( bossStopAttackLoopTimer )
+  timer.resume( nucleumsFactoryLoopTimer )
+  if( isMainCellFirstHit == true ) then
+    timer.resume( gameLoopTimer )
+    timer.resume( nTsAttackLoopTimer )
+  end
+end
+
 -- Reserve channel 1 for background music
 audio.reserveChannels( 1 )
 -- Reduce the overall volume of the channel
@@ -44,7 +58,6 @@ local isBossAttacking = false
 local isBossTakingDamage = false
 local mainCell
 local isMainCellAlive = true
-local isMainCellFirstHit = false
 local nT
 local nTtableRight = {}
 local nTtableLeft = {}
@@ -58,6 +71,7 @@ local points = 0
 local ground
 local platform
 local widget
+local pauseButton
 local punchButton
 local jumpButton
 local moveRightButton
@@ -66,7 +80,7 @@ local died = false
 local lives = 12
 local lifeBarScale = 0.3
 local nTsBarScale = 0.1
-local alpha = 0.8
+local alpha = 0.6
 
 -- Sound settings
 local musicTrack = audio.loadStream( "assets/audio/youCantHide.mp3" )
@@ -80,6 +94,26 @@ local inputText = native.newFont( "Starjedi.ttf" )
 local backGroup
 local mainGroup
 local uiGroup
+
+local function pauseMenu()
+  -- Pause game
+  physics.pause()
+  transition.pause("animationPause")
+  timer.pause( bossMovimentantionLoopTimer )
+  timer.pause( bossStopAttackLoopTimer )
+  timer.pause( nucleumsFactoryLoopTimer )
+  if( isMainCellFirstHit == true ) then
+    timer.pause( gameLoopTimer )
+    timer.pause( nTsAttackLoopTimer )
+  end
+
+  local options = {
+    isModal = true,
+    effect = "fade",
+    time = 100,
+  }
+  composer.showOverlay( "pause-menu", options )
+end
 
 local function punch()
   audio.play( punchTrack )
@@ -222,14 +256,14 @@ local function takeDamage( isPunchHit, isBossHit )
 end
 
 local function restoreSuperD()
-  if( died == false ) then
+  if( died == false and superD ~= nil ) then
     superD:setLinearVelocity( 0,0 )
     superD.isBodyActive = false
 
     -- Fade in SuperD
-    transition.to( superD, { alpha=1, time=225,
+    transition.to( superD, { tag="animationPause", alpha=1, time=225,
       onComplete = function()
-        if( died == false ) then
+        if( died == false and superD ~= nil ) then
           superD.isBodyActive = true
           punchButton:setEnabled( true )
           jumpButton:setEnabled( true )
@@ -266,7 +300,7 @@ end
 local function removeNucleumUsed( nucleum )
   for i = #nucleumTable, 1, -1 do
     if ( nucleumTable[i] == nucleum ) then
-      transition.to( nucleumTable[i], { alpha=1, time=2000,
+      transition.to( nucleumTable[i], { tag="animationPause", alpha=1, time=2000,
         onComplete = function()
           display.remove( nucleum )
         end
@@ -385,11 +419,11 @@ local function bossMoveRight( timeToMove )
       end
       timer.performWithDelay( timeToMove, function()
         if boss ~= nil then
-          transition.to( boss, { time=timeToMove, x=( display.contentWidth-150 ),
+          transition.to( boss, { tag="animationPause", time=timeToMove, x=( display.contentWidth-150 ),
             onComplete = function()
               if boss ~= nil then
                 if( died == false ) then
-                  bossStopMovement()
+                  --bossStopMovement()
                   bossMovingLeft = true
                 end
               end
@@ -410,11 +444,11 @@ local function bossMoveLeft()
       end
       bossMovingLeft = true
       timer.performWithDelay( timeToMove, function()
-        transition.to( boss, { time=timeToMove, x=( display.contentWidth-450 ),
+        transition.to( boss, { tag="animationPause", time=timeToMove, x=( display.contentWidth-450 ),
           onComplete = function()
             if boss ~= nil then
               if died == false and isBossTakingDamage == false then
-                bossStopMovement()
+                --bossStopMovement()
                 bossMovingLeft = false
                 bossMoveRight( timeToMove )
               end
@@ -443,7 +477,7 @@ end
 local function bossAttack()
   if( boss ~= nil ) then
     if( isBossAttacking == false and isBossTakingDamage == false ) then
-      bossStopMovement()
+      --bossStopMovement()
       boss:setSequence( "attackLeft" )
       boss:play()
       isBossAttacking = true
@@ -473,10 +507,10 @@ end
 
 local function moveMainCellAfterBossDeath()
   timer.performWithDelay( 1, function()
-    transition.to( mainCell, { time=4000, x=( display.contentCenterX + 100 ),
+    transition.to( mainCell, { tag="animationPause", time=4000, x=( display.contentCenterX + 100 ),
       onComplete = function()
         if mainCell ~= nil then
-          transition.to( mainCell, { time=4000, y=( display.contentHeight - 560 ),
+          transition.to( mainCell, { tag="animationPause", time=4000, y=( display.contentHeight - 560 ),
             onComplete = function()
               if mainCell ~= nil then
                 mainCell.alpha = 1
@@ -502,7 +536,7 @@ local function restoreBoss()
     boss.isBodyActive = false
 
     -- Fade in Boss
-    transition.to( boss, { alpha=1, time=500,
+    transition.to( boss, { tag="animationPause", alpha=1, time=500,
       onComplete = function()
         if( boss ~= nil and died == false ) then
           -- Tests
@@ -575,7 +609,7 @@ local function restoreMainCell()
     mainCell.isBodyActive = false
 
     -- Fade in Main Cell
-    transition.to( mainCell, { alpha=1, time=500,
+    transition.to( mainCell, { tag="animationPause", alpha=1, time=500,
       onComplete = function()
         if( mainCell ~= nil ) then
           -- Tests
@@ -892,6 +926,23 @@ function scene:show( event )
     widget = require("widget")
 
     -- Load gamepad start
+    pauseButton = widget.newButton( {
+      -- The id can be used to tell you what button was pressed in your button event
+      id = "pauseButton",
+      -- Size of the button
+      width = 130,
+      height = 150,
+      -- This is the default button image
+      defaultFile = "assets/img/pause-menu-button.png",
+      -- This is the pressed button image
+      overFile = "assets/img/pause-menu-button-pressed.png",
+      -- Position of the button
+      left = display.contentCenterX - 70,
+      top = 520,
+      -- This tells it what function to call when you press the button
+      onPress = pauseMenu
+    } )
+
     punchButton = widget.newButton( {
       -- The id can be used to tell you what button was pressed in your button event
       id = "punchButton",
@@ -941,12 +992,14 @@ function scene:show( event )
       top = 520,
       onEvent = moveLeft
     } )
-
+    
+    pauseButton.alpha = alpha;
     punchButton.alpha = alpha;
     jumpButton.alpha = alpha;
     moveLeftButton.alpha = alpha;
     moveRightButton.alpha = alpha;
 
+    uiGroup:insert( pauseButton )
     uiGroup:insert( punchButton )
     uiGroup:insert( jumpButton )
     uiGroup:insert( moveLeftButton )
@@ -976,11 +1029,11 @@ function scene:hide( event )
     display.remove(backGroup)
     display.remove(mainGroup)
     display.remove(uiGroup)
-
+    boss = nil
+    Runtime:removeEventListener( "enterFrame", bossStartAttackRange )
   elseif ( phase == "did" ) then
     -- Code here runs immediately after the scene goes entirely off screen
     Runtime:removeEventListener( "collision", onCollision )
-    Runtime:removeEventListener( "enterFrame", bossStartAttackRange )
     physics.pause()
     composer.removeScene( "rs-boss" )
   end

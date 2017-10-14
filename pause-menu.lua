@@ -26,7 +26,7 @@ end
 
 local function goResumeGame()
   audio.play( selected )
-  composer.hideOverlay( "fade", 400 )
+  composer.hideOverlay( "fade", 100 )
 end
 
 -- create()

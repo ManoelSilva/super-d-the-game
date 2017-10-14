@@ -3,10 +3,8 @@ local composer = require( "composer" )
 local scene = composer.newScene()
 
 function scene:resumeGame()
-  print( "Entrei resumeGame" )
-
   physics.start()
-  transition.resume("animationPause")
+  transition.resume( "animationPause" )
   timer.resume( gameLoopTimer )
   timer.resume( nTsAttackLoopTimer )
   timer.resume( nucleumsFactoryLoopTimer )
@@ -94,7 +92,7 @@ local function pauseMenu()
   local options = {
     isModal = true,
     effect = "fade",
-    time = 400,
+    time = 100,
   }
   composer.showOverlay( "pause-menu", options )
 end
@@ -236,14 +234,14 @@ local function takeDamage( isPunchHit )
 end
 
 local function restoreSuperD()
-  if( died == false ) then
+  if( died == false and superD ~= nil ) then
     superD:setLinearVelocity( 0,0 )
     superD.isBodyActive = false
 
     -- Fade in SuperD
     transition.to( superD, { tag="animationPause", alpha=1, time=225,
       onComplete = function()
-        if( died == false ) then
+        if( died == false and superD ~= nil ) then
           superD.isBodyActive = true
           punchButton:setEnabled( true )
           jumpButton:setEnabled( true )

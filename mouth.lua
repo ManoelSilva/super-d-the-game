@@ -6,6 +6,7 @@ function scene:resumeGame()
   print( "Entrei resumeGame" )
 
   physics.start()
+  transition.resume("animationPause")
   timer.resume( gameLoopTimer )
   timer.resume( nTsAttackLoopTimer )
   timer.resume( nucleumsFactoryLoopTimer )
@@ -67,7 +68,7 @@ local died = false
 local lives = 12
 local lifeBarScale = 0.3
 local nTsBarScale = 0.1
-local alpha = 0.8
+local alpha = 0.6
 --local offsetSuperDParams = { 0,-37, 37,-10, 23,34, -23,34, -37,-10 }
 -- Sound settings
 local musicTrack = audio.loadStream( "assets/audio/youCantHide.mp3" )
@@ -85,6 +86,7 @@ local uiGroup
 local function pauseMenu()
   -- Pause game
   physics.pause()
+  transition.pause("animationPause")
   timer.pause( gameLoopTimer )
   timer.pause( nTsAttackLoopTimer )
   timer.pause( nucleumsFactoryLoopTimer )
@@ -239,7 +241,7 @@ local function restoreSuperD()
     superD.isBodyActive = false
 
     -- Fade in SuperD
-    transition.to( superD, { alpha=1, time=225,
+    transition.to( superD, { tag="animationPause", alpha=1, time=225,
       onComplete = function()
         if( died == false ) then
           superD.isBodyActive = true
@@ -278,7 +280,7 @@ end
 local function removeNucleumUsed( nucleum )
   for i = #nucleumTable, 1, -1 do
     if ( nucleumTable[i] == nucleum ) then
-      transition.to( nucleumTable[i], { alpha=1, time=2000,
+      transition.to( nucleumTable[i], { tag="animationPause", alpha=1, time=2000,
         onComplete = function()
           display.remove( nucleum )
         end
@@ -554,15 +556,15 @@ function scene:show( event )
       -- The id can be used to tell you what button was pressed in your button event
       id = "pauseButton",
       -- Size of the button
-      width = 71,
-      height = 65,
+      width = 130,
+      height = 150,
       -- This is the default button image
       defaultFile = "assets/img/pause-menu-button.png",
       -- This is the pressed button image
       overFile = "assets/img/pause-menu-button-pressed.png",
       -- Position of the button
-      left = display.contentCenterX,
-      top = 100,
+      left = display.contentCenterX - 70,
+      top = 520,
       -- This tells it what function to call when you press the button
       onPress = pauseMenu
     } )

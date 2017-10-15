@@ -1030,10 +1030,10 @@ function scene:hide( event )
     display.remove(mainGroup)
     display.remove(uiGroup)
     boss = nil
-    Runtime:removeEventListener( "enterFrame", bossStartAttackRange )
   elseif ( phase == "did" ) then
     -- Code here runs immediately after the scene goes entirely off screen
     Runtime:removeEventListener( "collision", onCollision )
+    Runtime:removeEventListener( "enterFrame", bossStartAttackRange )
     physics.pause()
     composer.removeScene( "rs-boss" )
   end

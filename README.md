@@ -1,7 +1,7 @@
 # Super Disease - The Game
 
 ## Actual Version
-	0.7
+	0.9
 
 ## Game name
  	Super Disease.
@@ -25,6 +25,13 @@
 ```
 	Each level represent a human system, divided in two or three sublevels. For this project,
 	the game will try to reproduce respiratory, digestive and nervous systems.
+```
+
+* Ranking System
+```
+	Passing sublevels with all points of life ranks the player with 3 stars. Passing with
+	a pontuation less than 12 or more/equals to 8 points of life will rank 2 stars. Passing
+	with less than 8 points of life will rank 1 star. 
 ```
 
 ## Specific objectives
@@ -117,3 +124,8 @@
 		Ranking system complete.
 	**0.7**
 		Lung sublevel complete.
+	**0.9**
+		Boss sublevel complete.
+		Pause menu features add.
+		Cores of lifes give 4 points of life and appears only 3 times now.
+		New ranking system.

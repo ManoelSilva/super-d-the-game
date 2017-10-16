@@ -15,7 +15,7 @@ local playerConfigDataTable = {}
 local scene = composer.newScene()
 
 -- Load Font
-  local inputText = native.newFont( "Starjedi.ttf" )
+local inputText = native.newFont( "Starjedi.ttf" )
 
 -- Menu music
 local soundTextEntity
@@ -56,8 +56,23 @@ local function setSoundOnOrOff()
   playerConfigDataTable = loadsave.loadTable( "playerConfig.json" )
 
   if( playerConfigDataTable ~= nil ) then
-    if( playerConfigDataTable.isSoundOn == false ) then
+    if( playerConfigDataTable.isSoundOn == true ) then
+      playerConfigDataTable.isSoundOn = false
+      audio.setVolume( 0.0, { channel=0 } )
 
+      display.remove( soundTextEntity )
+      local soundText = "Sound: off"
+      soundTextEntity = display.newText( soundText, display.contentCenterX, display.contentHeight - 350, inputText, 40 )
+      soundTextEntity:setFillColor( 255, 255, 0 )
+    else
+      playerConfigDataTable.isSoundOn = true
+      audio.setVolume( 1, { channel=0 } )
+      audio.setVolume( 0.5, { channel=1 } )
+      
+      display.remove( soundTextEntity )
+      local soundText = "Sound: on"
+      soundTextEntity = display.newText( soundText, display.contentCenterX, display.contentHeight - 350, inputText, 40 )
+      soundTextEntity:setFillColor( 255, 255, 0 )
     end
 
     loadsave.saveTable( playerConfigDataTable, "playerConfig.json" )
@@ -70,7 +85,7 @@ local function setSoundOnOrOff()
     local soundText = "Sound: off"
     soundTextEntity = display.newText( soundText, display.contentCenterX, display.contentHeight - 350, inputText, 40 )
     soundTextEntity:setFillColor( 255, 255, 0 )
-    
+
     loadsave.saveTable( playerConfigDataTable, "playerConfig.json" )
   end
 end

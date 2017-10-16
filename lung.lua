@@ -10,19 +10,33 @@ function scene:resumeGame()
   timer.resume( nucleumsFactoryLoopTimer )
 end
 
+-- Initialize data lib
+local loadsave
+loadsave = require( "loadsave" )
+
+local playerConfigDataTable = {}
+
 -- Reserve channel 1 for background music
 audio.reserveChannels( 1 )
--- Reduce the overall volume of the channel
-audio.setVolume( 0.5, { channel=1 } )
+
+playerConfigDataTable = loadsave.loadTable( "playerConfig.json" )
+if( playerConfigDataTable ~= nil ) then
+  if( playerConfigDataTable.isSoundOn ) then
+    -- Reduce the overall volume of the channel
+    audio.setVolume( 1, { channel=0 } )
+    audio.setVolume( 0.5, { channel=1 } )
+  else
+    audio.setVolume( 0.0, { channel=0 } )
+  end
+else
+  -- Reduce the overall volume of the channel
+  audio.setVolume( 0.5, { channel=1 } )
+end
 
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
 -- -----------------------------------------------------------------------------------
-
--- Initialize player data lib
-local loadsave
-loadsave = require( "loadsave" )
 
 -- Initialize physics
 local physics
@@ -605,7 +619,7 @@ function scene:show( event )
       -- This tells it what function to call when you press the button
       onPress = pauseMenu
     } )
-    
+
     punchButton = widget.newButton( {
       -- The id can be used to tell you what button was pressed in your button event
       id = "punchButton",
@@ -655,13 +669,13 @@ function scene:show( event )
       top = 520,
       onEvent = moveLeft
     } )
-    
+
     pauseButton.alpha = alpha;
     punchButton.alpha = alpha;
     jumpButton.alpha = alpha;
     moveLeftButton.alpha = alpha;
     moveRightButton.alpha = alpha;
-  
+
     uiGroup:insert( pauseButton )
     uiGroup:insert( punchButton )
     uiGroup:insert( jumpButton )

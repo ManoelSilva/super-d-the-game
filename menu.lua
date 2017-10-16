@@ -9,10 +9,28 @@ local composer = require( "composer" )
 -- Creates a variable that holds a Composer scene object
 local scene = composer.newScene()
 
+-- Initialize data lib
+local loadsave
+loadsave = require( "loadsave" )
+
+local playerConfigDataTable = {}
+
 -- Reserve channel 1 for background music
 audio.reserveChannels( 1 )
--- Reduce the overall volume of the channel
-audio.setVolume( 0.5, { channel=1 } )
+
+playerConfigDataTable = loadsave.loadTable( "playerConfig.json" )
+if( playerConfigDataTable ~= nil ) then
+  if( playerConfigDataTable.isSoundOn ) then
+    -- Reduce the overall volume of the channel
+    audio.setVolume( 1, { channel=0 } )
+    audio.setVolume( 0.5, { channel=1 } )
+  else
+    audio.setVolume( 0.0, { channel=0 } )
+  end
+else
+  -- Reduce the overall volume of the channel
+  audio.setVolume( 0.5, { channel=1 } )
+end
 
 -- Menu music
 local musicTrack = audio.loadStream( "assets/audio/hollywood.mp3" )
@@ -125,10 +143,10 @@ function scene:hide( event )
   local phase = event.phase
 
   if ( phase == "will" ) then
-    -- Code here runs when the scene is on screen (but is about to go off screen)
+  -- Code here runs when the scene is on screen (but is about to go off screen)
 
   elseif ( phase == "did" ) then
-    -- Code here runs immediately after the scene goes entirely off screen
+  -- Code here runs immediately after the scene goes entirely off screen
   end
 end
 

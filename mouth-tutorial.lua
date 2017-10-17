@@ -402,7 +402,7 @@ local function onCollision( event )
         if( nTsNumber > 0 ) then
           display.remove( nTsLeft )
           display.remove( pontuation )
-          nTsLeft = display.newText( uiGroup, nTsNumber, display.contentCenterX + 370, display.contentHeight - 640, inputText, 40 )
+          nTsLeft = display.newText( uiGroup, nTsNumber, display.contentCenterX + 378, display.contentHeight - 640, inputText, 40 )
           nTsLeft:setFillColor( 255, 255, 0 )
           pontuation = display.newText( uiGroup, points, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
           pontuation:setFillColor( 255, 255, 0 )
@@ -529,6 +529,7 @@ local function gameTutorial()
     display.remove( tutorialTextBox )
     display.remove( passText )
     display.remove( passTutorialButton )
+    passText = nil
     afterGameTutorial()
   end )
 
@@ -546,7 +547,9 @@ local function gameTutorial()
         startTextThree = false
         animationOne = true
       elseif( animationOne == true ) then
-        passText:toBack()
+        if passText ~= nil then
+          passText:toBack()
+        end
         contentText = "Jump for example."
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
         infoPointer.x = display.contentCenterX + 450
@@ -560,11 +563,15 @@ local function gameTutorial()
             passTutorialText = true
             animationOne = false
             animationTwo = true
-            passText:toFront()
+            if passText ~= nil then
+              passText:toFront()
+            end
           end
         } )
       elseif( animationTwo == true ) then
-        passText:toBack()
+        if passText ~= nil then
+          passText:toBack()
+        end
         contentText = "Move arround fast!"
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
         infoPointer.x = display.contentCenterX - 395
@@ -588,13 +595,17 @@ local function gameTutorial()
                 passTutorialText = true
                 animationTwo = false
                 animationThree = true
-                passText:toFront()
+                if passText ~= nil then
+                  passText:toFront()
+                end
               end
             } )
           end
         } )
       elseif( animationThree == true ) then
-        passText:toBack()
+        if passText ~= nil then
+          passText:toBack()
+        end
         passTutorialText = false
         contentText = "And your strongest weapon, your boxing glove!!!"
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
@@ -608,11 +619,15 @@ local function gameTutorial()
             animationThree = false
             startTextFour = true
             display.remove( infoPointer )
-            passText:toFront()
+            if passText ~= nil then
+              passText:toFront()
+            end
           end
         } )
       elseif( startTextFour == true ) then
-        passText:toBack()
+        if passText ~= nil then
+          passText:toBack()
+        end
         passTutorialText = false
         contentText = "This is your life bar"
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-up.png", 50, 57);
@@ -624,11 +639,15 @@ local function gameTutorial()
             startTextFour = false
             startTextFive = true
             display.remove( infoPointer )
-            passText:toFront()
+            if passText ~= nil then
+              passText:toFront()
+            end
           end
         } )
       elseif( startTextFive == true ) then
-        passText:toBack()
+        if passText ~= nil then
+          passText:toBack()
+        end
         passTutorialText = false
         contentText = "The counter that shows how many N-Ts you have to kill to go to another sub-level or level"
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-up.png", 50, 57);
@@ -640,11 +659,15 @@ local function gameTutorial()
             startTextFive = false
             startTextSix = true
             display.remove( infoPointer )
-            passText:toFront()
+            if passText ~= nil then
+              passText:toFront()
+            end
           end
         } )
       elseif( startTextSix == true ) then
-        passText:toBack()
+        if passText ~= nil then
+          passText:toBack()
+        end
         passTutorialText = false
         contentText = "The counter that shows how many N-Ts you have already killed"
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-up.png", 50, 57);
@@ -656,11 +679,15 @@ local function gameTutorial()
             startTextSix = false
             startTextSeven = true
             display.remove( infoPointer )
-            passText:toFront()
+            if passText ~= nil then
+              passText:toFront()
+            end
           end
         } )
       elseif( startTextSeven == true ) then
-        passText:toBack()
+        if passText ~= nil then
+          passText:toBack()
+        end
         passTutorialText = false
         contentText = "This is a core of life that will increase one point of life, if you need it. it appears four times randomly."
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
@@ -672,7 +699,9 @@ local function gameTutorial()
             startTextSeven = false
             startTextEight = true
             display.remove( infoPointer )
-            passText:toFront()
+            if passText ~= nil then
+              passText:toFront()
+            end
           end
         } )
       elseif( startTextEight == true ) then
@@ -868,7 +897,7 @@ function scene:show( event )
     audio.play( musicTrack, { channel=1, loops=-1 } )
     physics.start()
     nTsNumber = math.random( 40, 60 )
-    nTsLeft = display.newText( uiGroup, nTsNumber, display.contentCenterX + 370, display.contentHeight - 640, inputText, 40 )
+    nTsLeft = display.newText( uiGroup, nTsNumber, display.contentCenterX + 378, display.contentHeight - 640, inputText, 40 )
     nTsLeft:setFillColor( 255, 255, 0 )
     pontuation = display.newText( uiGroup, points, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
     pontuation:setFillColor( 255, 255, 0 )

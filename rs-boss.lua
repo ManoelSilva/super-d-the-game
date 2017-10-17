@@ -618,7 +618,7 @@ local function afterMainCellDeath()
 end
 
 local function restoreMainCell()
-  if( mainCell ~= false ) then
+  if( mainCell ~= nil ) then
     mainCell:setLinearVelocity( 0,0 )
     mainCell.isBodyActive = false
 

@@ -1,9 +1,9 @@
 local composer = require( "composer" )
 
 local scene = composer.newScene()
-  
-local stillInTutorial = true 
-  
+
+local stillInTutorial = true
+
 function scene:resumeGame()
   physics.start()
   transition.resume( "animationPause" )
@@ -499,7 +499,7 @@ local function gameTutorial()
   tutorialTextBox.strokeWidth = 1
 
   -- Load pass text button
-  local passText = display.newImageRect(mainGroup, "assets/img/arrow-right.png", 30, 26);
+  local passText = display.newImageRect( backGroup, "assets/img/arrow-right.png", 30, 26 )
   passText.x = display.contentCenterX + 160
   passText.y = display.contentHeight - 415
 
@@ -518,6 +518,20 @@ local function gameTutorial()
   local contentTextEntity = display.newText( backGroup, contentTextOne, display.contentCenterX+05, display.contentHeight-505, 300, 0, inputText, 20 )
   contentTextEntity:setFillColor( 1, 1, 0 )
 
+  -- Load pass tutorial button
+  local passTutorialButtonText = "Pass Tutorial"
+  local passTutorialButton = display.newText( mainGroup, passTutorialButtonText, display.contentCenterX-100, display.contentHeight-400, inputText, 20 )
+  passTutorialButton:setFillColor( 1, 1, 0 )
+
+  passTutorialButton:addEventListener( "tap", function( event )
+    endTutorial = true
+    display.remove( contentTextEntity )
+    display.remove( tutorialTextBox )
+    display.remove( passText )
+    display.remove( passTutorialButton )
+    afterGameTutorial()
+  end )
+
   passText:addEventListener( "tap", function( event )
     local contentText
     local infoPointer
@@ -532,6 +546,7 @@ local function gameTutorial()
         startTextThree = false
         animationOne = true
       elseif( animationOne == true ) then
+        passText:toBack()
         contentText = "Jump for example."
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
         infoPointer.x = display.contentCenterX + 450
@@ -545,9 +560,11 @@ local function gameTutorial()
             passTutorialText = true
             animationOne = false
             animationTwo = true
+            passText:toFront()
           end
         } )
       elseif( animationTwo == true ) then
+        passText:toBack()
         contentText = "Move arround fast!"
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
         infoPointer.x = display.contentCenterX - 395
@@ -571,11 +588,13 @@ local function gameTutorial()
                 passTutorialText = true
                 animationTwo = false
                 animationThree = true
+                passText:toFront()
               end
             } )
           end
         } )
       elseif( animationThree == true ) then
+        passText:toBack()
         passTutorialText = false
         contentText = "And your strongest weapon, your boxing glove!!!"
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
@@ -589,9 +608,11 @@ local function gameTutorial()
             animationThree = false
             startTextFour = true
             display.remove( infoPointer )
+            passText:toFront()
           end
         } )
       elseif( startTextFour == true ) then
+        passText:toBack()
         passTutorialText = false
         contentText = "This is your life bar"
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-up.png", 50, 57);
@@ -603,9 +624,11 @@ local function gameTutorial()
             startTextFour = false
             startTextFive = true
             display.remove( infoPointer )
+            passText:toFront()
           end
         } )
       elseif( startTextFive == true ) then
+        passText:toBack()
         passTutorialText = false
         contentText = "The counter that shows how many N-Ts you have to kill to go to another sub-level or level"
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-up.png", 50, 57);
@@ -617,9 +640,11 @@ local function gameTutorial()
             startTextFive = false
             startTextSix = true
             display.remove( infoPointer )
+            passText:toFront()
           end
         } )
       elseif( startTextSix == true ) then
+        passText:toBack()
         passTutorialText = false
         contentText = "The counter that shows how many N-Ts you have already killed"
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-up.png", 50, 57);
@@ -631,9 +656,11 @@ local function gameTutorial()
             startTextSix = false
             startTextSeven = true
             display.remove( infoPointer )
+            passText:toFront()
           end
         } )
       elseif( startTextSeven == true ) then
+        passText:toBack()
         passTutorialText = false
         contentText = "This is a core of life that will increase one point of life, if you need it. it appears four times randomly."
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
@@ -645,6 +672,7 @@ local function gameTutorial()
             startTextSeven = false
             startTextEight = true
             display.remove( infoPointer )
+            passText:toFront()
           end
         } )
       elseif( startTextEight == true ) then
@@ -658,6 +686,7 @@ local function gameTutorial()
         display.remove( contentTextEntity )
         display.remove( tutorialTextBox )
         display.remove( passText )
+        display.remove( passTutorialButton )
         afterGameTutorial()
       end
       if( endTutorial == false ) then

@@ -29,6 +29,7 @@ local starThree
 
 local function goBacktoMenu()
   audio.play( selected )
+  transition.cancel()
   composer.gotoScene( "menu", { time=800, effect="crossFade" } )
 end
 
@@ -40,6 +41,7 @@ end
 local function goTryAgain()
   audio.play( selected )
   isResume = false
+  transition.cancel()
   composer.gotoScene( "try-again" )
 end
 

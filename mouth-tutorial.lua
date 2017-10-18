@@ -102,10 +102,13 @@ local function pauseMenu()
   -- Pause game
   physics.pause()
   transition.pause("animationPause")
-  timer.pause( gameLoopTimer )
-  timer.pause( nTsAttackLoopTimer )
-  timer.pause( nucleumsFactoryLoopTimer )
-
+  
+  if( stillInTutorial == false ) then
+    timer.pause( gameLoopTimer )
+    timer.pause( nTsAttackLoopTimer )
+    timer.pause( nucleumsFactoryLoopTimer )
+  end
+  
   local options = {
     isModal = true,
     effect = "fade",

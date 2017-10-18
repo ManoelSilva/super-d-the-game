@@ -113,8 +113,10 @@ local function pauseMenu()
   -- Pause game
   physics.pause()
   transition.pause("animationPause")
-  timer.pause( gameLoopTimer )
-  timer.pause( nTsAttackLoopTimer )
+  if( isMainCellFirstHit == true ) then
+    timer.pause( gameLoopTimer )
+    timer.pause( nTsAttackLoopTimer )
+  end
   timer.pause( nucleumsFactoryLoopTimer )
 
   local options = {
@@ -455,7 +457,7 @@ local function bossMoveLeft()
       end
       bossMovingLeft = true
       timer.performWithDelay( timeToMove, function()
-        transition.to( boss, { tag="animationPause", time=timeToMove, x=( display.contentWidth-450 ),
+        transition.to( boss, { tag="animationPause", time=timeToMove, x=( display.contentWidth-math.random(570, 620) ),
           onComplete = function()
             if boss ~= nil then
               if died == false and isBossTakingDamage == false then
@@ -501,7 +503,7 @@ local function bossStartAttackRange()
     if( died == false and isBossTakingDamage == false ) then
       superDxReference = superDxPosition
       local bossAndSuperDdistance = boss.x - superDxReference
-      if bossAndSuperDdistance <= 450 or bossAndSuperDdistance <= -450 then
+      if bossAndSuperDdistance <= 460 or bossAndSuperDdistance <= -460 then
         bossAttack()
       end
     end
@@ -756,6 +758,20 @@ local function onCollision( event )
         takeDamage( false, true )
         superD.alpha = 0.5
         timer.performWithDelay( 600, restoreSuperD )
+      elseif( boss.sequence == "static" and ( superD.sequence == "movingRight" or superD.sequence == "movingLeft" or superD.sequence == "static" ) ) then
+        if( ( superD.sequence == "static" and superD.frame == 2 ) or
+          superD.sequence == "movingRight" or superD.sequence == "attackRight" ) then
+          superD:setSequence( "superDtakingDamage" )
+          superD:setFrame(1)
+        else
+          superD:setSequence( "superDtakingDamage" )
+          superD:setFrame(2)
+        end
+
+        takeDamage( false, false )
+        superD.alpha = 0.5
+        timer.performWithDelay( 600, restoreSuperD )
+
       end
     end
 

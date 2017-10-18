@@ -107,6 +107,7 @@ local function pauseMenu()
     isModal = true,
     effect = "fade",
     time = 100,
+    params = { currentLifePoints = lives }
   }
   composer.showOverlay( "pause-menu", options )
 end
@@ -654,6 +655,7 @@ function scene:hide( event )
 
   if ( phase == "will" ) then
     -- Code here runs when the scene is on screen (but is about to go off screen)
+    transition.cancel( "animationPause" )
     timer.cancel( gameLoopTimer )
     timer.cancel( nTsAttackLoopTimer )
     timer.cancel( nucleumsFactoryLoopTimer )

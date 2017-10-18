@@ -155,11 +155,11 @@ function scene:create( event )
   background.x = display.contentCenterX
   background.y = display.contentCenterY
 
-  -- Load Respiratory System text
+  --[[ Load Respiratory System text
   respiratorySystemText = "Respiratory System"
   respiratorySystemTextEntity = display.newText( uiGroup, respiratorySystemText, display.contentCenterX, display.contentHeight - 550, inputText, 40 )
   respiratorySystemTextEntity:setFillColor( 255, 255, 0 )
-
+  ]]
   -- Load mouth text
   mouthText = "Mouth"
   mouthTextEntity = display.newText( uiGroup, mouthText, display.contentCenterX - 300, display.contentHeight - 290, inputText, 40 )
@@ -208,7 +208,7 @@ function scene:create( event )
   padLockTwo.y = display.contentCenterY
 
   padLockThree = display.newImageRect( uiGroup, "assets/img/pad-lock.png", 50, 72 )
-  padLockThree.x = display.contentCenterX + 436
+  padLockThree.x = display.contentCenterX + 452
   padLockThree.y = display.contentCenterY + 200
 
   backToMenuButton = widget.newButton( {
@@ -226,9 +226,9 @@ function scene:create( event )
     id = "passLevelButton",
     width = 100,
     height = 150,
-    defaultFile = "assets/img/move-right-button.png",
-    overFile = "assets/img/move-right-button-pressed.png",
-    left = 900,
+    defaultFile = "assets/img/movie-button.png",
+    overFile = "assets/img/movie-button-pressed.png",
+    left = 915,
     top = 520,
     onEvent = goToNextLevel
   } )

@@ -108,6 +108,7 @@ local function pauseMenu()
     isModal = true,
     effect = "fade",
     time = 100,
+    params = { currentLifePoints = lives }
   }
   composer.showOverlay( "pause-menu", options )
 end

@@ -102,16 +102,15 @@ local function pauseMenu()
   -- Pause game
   physics.pause()
   transition.pause("animationPause")
-  if( stillInTutorial == false ) then
-    timer.pause( gameLoopTimer )
-    timer.pause( nTsAttackLoopTimer )
-    timer.pause( nucleumsFactoryLoopTimer )
-  end
+  timer.pause( gameLoopTimer )
+  timer.pause( nTsAttackLoopTimer )
+  timer.pause( nucleumsFactoryLoopTimer )
 
   local options = {
     isModal = true,
     effect = "fade",
     time = 100,
+    params = { currentLifePoints = lives }
   }
   composer.showOverlay( "pause-menu", options )
 end

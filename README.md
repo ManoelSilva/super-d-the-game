@@ -23,13 +23,12 @@
 
 * Levels
 ```
-	Each level represent a human system, divided in two or three sublevels. For this project,
-	the game will try to reproduce respiratory, digestive and nervous systems.
+	Each level represent a human system.
 ```
 
 * Ranking System
 ```
-	Passing sublevels with all points of life ranks the player with 3 stars. Passing with
+	Passing levels with all points of life ranks the player with 3 stars. Passing with
 	a pontuation less than 12 or more/equals to 8 points of life will rank 2 stars. Passing
 	with less than 8 points of life will rank 1 star. 
 ```
@@ -37,21 +36,20 @@
 ## Specific objectives
 	Kill the number necessary of Nts to move to the next level;
 	Kill level's boss to reach main cell;
-	Kill main cell to introduce your own core and dominate body system, obtaining a new power.
+	Kill main cell to introduce your own core and dominate body system.
 
 ## Life system
 	Super D's life is represented by 3 blue circles, splited in four quadrants, who will by placed on the top left 
 	corner of the screen, totalizing 12 points of life.
 
 ## Points system
-	Super Disease game's points system it's quite very simple. In each sublevel, of each level, it will be given a 
+	Super Disease game's points system it's quite very simple. In each level, it will be given a 
 	number of Nts that you must kill. Each Nt dead will increase one point.
 	
 * Points of each level
 ```
-	First level-> Random number of 40-60, increasing initial interval by 5 in each sublevel.
-	Second level-> Random number of 60-80, increasing initial interval by 5 in each sublevel.
-	Third level-> Random number of 80-100, increasing initial interval by 5 in each sublevel.
+	First level-> Random number of 40-60.
+	Second level-> Random number of 45-60.
 ```
 
 ## End of the game
@@ -61,15 +59,14 @@
 ## Special considerations and credits
 	Game developed using Corona®.
 	Game and sprites arts developed by Manoel Silva, me. :) Using Inkscape®,
-	to vectorize my drawings, TexturePacker® and ShoeBox® to generate sprite sheets and sprite map.
+	to vectorize my drawings, ShoeBox® to generate sprite sheets and sprite map.
 	Super Disease arts were inspired in Sonic the Hedgehog, Alex Kid (Sega®) and 
 	Super Mario (Nintendo®).
 	Background image of demo version 0.0.4 was obtained in google images. Unknown creator, all credits given.
 	Sound effects and music credits of demo version 0.0.4 are given to Sega®, Nintendo® and 
 	Vintage Culture (Musics - You Can't Hide, Hollywood).
 	Fonts:
-		http://www.dafont.com/pt/star-jedi.font
-		http://www6.flamingtext.com
+		https://cooltext.com
 
 ## Versions Features
 ```
@@ -123,9 +120,9 @@
 	**0.6**
 		Ranking system complete.
 	**0.7**
-		Lung sublevel complete.
+		Lung level complete.
 	**0.9**
-		Boss sublevel complete.
+		Boss level complete.
 		Pause menu features add.
 		Cores of lifes give 4 points of life and appears only 3 times now.
 		New ranking system.

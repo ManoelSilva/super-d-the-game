@@ -5,6 +5,8 @@ local scene = composer.newScene()
 function scene:resumeGame()
   physics.start()
   transition.resume( "animationPause" )
+  -- Clock
+  timer.resume( timeCounterTimer )
   timer.resume( gameLoopTimer )
   timer.resume( nTsAttackLoopTimer )
   timer.resume( nucleumsFactoryLoopTimer )
@@ -50,6 +52,8 @@ local nTentity = require( "entities.nT" )
 local nucleumEntity = require( "entities.nucleum" )
 
 -- Initialize variables
+local startTime
+local endTime
 local playerDataTable = {}
 local superD
 local nucleum
@@ -99,6 +103,8 @@ local function pauseMenu()
   -- Pause game
   physics.pause()
   transition.pause("animationPause")
+  -- Clock
+  timer.pause( timeCounterTimer )
   timer.pause( gameLoopTimer )
   timer.pause( nTsAttackLoopTimer )
   timer.pause( nucleumsFactoryLoopTimer )
@@ -364,7 +370,14 @@ local function passSubLevel()
   end
 
   loadsave.saveTable( playerDataTable, "playerData.json" )
-  composer.gotoScene( "lung", { time=800, effect="crossFade" } )
+  -- Results
+  timer.pause( timeCounterTimer )
+
+  composer.gotoScene( "results", {
+    time=800, effect="crossFade", params = {
+      lifePoints = lives, time=os.date( "%M:%S", os.time( endTime ) )
+    }
+  } )
 end
 
 local function onCollision( event )
@@ -461,6 +474,13 @@ local function onCollision( event )
   end
 end
 
+-- Clock
+local function timeCounter()
+  if( endTime ~= nil ) then
+    endTime.sec = endTime.sec + 1
+  end
+end
+
 local function gameLoop()
   nTsFactory()
   removeDriftedNts()
@@ -547,16 +567,21 @@ function scene:show( event )
     audio.stop( 1 )
   elseif ( phase == "did" ) then
     -- Code here runs when the scene is entirely on screen
+    -- Clock
+    startTime = os.date( "*t" )
+    endTime = os.date( "*t" )
     system.activate( "multitouch" )
     audio.play( musicTrack, { channel=1, loops=-1 } )
     physics.start()
     --physics.setDrawMode( "hybrid" )
-    nTsNumber = math.random( 40, 60 )
+    nTsNumber = math.random( 2 )
     nTsLeft = display.newText( uiGroup, nTsNumber, display.contentCenterX + 378, display.contentHeight - 640, inputText, 40 )
     nTsLeft:setFillColor( 255, 255, 0 )
     pontuation = display.newText( uiGroup, points, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
     pontuation:setFillColor( 255, 255, 0 )
     Runtime:addEventListener( "collision", onCollision )
+    -- Clock
+    timeCounterTimer = timer.performWithDelay( 1000, timeCounter, 0 )
     gameLoopTimer = timer.performWithDelay( 1200, gameLoop, 0 )
     nucleumsFactoryLoopTimer = timer.performWithDelay( math.random( 60000, 90000 ), nucleumsFactory, 0 )
     nTsAttackLoopTimer = timer.performWithDelay( math.random( 1000, 3000 ), nTsAttack, 0 )
@@ -655,6 +680,8 @@ function scene:hide( event )
 
   if ( phase == "will" ) then
     -- Code here runs when the scene is on screen (but is about to go off screen)
+    -- Clock
+    timer.cancel( timeCounterTimer )
     timer.cancel( gameLoopTimer )
     timer.cancel( nTsAttackLoopTimer )
     timer.cancel( nucleumsFactoryLoopTimer )

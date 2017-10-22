@@ -7,6 +7,8 @@ local isMainCellFirstHit = false
 function scene:resumeGame()
   physics.start()
   transition.resume( "animationPause" )
+  -- Clock
+  timer.resume( timeCounterTimer )
   timer.resume( bossMovimentantionLoopTimer )
   timer.resume( bossStopAttackLoopTimer )
   timer.resume( nucleumsFactoryLoopTimer )
@@ -58,6 +60,8 @@ local nTentity = require( "entities.nT" )
 local nucleumEntity = require( "entities.nucleum" )
 
 -- Initialize variables
+-- Clock
+local endTime = 0
 local playerDataTable = {}
 local superD
 local nucleum
@@ -112,6 +116,8 @@ local uiGroup
 local function pauseMenu()
   -- Pause game
   physics.pause()
+  -- Clock
+  timer.pause( timeCounterTimer )
   transition.pause("animationPause")
   if( isMainCellFirstHit == true ) then
     timer.pause( gameLoopTimer )
@@ -299,7 +305,7 @@ end
 local function nucleumsFactory()
   if( not hasNucleumFull ) then
 
-    if( generatedNucleums < 3 )  then
+    if( generatedNucleums < 9 )  then
       nucleum = nucleumEntity:getNucleum( math.random( -400, 400 ), 270 )
       backGroup:insert( nucleum )
       physics.addBody( nucleum, "static", { isSensor=true } )
@@ -410,6 +416,11 @@ local function nTsAttack()
       nT:play()
     end
   end
+end
+
+-- Clock
+local function timeCounter()
+  endTime = endTime + 1
 end
 
 local function gameLoop()
@@ -589,7 +600,14 @@ local function passSubLevel()
   end
 
   loadsave.saveTable( playerDataTable, "playerData.json" )
-  composer.gotoScene( "menu", { time=800, effect="crossFade" } )
+  -- Results
+  timer.pause( timeCounterTimer )
+
+  composer.gotoScene( "results", {
+    time=800, effect="crossFade", params = {
+      lifePoints = lives, timeEnd = endTime, nucleums = generatedNucleums
+    }
+  } )
 end
 
 local function afterMainCellDeath()
@@ -945,9 +963,11 @@ function scene:show( event )
     enemyLifePoints:setFillColor( 255, 255, 0 )
     Runtime:addEventListener( "collision", onCollision )
     Runtime:addEventListener( "enterFrame", bossStartAttackRange )
+    -- Clock
+    timeCounterTimer = timer.performWithDelay( 1000, timeCounter, 0 )
     nucleumsFactoryLoopTimer = timer.performWithDelay( math.random( 60000, 90000 ), nucleumsFactory, 0 )
     bossStopAttackLoopTimer = timer.performWithDelay( math.random( 500, 800 ), bossStopAttack, 0 )
-    bossMovimentantionLoopTimer = timer.performWithDelay( math.random( 700, 1000 ), bossMovimentantion, 0 )
+    bossMovimentantionLoopTimer = timer.performWithDelay( math.random( 1000, 1200 ), bossMovimentantion, 0 )
 
     -- Initialize widget
     widget = require("widget")
@@ -1047,7 +1067,8 @@ function scene:hide( event )
       timer.cancel( gameLoopTimer )
       timer.cancel( nTsAttackLoopTimer )
     end
-
+    -- Clock
+    timer.cancel( timeCounterTimer )
     timer.cancel( nucleumsFactoryLoopTimer )
     timer.cancel( bossStopAttackLoopTimer )
     timer.cancel( bossMovimentantionLoopTimer )

@@ -5,6 +5,8 @@ local scene = composer.newScene()
 function scene:resumeGame()
   physics.start()
   transition.resume( "animationPause" )
+  -- Clock
+  timer.resume( timeCounterTimer )
   timer.resume( gameLoopTimer )
   timer.resume( nTsAttackLoopTimer )
   timer.resume( nucleumsFactoryLoopTimer )
@@ -50,6 +52,8 @@ local nTentity = require( "entities.nT" )
 local nucleumEntity = require( "entities.nucleum" )
 
 -- Initialize variables
+-- Clock
+local endTime = 0
 local playerDataTable = {}
 local superD
 local nucleum
@@ -100,6 +104,8 @@ local function pauseMenu()
   -- Pause game
   physics.pause()
   transition.pause("animationPause")
+  -- Clock
+  timer.pause( timeCounterTimer )
   timer.pause( gameLoopTimer )
   timer.pause( nTsAttackLoopTimer )
   timer.pause( nucleumsFactoryLoopTimer )
@@ -396,7 +402,14 @@ local function passSubLevel()
   end
 
   loadsave.saveTable( playerDataTable, "playerData.json" )
-  composer.gotoScene( "rs-boss", { time=800, effect="crossFade" } )
+  -- Results
+  timer.pause( timeCounterTimer )
+
+  composer.gotoScene( "results", {
+    time=800, effect="crossFade", params = {
+      lifePoints = lives, timeEnd = endTime, nucleums = generatedNucleums
+    }
+  } )
 end
 
 local function onCollision( event )
@@ -499,6 +512,11 @@ local function onCollision( event )
   end
 end
 
+-- Clock
+local function timeCounter()
+  endTime = endTime + 1
+end
+
 local function gameLoop()
   nTsFactory()
   removeDriftedNts()
@@ -596,6 +614,8 @@ function scene:show( event )
     pontuation = display.newText( uiGroup, points, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
     pontuation:setFillColor( 255, 255, 0 )
     Runtime:addEventListener( "collision", onCollision )
+    -- Clock
+    timeCounterTimer = timer.performWithDelay( 1000, timeCounter, 0 )
     gameLoopTimer = timer.performWithDelay( 1000, gameLoop, 0 )
     nucleumsFactoryLoopTimer = timer.performWithDelay( math.random( 60000, 90000 ), nucleumsFactory, 0 )
     nTsAttackLoopTimer = timer.performWithDelay( math.random( 1000, 3000 ), nTsAttack, 0 )
@@ -694,6 +714,8 @@ function scene:hide( event )
 
   if ( phase == "will" ) then
     -- Code here runs when the scene is on screen (but is about to go off screen)
+    -- Clock
+    timer.cancel( timeCounterTimer )
     timer.cancel( gameLoopTimer )
     timer.cancel( nTsAttackLoopTimer )
     timer.cancel( nucleumsFactoryLoopTimer )

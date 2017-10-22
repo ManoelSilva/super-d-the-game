@@ -52,8 +52,8 @@ local nTentity = require( "entities.nT" )
 local nucleumEntity = require( "entities.nucleum" )
 
 -- Initialize variables
-local startTime
-local endTime
+-- Clock
+local endTime = 0
 local playerDataTable = {}
 local superD
 local nucleum
@@ -375,7 +375,7 @@ local function passSubLevel()
 
   composer.gotoScene( "results", {
     time=800, effect="crossFade", params = {
-      lifePoints = lives, time=os.date( "%M:%S", os.time( endTime ) )
+      lifePoints = lives, timeEnd = endTime, nucleums = generatedNucleums
     }
   } )
 end
@@ -476,9 +476,7 @@ end
 
 -- Clock
 local function timeCounter()
-  if( endTime ~= nil ) then
-    endTime.sec = endTime.sec + 1
-  end
+    endTime = endTime + 1
 end
 
 local function gameLoop()
@@ -567,14 +565,11 @@ function scene:show( event )
     audio.stop( 1 )
   elseif ( phase == "did" ) then
     -- Code here runs when the scene is entirely on screen
-    -- Clock
-    startTime = os.date( "*t" )
-    endTime = os.date( "*t" )
     system.activate( "multitouch" )
     audio.play( musicTrack, { channel=1, loops=-1 } )
     physics.start()
     --physics.setDrawMode( "hybrid" )
-    nTsNumber = math.random( 2 )
+    nTsNumber = math.random( 40, 60 )
     nTsLeft = display.newText( uiGroup, nTsNumber, display.contentCenterX + 378, display.contentHeight - 640, inputText, 40 )
     nTsLeft:setFillColor( 255, 255, 0 )
     pontuation = display.newText( uiGroup, points, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )

@@ -14,6 +14,8 @@ local loadsave
 loadsave = require( "loadsave" )
 
 local playerConfigDataTable = {}
+local soundImage
+local soundIcon
 
 -- Reserve channel 1 for background music
 audio.reserveChannels( 1 )
@@ -36,6 +38,57 @@ end
 local musicTrack = audio.loadStream( "assets/audio/hollywood.mp3" )
 -- Select option sound effect
 local selected = audio.loadSound( "assets/audio/menuClick.mp3" )
+
+local function isSoundOnOrOf()
+  print( "loading data" )
+  playerConfigDataTable = loadsave.loadTable( "playerConfig.json" )
+
+  if( playerConfigDataTable ~= nil ) then
+    if( playerConfigDataTable.isSoundOn ) then
+      soundImage = "assets/img/sound-on.png"
+    else
+      soundImage = "assets/img/sound-off.png"
+    end
+  else
+    soundImage = "assets/img/sound-on.png"
+  end
+end
+
+local function setSoundOnOrOff()
+  print("loading data")
+  playerConfigDataTable = loadsave.loadTable( "playerConfig.json" )
+
+  if( playerConfigDataTable ~= nil ) then
+    if( playerConfigDataTable.isSoundOn == true ) then
+      playerConfigDataTable.isSoundOn = false
+      audio.setVolume( 0.0, { channel=0 } )
+
+      local soundOff = { type="image", filename="assets/img/sound-off.png" }
+      soundIcon.fill = soundOff
+      soundIcon.isShowing = "soundOff"
+    else
+      playerConfigDataTable.isSoundOn = true
+      audio.setVolume( 1, { channel=0 } )
+      audio.setVolume( 0.5, { channel=1 } )
+
+      local soundOn = { type="image", filename="assets/img/sound-on.png" }
+      soundIcon.fill = soundOn
+      soundIcon.isShowing = "soundOn"
+    end
+
+    loadsave.saveTable( playerConfigDataTable, "playerConfig.json" )
+  else
+    playerConfigDataTable = {}
+    playerConfigDataTable.isSoundOn = false
+    audio.setVolume( 0.0, { channel=0 } )
+
+    local soundOff = { type="image", filename="assets/img/sound-off.png" }
+    soundIcon.fill = soundOff
+    soundIcon.isShowing = "soundOff"
+
+    loadsave.saveTable( playerConfigDataTable, "playerConfig.json" )
+  end
+end
 
 local function goBacktoMenu()
   audio.play( selected )
@@ -99,7 +152,14 @@ function scene:show( event )
   local phase = event.phase
 
   if ( phase == "will" ) then
-  -- Code here runs when the scene is still off screen (but is about to come on screen)
+    -- Code here runs when the scene is still off screen (but is about to come on screen)
+    isSoundOnOrOf()
+
+    soundIcon = display.newImageRect( sceneGroup, soundImage, 70, 70 )
+    soundIcon.x = display.contentCenterX - 400
+    soundIcon.y = display.contentCenterY - 220
+
+    soundIcon:addEventListener( "tap", setSoundOnOrOff )
 
   elseif ( phase == "did" ) then
     -- Code here runs when the scene is entirely on screen
@@ -118,7 +178,8 @@ function scene:hide( event )
   -- Code here runs when the scene is on screen (but is about to go off screen)
 
   elseif ( phase == "did" ) then
-  -- Code here runs immediately after the scene goes entirely off screen
+    -- Code here runs immediately after the scene goes entirely off screen
+    display.remove( soundIcon )
   end
 end
 

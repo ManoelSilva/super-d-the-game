@@ -10,6 +10,25 @@ loadsave = require( "loadsave" )
 
 local composer = require( "composer" )
 local playerConfigDataTable = {}
+local soundImage
+local soundIcon
+
+-- Reserve channel 1 for background music
+audio.reserveChannels( 1 )
+
+playerConfigDataTable = loadsave.loadTable( "playerConfig.json" )
+if( playerConfigDataTable ~= nil ) then
+  if( playerConfigDataTable.isSoundOn ) then
+    -- Reduce the overall volume of the channel
+    audio.setVolume( 1, { channel=0 } )
+    audio.setVolume( 0.5, { channel=1 } )
+  else
+    audio.setVolume( 0.0, { channel=0 } )
+  end
+else
+  -- Reduce the overall volume of the channel
+  audio.setVolume( 0.5, { channel=1 } )
+end
 
 -- Creates a variable that holds a Composer scene object
 local scene = composer.newScene()
@@ -18,20 +37,78 @@ local scene = composer.newScene()
 local inputText = native.newFont( "Starjedi.ttf" )
 
 -- Menu music
-local soundTextEntity
+local musicTrack = audio.loadStream( "assets/audio/hollywood.mp3" )
+
 -- Select option sound effect
 local selected = audio.loadSound( "assets/audio/menuClick.mp3" )
 
+local nextLevelText
+local nextLevelTextEntity
+local nextLevelButton
 local nextLevelImage
 local nextLevelImagePath
 local previousLevelImage
 local previousLevelImagePath
-local feedBackImagePath = "assets/img/good.png"
+local happySuperD
+local feedBack
+local feedBackText
+local feedBackImagePath
 local nextLevel
 local previousLevel
 local starOne
 local starTwo
 local starThree
+
+local function isSoundOnOrOf()
+  print( "loading data" )
+  playerConfigDataTable = loadsave.loadTable( "playerConfig.json" )
+
+  if( playerConfigDataTable ~= nil ) then
+    if( playerConfigDataTable.isSoundOn ) then
+      soundImage = "assets/img/sound-on.png"
+    else
+      soundImage = "assets/img/sound-off.png"
+    end
+  else
+    soundImage = "assets/img/sound-on.png"
+  end
+end
+
+local function setSoundOnOrOff()
+  print("loading data")
+  playerConfigDataTable = loadsave.loadTable( "playerConfig.json" )
+
+  if( playerConfigDataTable ~= nil ) then
+    if( playerConfigDataTable.isSoundOn == true ) then
+      playerConfigDataTable.isSoundOn = false
+      audio.setVolume( 0.0, { channel=0 } )
+
+      local soundOff = { type="image", filename="assets/img/sound-off.png" }
+      soundIcon.fill = soundOff
+      soundIcon.isShowing = "soundOff"
+    else
+      playerConfigDataTable.isSoundOn = true
+      audio.setVolume( 1, { channel=0 } )
+      audio.setVolume( 0.5, { channel=1 } )
+
+      local soundOn = { type="image", filename="assets/img/sound-on.png" }
+      soundIcon.fill = soundOn
+      soundIcon.isShowing = "soundOn"
+    end
+
+    loadsave.saveTable( playerConfigDataTable, "playerConfig.json" )
+  else
+    playerConfigDataTable = {}
+    playerConfigDataTable.isSoundOn = false
+    audio.setVolume( 0.0, { channel=0 } )
+
+    local soundOff = { type="image", filename="assets/img/sound-off.png" }
+    soundIcon.fill = soundOff
+    soundIcon.isShowing = "soundOff"
+
+    loadsave.saveTable( playerConfigDataTable, "playerConfig.json" )
+  end
+end
 
 local function goToNextLevel()
   audio.play( selected )
@@ -45,65 +122,13 @@ end
 
 local function goTryAgain()
   audio.play( selected )
-  composer.removeScene( composer.getSceneName( "previous" ) )
-  composer.gotoScene( composer.getSceneName( "previous" ) )
-end
-
-local function isSoundOnOrOf()
-  local soundText
-
-  print( "loading data" )
-  playerConfigDataTable = loadsave.loadTable( "playerConfig.json" )
-
-  if( playerConfigDataTable ~= nil ) then
-    if( playerConfigDataTable.isSoundOn ) then
-      soundText = "Sound: on"
-    else
-      soundText = "Sound: off"
-    end
+  local previousScene = composer.getSceneName( "previous" )
+  if( previousScene == "mouth-tutorial" ) then
+    composer.removeScene( previousScene )
+    composer.gotoScene( "mouth" )
   else
-    soundText = "Sound: on"
-  end
-
-  return soundText
-end
-
-local function setSoundOnOrOff()
-  print("loading data")
-  playerConfigDataTable = loadsave.loadTable( "playerConfig.json" )
-
-  if( playerConfigDataTable ~= nil ) then
-    if( playerConfigDataTable.isSoundOn == true ) then
-      playerConfigDataTable.isSoundOn = false
-      audio.setVolume( 0.0, { channel=0 } )
-
-      display.remove( soundTextEntity )
-      local soundText = "Sound: off"
-      soundTextEntity = display.newText( soundText, display.contentCenterX, display.contentHeight - 275, inputText, 40 )
-      soundTextEntity:setFillColor( 255, 255, 0 )
-    else
-      playerConfigDataTable.isSoundOn = true
-      audio.setVolume( 1, { channel=0 } )
-      audio.setVolume( 0.5, { channel=1 } )
-
-      display.remove( soundTextEntity )
-      local soundText = "Sound: on"
-      soundTextEntity = display.newText( soundText, display.contentCenterX, display.contentHeight - 275, inputText, 40 )
-      soundTextEntity:setFillColor( 255, 255, 0 )
-    end
-
-    loadsave.saveTable( playerConfigDataTable, "playerConfig.json" )
-  else
-    playerConfigDataTable = {}
-    playerConfigDataTable.isSoundOn = false
-    audio.setVolume( 0.0, { channel=0 } )
-
-    display.remove( soundTextEntity )
-    local soundText = "Sound: off"
-    soundTextEntity = display.newText( soundText, display.contentCenterX, display.contentHeight - 275, inputText, 40 )
-    soundTextEntity:setFillColor( 255, 255, 0 )
-
-    loadsave.saveTable( playerConfigDataTable, "playerConfig.json" )
+    composer.removeScene( previousScene )
+    composer.gotoScene( previousScene )
   end
 end
 
@@ -116,12 +141,22 @@ local function checkPlayerStars( stars )
   end
 end
 
-local function checkPlayerFeedBack( stars, nucleums )
+local function checkPlayerFeedBack( lifePoints, nucleums )
+  feedBackText = "good"
+  feedBackImagePath = "assets/img/good.png"
+
+  if( lifePoints == 12 and nucleums == 0 ) then
+    feedBackText = "excelent"
+    feedBackImagePath = "assets/img/excelent.png"
+  elseif( lifePoints == 12 and nucleums ~= 0 ) then
+    feedBackText = "very-good"
+    feedBackImagePath = "assets/img/very-good.png"
+  end
 end
 
 local function checkLevelImages()
   local previousScene = composer.getSceneName( "previous" )
-  if( previousScene == "mouth" ) then
+  if( previousScene == "mouth" or previousScene == "mouth-tutorial" ) then
     nextLevel = "lung"
     previousLevelImagePath = "assets/img/mouth-background.jpg"
     nextLevelImagePath = "assets/img/lung-background.png"
@@ -129,24 +164,22 @@ local function checkLevelImages()
     nextLevel = "rs-boss"
     previousLevelImagePath = "assets/img/lung-background.png"
     nextLevelImagePath = "assets/img/rs-boss-background.png"
+  else
+    nextLevel = nil
+    previousLevelImagePath = "assets/img/rs-boss-background.png"
   end
 end
 
 -- create()
 function scene:create( event )
   local sceneGroup = self.view
+
   -- Code here runs when the scene is first created but has not yet appeared on screen
 
   -- Load background
   local background = display.newImageRect( sceneGroup, "assets/img/universe.png", display.actualContentWidth, display.actualContentHeight )
   background.x = display.contentCenterX
   background.y = display.contentCenterY
-
-  -- Load Rank Feedback
-  local feedBack = display.newImageRect( sceneGroup, feedBackImagePath, 295, 103 )
-  feedBack.x = display.contentCenterX
-  feedBack.y = display.contentCenterY - 230
-
 
   -- Load Obtained Stars text
   local obtainedStarsText = "Obtained Stars"
@@ -168,16 +201,21 @@ function scene:create( event )
 
   local nucleum = display.newImageRect( sceneGroup, "assets/img/nucleum.png", 62, 72 )
   nucleum.x = display.contentCenterX - 70
-  nucleum.y = display.contentCenterY + 20
+  nucleum.y = display.contentCenterY
 
   local hourGlass = display.newImageRect( sceneGroup, "assets/img/hourglass.png", 43, 72 )
   hourGlass.x = display.contentCenterX - 70
   hourGlass.y = display.contentCenterY + 100
 
-  -- Load Next Level text
-  local nextLevelText = "Next level"
-  local nextLevelTextEntity = display.newText( sceneGroup, nextLevelText, display.contentCenterX + 350, display.contentCenterY + 50, inputText, 40 )
-  nextLevelTextEntity:setFillColor( 255, 255, 0 )
+  -- Load Nucleums used text
+  local nucleumsUsed = tostring( event.params.nucleums )
+  local nucleumsUsedText = "x " .. nucleumsUsed
+  local nucleumsUsedTextEntity = display.newText( sceneGroup, nucleumsUsedText, display.contentCenterX + 10, display.contentCenterY, inputText, 40 )
+  nucleumsUsedTextEntity:setFillColor( 255, 255, 0 )
+
+  local timeToPassLevelText = os.date( "%M:%S",  event.params.timeEnd )
+  local timeToPassLevelTextEntity = display.newText( sceneGroup, timeToPassLevelText, display.contentCenterX + 27, display.contentCenterY + 100, inputText, 40 )
+  timeToPassLevelTextEntity:setFillColor( 255, 255, 0 )
 
   -- Load Levels Menu text
   local levelsMenuText = "Levels"
@@ -186,10 +224,10 @@ function scene:create( event )
 
   -- Load Try Again text
   local tryAgainText = "Try Again"
-  local tryAgainTextEntity = display.newText( sceneGroup, tryAgainText, display.contentCenterX - 350, display.contentCenterY + 50, inputText, 40 )
+  local tryAgainTextEntity = display.newText( sceneGroup, tryAgainText, display.contentCenterX - 350, display.contentCenterY + 220, inputText, 40 )
   tryAgainTextEntity:setFillColor( 255, 255, 0 )
 
-  local tryAgainButton = display.newRect( sceneGroup, display.contentCenterX - 350, display.contentCenterY + 50, 220, 20 )
+  local tryAgainButton = display.newRect( sceneGroup, display.contentCenterX - 350, display.contentCenterY + 220, 220, 20 )
   tryAgainButton.strokeWidth = 30
   --tryAgainButton:setFillColor( 1, 0 )
   tryAgainButton:setFillColor( 0,0,0,0 )
@@ -209,15 +247,6 @@ function scene:create( event )
   levelsButton:addEventListener( "tap", goToLevelsMenu )
   levelsButton.isHitTestable = true
 
-  local nextLevelButton = display.newRect( sceneGroup, display.contentCenterX + 350, display.contentCenterY + 50, 250, 20 )
-  nextLevelButton.strokeWidth = 30
-  --nextLevelButton:setFillColor( 1, 0 )
-  nextLevelButton:setFillColor( 0,0,0,0 )
-  --nextLevelButton:setStrokeColor( 1, 0, 0 )
-  nextLevelButton:setStrokeColor( 0, 0, 0, 0 )
-
-  nextLevelButton:addEventListener( "tap", goToNextLevel )
-  nextLevelButton.isHitTestable = true
 end
 
 -- show()
@@ -228,44 +257,69 @@ function scene:show( event )
 
   if ( phase == "will" ) then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
+    isSoundOnOrOf()
+
+    soundIcon = display.newImageRect( sceneGroup, soundImage, 70, 70 )
+    soundIcon.x = display.contentCenterX - 400
+    soundIcon.y = display.contentCenterY - 220
+
+    soundIcon:addEventListener( "tap", setSoundOnOrOff )
+
     checkPlayerStars( event.params.lifePoints )
+    checkPlayerFeedBack( event.params.lifePoints, event.params.nucleums )
     checkLevelImages()
-    print( event.params.time )
-  elseif ( phase == "did" ) then
-    -- Code here runs when the scene is entirely on screen
-    -- Play music
-    audio.play( musicTrack, { channel=1, loops=-1 } )
 
-    --[[
+    if( nextLevel ~= nil ) then
+      -- Load Next Level text
+      nextLevelText = "Next level"
+      nextLevelTextEntity = display.newText( sceneGroup, nextLevelText, display.contentCenterX + 350, display.contentCenterY + 220, inputText, 40 )
+      nextLevelTextEntity:setFillColor( 255, 255, 0 )
 
+      nextLevelButton = display.newRect( sceneGroup, display.contentCenterX + 350, display.contentCenterY + 220, 250, 20 )
+      nextLevelButton.strokeWidth = 30
+      --nextLevelButton:setFillColor( 1, 0 )
+      nextLevelButton:setFillColor( 0,0,0,0 )
+      --nextLevelButton:setStrokeColor( 1, 0, 0 )
+      nextLevelButton:setStrokeColor( 0, 0, 0, 0 )
 
-    local t1 = os.date( '*t' )
+      nextLevelButton:addEventListener( "tap", goToNextLevel )
+      nextLevelButton.isHitTestable = true
 
-
-    t1.sec  = t1.sec +60
-
-
-    t1 = os.date( "%H:%M:%S", os.time( t1 ) )
-
-
-    print(t1)
-
-
-    --]]
-    -- Load Next Level Image
-    nextLevelImage = display.newImageRect( sceneGroup, nextLevelImagePath, 200, 120 )
-    nextLevelImage.x = display.contentCenterX + 350
-    nextLevelImage.y = display.contentCenterY - 60
-    nextLevelImage:setStrokeColor( 1, 1, 0 )
-    nextLevelImage.strokeWidth = 4
+      -- Load Next Level Image
+      nextLevelImage = display.newImageRect( sceneGroup, nextLevelImagePath, 200, 120 )
+      nextLevelImage.x = display.contentCenterX + 350
+      nextLevelImage.y = display.contentCenterY + 130
+      nextLevelImage:setStrokeColor( 1, 1, 0 )
+      nextLevelImage.strokeWidth = 4
+      nextLevelImage:addEventListener( "tap", goToNextLevel )
+    end
 
     -- Load Previous Level Image
     previousLevelImage = display.newImageRect( sceneGroup, previousLevelImagePath, 200, 120 )
     previousLevelImage.x = display.contentCenterX - 350
-    previousLevelImage.y = display.contentCenterY - 60
+    previousLevelImage.y = display.contentCenterY + 130
     previousLevelImage:setStrokeColor( 1, 1, 0 )
     previousLevelImage.strokeWidth = 4
+    previousLevelImage:addEventListener( "tap", goTryAgain )
 
+    -- Load Rank Feedback
+    if( feedBackText == "good" ) then
+      feedBack = display.newImageRect( sceneGroup, feedBackImagePath, 295, 103 )
+    elseif( feedBackText == "excelent" ) then
+      feedBack = display.newImageRect( sceneGroup, feedBackImagePath, 526, 103 )
+      happySuperD = display.newImageRect( sceneGroup, "assets/img/happy-superD.png", 145, 170 )
+      happySuperD.x = display.contentCenterX + 340
+      happySuperD.y = display.contentCenterY - 80
+    else
+      feedBack = display.newImageRect( sceneGroup, feedBackImagePath, 591, 103 )
+    end
+    feedBack.x = display.contentCenterX
+    feedBack.y = display.contentCenterY - 230
+
+  elseif ( phase == "did" ) then
+    -- Code here runs when the scene is entirely on screen
+    -- Play music
+    audio.play( musicTrack, { channel=1, loops=-1 } )
   end
 end
 
@@ -280,8 +334,8 @@ function scene:hide( event )
   -- Code here runs when the scene is on screen (but is about to go off screen)
 
   elseif ( phase == "did" ) then
-  -- Code here runs immediately after the scene goes entirely off screen
-  composer.removeScene( "results" )
+    -- Code here runs immediately after the scene goes entirely off screen
+    composer.removeScene( "results" )
   end
 end
 

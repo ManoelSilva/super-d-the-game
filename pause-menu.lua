@@ -75,7 +75,7 @@ local function setSoundOnOrOff()
 
       display.remove( soundTextEntity )
       local soundText = "Sound: off"
-      soundTextEntity = display.newText( soundText, display.contentCenterX, display.contentHeight - 275, inputText, 40 )
+      soundTextEntity = display.newText( soundText, display.contentCenterX, display.contentHeight - 215, inputText, 40 )
       soundTextEntity:setFillColor( 255, 255, 0 )
     else
       playerConfigDataTable.isSoundOn = true
@@ -84,7 +84,7 @@ local function setSoundOnOrOff()
 
       display.remove( soundTextEntity )
       local soundText = "Sound: on"
-      soundTextEntity = display.newText( soundText, display.contentCenterX, display.contentHeight - 275, inputText, 40 )
+      soundTextEntity = display.newText( soundText, display.contentCenterX, display.contentHeight - 215, inputText, 40 )
       soundTextEntity:setFillColor( 255, 255, 0 )
     end
 
@@ -96,7 +96,7 @@ local function setSoundOnOrOff()
 
     display.remove( soundTextEntity )
     local soundText = "Sound: off"
-    soundTextEntity = display.newText( soundText, display.contentCenterX, display.contentHeight - 275, inputText, 40 )
+    soundTextEntity = display.newText( soundText, display.contentCenterX, display.contentHeight - 215, inputText, 40 )
     soundTextEntity:setFillColor( 255, 255, 0 )
 
     loadsave.saveTable( playerConfigDataTable, "playerConfig.json" )
@@ -141,20 +141,20 @@ function scene:create( event )
   
   -- Load Resume text
   local resumeText = "Resume"
-  local resumeTextEntity = display.newText( sceneGroup, resumeText, display.contentCenterX, display.contentHeight - 205, inputText, 40 )
+  local resumeTextEntity = display.newText( sceneGroup, resumeText, display.contentCenterX, display.contentHeight - 140, inputText, 40 )
   resumeTextEntity:setFillColor( 255, 255, 0 )
 
   -- Load Main Menu text
   local mainMenuText = "Menu"
-  local mainMenuTextEntity = display.newText( sceneGroup, mainMenuText, display.contentCenterX, display.contentHeight - 425, inputText, 40 )
+  local mainMenuTextEntity = display.newText( sceneGroup, mainMenuText, display.contentCenterX, display.contentHeight - 365, inputText, 40 )
   mainMenuTextEntity:setFillColor( 255, 255, 0 )
 
   -- Load Try Again text
   local tryAgainText = "Try Again"
-  local tryAgainTextEntity = display.newText( sceneGroup, tryAgainText, display.contentCenterX, display.contentHeight - 350, inputText, 40 )
+  local tryAgainTextEntity = display.newText( sceneGroup, tryAgainText, display.contentCenterX, display.contentHeight - 290, inputText, 40 )
   tryAgainTextEntity:setFillColor( 255, 255, 0 )
 
-  local tryAgainButton = display.newRect( sceneGroup, display.contentCenterX - 2, display.contentHeight - 350, 200, 20 )
+  local tryAgainButton = display.newRect( sceneGroup, display.contentCenterX - 2, display.contentHeight - 290, 200, 20 )
   tryAgainButton.strokeWidth = 30
   --tryAgainButton:setFillColor( 1, 0 )
   tryAgainButton:setFillColor( 0,0,0,0 )
@@ -164,7 +164,7 @@ function scene:create( event )
   tryAgainButton:addEventListener( "tap", goTryAgain )
   tryAgainButton.isHitTestable = true
 
-  local resumeButton = display.newRect( sceneGroup, display.contentCenterX, display.contentHeight - 205, 200, 10 )
+  local resumeButton = display.newRect( sceneGroup, display.contentCenterX, display.contentHeight - 140, 200, 10 )
   resumeButton.strokeWidth = 30
   --resumeButton:setFillColor( 1, 0 )
   resumeButton:setFillColor( 0,0,0,0 )
@@ -174,7 +174,7 @@ function scene:create( event )
   resumeButton:addEventListener( "tap", goResumeGame )
   resumeButton.isHitTestable = true
 
-  local mainMenuButton = display.newRect( sceneGroup, display.contentCenterX - 2, display.contentHeight - 420, 200, 20 )
+  local mainMenuButton = display.newRect( sceneGroup, display.contentCenterX - 2, display.contentHeight - 365, 200, 20 )
   mainMenuButton.strokeWidth = 30
   --mainMenuButton:setFillColor( 1, 0 )
   mainMenuButton:setFillColor( 0,0,0,0 )
@@ -186,10 +186,10 @@ function scene:create( event )
 
   -- Load Sound text
   local soundText = isSoundOnOrOf()
-  soundTextEntity = display.newText( soundText, display.contentCenterX, display.contentHeight - 275, inputText, 40 )
+  soundTextEntity = display.newText( soundText, display.contentCenterX, display.contentHeight - 215, inputText, 40 )
   soundTextEntity:setFillColor( 255, 255, 0 )
 
-  local soundButton = display.newRect( sceneGroup, display.contentCenterX - 2, display.contentHeight - 275, 210, 20 )
+  local soundButton = display.newRect( sceneGroup, display.contentCenterX - 2, display.contentHeight - 215, 210, 20 )
   soundButton.strokeWidth = 30
   --soundButton:setFillColor( 1, 0 )
   soundButton:setFillColor( 0,0,0,0 )

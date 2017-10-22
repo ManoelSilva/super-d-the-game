@@ -8,6 +8,8 @@ function scene:resumeGame()
   physics.start()
   transition.resume( "animationPause" )
   if( stillInTutorial == false ) then
+    -- Clock
+    timer.resume( timeCounterTimer )
     timer.resume( gameLoopTimer )
     timer.resume( nTsAttackLoopTimer )
     timer.resume( nucleumsFactoryLoopTimer )
@@ -54,6 +56,8 @@ local nTentity = require( "entities.nT" )
 local nucleumEntity = require( "entities.nucleum" )
 
 -- Initialize variables
+-- Clock
+local endTime = 0
 local playerDataTable = {}
 local passTutorialText = true
 local superD
@@ -102,13 +106,15 @@ local function pauseMenu()
   -- Pause game
   physics.pause()
   transition.pause("animationPause")
-  
+
   if( stillInTutorial == false ) then
+    -- Clock
+    timer.pause( timeCounterTimer )
     timer.pause( gameLoopTimer )
     timer.pause( nTsAttackLoopTimer )
     timer.pause( nucleumsFactoryLoopTimer )
   end
-  
+
   local options = {
     isModal = true,
     effect = "fade",
@@ -370,7 +376,14 @@ local function passSubLevel()
   end
 
   loadsave.saveTable( playerDataTable, "playerData.json" )
-  composer.gotoScene( "lung", { time=800, effect="crossFade" } )
+  -- Results
+  timer.pause( timeCounterTimer )
+
+  composer.gotoScene( "results", {
+    time=800, effect="crossFade", params = {
+      lifePoints = lives, timeEnd = endTime, nucleums = generatedNucleums
+    }
+  } )
 end
 
 local function onCollision( event )
@@ -472,6 +485,11 @@ local function gameLoop()
   removeDriftedNts()
 end
 
+-- Clock
+local function timeCounter()
+  endTime = endTime + 1
+end
+
 local function afterGameTutorial()
   superD.isBodyActive = true
   punchButton:setEnabled( true )
@@ -480,6 +498,8 @@ local function afterGameTutorial()
   moveRightButton:setEnabled( true )
 
   Runtime:addEventListener( "collision", onCollision )
+  -- Clock
+  timeCounterTimer = timer.performWithDelay( 1000, timeCounter, 0 )
   gameLoopTimer = timer.performWithDelay( 1200, gameLoop, 0 )
   nucleumsFactoryLoopTimer = timer.performWithDelay( math.random( 60000, 90000 ), nucleumsFactory, 0 )
   nTsAttackLoopTimer = timer.performWithDelay( math.random( 1000, 3000 ), nTsAttack, 0 )
@@ -917,6 +937,8 @@ function scene:hide( event )
   if ( phase == "will" ) then
     -- Code here runs when the scene is on screen (but is about to go off screen)
     if( stillInTutorial == false ) then
+      -- Clock
+      timer.cancel( timeCounterTimer )
       timer.cancel( gameLoopTimer )
       timer.cancel( nTsAttackLoopTimer )
       timer.cancel( nucleumsFactoryLoopTimer )

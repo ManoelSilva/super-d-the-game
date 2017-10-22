@@ -113,6 +113,14 @@ function scene:create( event )
   background.x = display.contentCenterX
   background.y = display.contentCenterY
 
+  isSoundOnOrOf()
+
+  soundIcon = display.newImageRect( sceneGroup, soundImage, 70, 70 )
+  soundIcon.x = display.contentCenterX - 400
+  soundIcon.y = display.contentCenterY - 220
+
+  soundIcon:addEventListener( "tap", setSoundOnOrOff )
+
   -- Load Try Again text
   local tryAgainText = "Try Again"
   local tryAgainTextEntity = display.newText( sceneGroup, tryAgainText, display.contentCenterX, display.contentHeight - 425, inputText, 40 )
@@ -153,12 +161,12 @@ function scene:show( event )
 
   if ( phase == "will" ) then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
+    display.remove( soundIcon )
     isSoundOnOrOf()
 
     soundIcon = display.newImageRect( sceneGroup, soundImage, 70, 70 )
     soundIcon.x = display.contentCenterX - 400
     soundIcon.y = display.contentCenterY - 220
-
     soundIcon:addEventListener( "tap", setSoundOnOrOff )
 
   elseif ( phase == "did" ) then

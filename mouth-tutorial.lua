@@ -411,65 +411,67 @@ local function onCollision( event )
     end
 
     if ( superD ~= nil and nT ~= nil ) then
-      audio.play( hitTrack )
+      if ( nT.sequence ~= "nTtakingDamage" ) then
+        audio.play( hitTrack )
 
-      if( ( superD.sequence == "attackRight" or superD.sequence == "attackLeft" ) and superD.frame ~= 7 or nT.sequence == "nTtakingDamage" ) then
-        nTsNumber = nTsNumber - 1
-        points = points + 1
-        if( nTsNumber > 0 ) then
-          display.remove( nTsLeft )
-          display.remove( pontuation )
-          nTsLeft = display.newText( uiGroup, nTsNumber, display.contentCenterX + 378, display.contentHeight - 640, inputText, 40 )
-          nTsLeft:setFillColor( 255, 255, 0 )
-          pontuation = display.newText( uiGroup, points, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
-          pontuation:setFillColor( 255, 255, 0 )
-        elseif( nTsNumber == 0 ) then
-          died = true
-          timer.performWithDelay( 200, passSubLevel )
-        end
-
-        if( nT.sequence == "attackRight" or ( nT.sequence == "static" and nT.frame == 2 ) ) then
-          nT:setSequence( "nTtakingDamage" )
-          nT:setFrame(2)
-        else
-          nT:setSequence( "nTtakingDamage" )
-          nT:setFrame(1)
-        end
-        nT.alpha = 0.5
-        nT.isSensor = true
-        timer.performWithDelay( 1000, function()
-          display.remove( nT )
-
-          for i = #nTtable, 1, -1 do
-            if ( nTtable[i] == nT ) then
-              table.remove( nTtable, i )
-              break
-            end
+        if( ( superD.sequence == "attackRight" or superD.sequence == "attackLeft" ) and superD.frame ~= 7 ) then
+          nTsNumber = nTsNumber - 1
+          points = points + 1
+          if( nTsNumber > 0 ) then
+            display.remove( nTsLeft )
+            display.remove( pontuation )
+            nTsLeft = display.newText( uiGroup, nTsNumber, display.contentCenterX + 378, display.contentHeight - 640, inputText, 40 )
+            nTsLeft:setFillColor( 255, 255, 0 )
+            pontuation = display.newText( uiGroup, points, display.contentCenterX + 485, display.contentHeight - 640, inputText, 40 )
+            pontuation:setFillColor( 255, 255, 0 )
+          elseif( nTsNumber == 0 ) then
+            died = true
+            timer.performWithDelay( 200, passSubLevel )
           end
-        end )
-      elseif ( died == false ) then
-        local punchHit = false
 
-        punchButton:setEnabled( false )
-        jumpButton:setEnabled( false )
-        moveLeftButton:setEnabled( false )
-        moveRightButton:setEnabled( false )
+          if( nT.sequence == "attackRight" or ( nT.sequence == "static" and nT.frame == 2 ) ) then
+            nT:setSequence( "nTtakingDamage" )
+            nT:setFrame(2)
+          else
+            nT:setSequence( "nTtakingDamage" )
+            nT:setFrame(1)
+          end
+          nT.alpha = 0.5
+          nT.isSensor = true
+          timer.performWithDelay( 1000, function()
+            display.remove( nT )
 
-        if( nT.sequence == "attackRight" and nT.frame ~= 7 ) then
-          punchHit = true
+            for i = #nTtable, 1, -1 do
+              if ( nTtable[i] == nT ) then
+                table.remove( nTtable, i )
+                break
+              end
+            end
+          end )
+        elseif ( died == false ) then
+          local punchHit = false
+
+          punchButton:setEnabled( false )
+          jumpButton:setEnabled( false )
+          moveLeftButton:setEnabled( false )
+          moveRightButton:setEnabled( false )
+
+          if( nT.sequence == "attackRight" and nT.frame ~= 7 ) then
+            punchHit = true
+          end
+
+          if( ( superD.sequence == "static" and superD.frame == 2 ) or
+            superD.sequence == "movingRight" or superD.sequence == "attackRight" ) then
+            superD:setSequence( "superDtakingDamage" )
+            superD:setFrame(1)
+          else
+            superD:setSequence( "superDtakingDamage" )
+            superD:setFrame(2)
+          end
+          takeDamage( punchHit )
+          superD.alpha = 0.5
+          timer.performWithDelay( 420 , restoreSuperD )
         end
-
-        if( ( superD.sequence == "static" and superD.frame == 2 ) or
-          superD.sequence == "movingRight" or superD.sequence == "attackRight" ) then
-          superD:setSequence( "superDtakingDamage" )
-          superD:setFrame(1)
-        else
-          superD:setSequence( "superDtakingDamage" )
-          superD:setFrame(2)
-        end
-        takeDamage( punchHit )
-        superD.alpha = 0.5
-        timer.performWithDelay( 420 , restoreSuperD )
       end
     end
 

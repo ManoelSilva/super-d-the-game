@@ -7,6 +7,7 @@ local isMainCellFirstHit = false
 function scene:resumeGame()
   physics.start()
   transition.resume( "animationPause" )
+  transition.resume("bossMove")
   -- Clock
   timer.resume( timeCounterTimer )
   timer.resume( bossMovimentantionLoopTimer )
@@ -119,6 +120,7 @@ local function pauseMenu()
   -- Clock
   timer.pause( timeCounterTimer )
   transition.pause("animationPause")
+  transition.pause("bossMove")
   if( isMainCellFirstHit == true ) then
     timer.pause( gameLoopTimer )
     timer.pause( nTsAttackLoopTimer )
@@ -399,8 +401,10 @@ local function nTsAttack()
       nT:setSequence( "superDattackLeft" )
       nT:play()
     else
-      nT:setSequence( "attackLeft" )
-      nT:play()
+      if( nT.sequence ~= "nTtakingDamage" ) then
+        nT:setSequence( "attackLeft" )
+        nT:play()
+      end
     end
   end
   if( #nTtableLeft > 0  ) then
@@ -412,8 +416,10 @@ local function nTsAttack()
       nT:setSequence( "superDattackRight" )
       nT:play()
     else
-      nT:setSequence( "attackRight" )
-      nT:play()
+      if( nT.sequence ~= "nTtakingDamage" ) then
+        nT:setSequence( "attackRight" )
+        nT:play()
+      end
     end
   end
 end
@@ -443,7 +449,7 @@ local function bossMoveRight( timeToMove )
       end
       timer.performWithDelay( timeToMove, function()
         if boss ~= nil then
-          transition.to( boss, { tag="animationPause", time=timeToMove, x=( display.contentWidth-150 ),
+          transition.to( boss, { tag="bossMove", time=timeToMove, x=( display.contentWidth-150 ),
             onComplete = function()
               if boss ~= nil then
                 if( died == false ) then
@@ -468,7 +474,7 @@ local function bossMoveLeft()
       end
       bossMovingLeft = true
       timer.performWithDelay( timeToMove, function()
-        transition.to( boss, { tag="animationPause", time=timeToMove, x=( display.contentWidth-math.random(570, 620) ),
+        transition.to( boss, { tag="bossMove", time=timeToMove, x=( display.contentWidth - 540 ),
           onComplete = function()
             if boss ~= nil then
               if died == false and isBossTakingDamage == false then
@@ -748,6 +754,7 @@ local function onCollision( event )
       audio.play( hitTrack )
       if( ( superD.sequence == "attackRight" or superD.sequence == "attackLeft" ) and superD.frame ~= 7 and boss.sequence == "static" ) then
         isBossTakingDamage = true
+        transition.cancel( "bossMove" )
         boss:setSequence( "takingDamageLeft" )
         boss:setFrame(1)
         boss.alpha = 0.5
@@ -796,22 +803,32 @@ local function onCollision( event )
     if ( superD ~= nil and nT ~= nil ) then
       audio.play( hitTrack )
 
-      if( ( superD.sequence == "attackRight" or superD.sequence == "attackLeft" ) and superD.frame ~= 7 ) then
+      if( ( superD.sequence == "attackRight" or superD.sequence == "attackLeft" ) and superD.frame ~= 7 or nT.sequence == "nTtakingDamage" ) then
+        if( nT.sequence == "attackRight" or ( nT.sequence == "static" and nT.frame == 2 ) ) then
+          nT:setSequence( "nTtakingDamage" )
+          nT:setFrame(2)
+        else
+          nT:setSequence( "nTtakingDamage" )
+          nT:setFrame(1)
+        end
+        nT.alpha = 0.5
         nT.isSensor = true
-        display.remove( nT )
+        timer.performWithDelay( 1000, function()
+          display.remove( nT )
 
-        for i = #nTtableRight, 1, -1 do
-          if ( nTtableRight[i] == nT ) then
-            table.remove( nTtableRight, i )
-            break
+          for i = #nTtableRight, 1, -1 do
+            if ( nTtableRight[i] == nT ) then
+              table.remove( nTtableRight, i )
+              break
+            end
           end
-        end
-        for i = #nTtableLeft, 1, -1 do
-          if ( nTtableLeft[i] == nT ) then
-            table.remove( nTtableLeft, i )
-            break
+          for i = #nTtableLeft, 1, -1 do
+            if ( nTtableLeft[i] == nT ) then
+              table.remove( nTtableLeft, i )
+              break
+            end
           end
-        end
+        end )
       elseif ( died == false ) then
         local punchHit = false
 

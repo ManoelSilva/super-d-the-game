@@ -369,16 +369,20 @@ local function nTsAttack()
     end
     for i = #nTtableRight, 1, -attackingNumber do
       local nT = nTtableRight[i]
-      nT:setSequence( "attackLeft" )
-      nT:play()
+      if( nT.sequence ~= "nTtakingDamage" ) then
+        nT:setSequence( "attackLeft" )
+        nT:play()
+      end
     end
     if( #nTtableLeft > 0  ) then
       attackingNumber = math.random( #nTtableLeft )
     end
     for i = #nTtableLeft, 1, -attackingNumber do
       local nT = nTtableLeft[i]
-      nT:setSequence( "attackRight" )
-      nT:play()
+      if( nT.sequence ~= "nTtakingDamage" ) then
+        nT:setSequence( "attackRight" )
+        nT:play()
+      end
     end
   end
 end
@@ -437,7 +441,7 @@ local function onCollision( event )
     if ( superD ~= nil and nT ~= nil ) then
       audio.play( hitTrack )
 
-      if( ( superD.sequence == "attackRight" or superD.sequence == "attackLeft" ) and superD.frame ~= 7 ) then
+      if( ( superD.sequence == "attackRight" or superD.sequence == "attackLeft" ) and superD.frame ~= 7 or nT.sequence == "nTtakingDamage" ) then
         nTsNumber = nTsNumber - 1
         points = points + 1
         if( nTsNumber > 0 ) then
@@ -452,21 +456,31 @@ local function onCollision( event )
           timer.performWithDelay( 200, passSubLevel )
         end
 
+        if( nT.sequence == "attackRight" or ( nT.sequence == "static" and nT.frame == 2 ) ) then
+          nT:setSequence( "nTtakingDamage" )
+          nT:setFrame(2)
+        else
+          nT:setSequence( "nTtakingDamage" )
+          nT:setFrame(1)
+        end
+        nT.alpha = 0.5
         nT.isSensor = true
-        display.remove( nT )
+        timer.performWithDelay( 1000, function()
+          display.remove( nT )
 
-        for i = #nTtableRight, 1, -1 do
-          if ( nTtableRight[i] == nT ) then
-            table.remove( nTtableRight, i )
-            break
+          for i = #nTtableRight, 1, -1 do
+            if ( nTtableRight[i] == nT ) then
+              table.remove( nTtableRight, i )
+              break
+            end
           end
-        end
-        for i = #nTtableLeft, 1, -1 do
-          if ( nTtableLeft[i] == nT ) then
-            table.remove( nTtableLeft, i )
-            break
+          for i = #nTtableLeft, 1, -1 do
+            if ( nTtableLeft[i] == nT ) then
+              table.remove( nTtableLeft, i )
+              break
+            end
           end
-        end
+        end )
       elseif ( died == false ) then
         local punchHit = false
 

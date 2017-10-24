@@ -1,7 +1,7 @@
 # Super Disease - The Game
 
 ## Actual Version
-	0.9
+	0.14
 
 ## Game name
  	Super Disease.
@@ -23,7 +23,7 @@
 
 * Levels
 ```
-	Each level represent a human system.
+	Each level represents a human organ.
 ```
 
 * Ranking System
@@ -53,7 +53,7 @@
 ```
 
 ## End of the game
-	The game end when Super D reaches nervous system and dominate his main cell. Controlling human body and 
+	The game end when Super D reaches nervous system and dominate the Main Cell. Controlling human body and 
 	subsequently human race.
 
 ## Special considerations and credits
@@ -126,3 +126,8 @@
 		Pause menu features add.
 		Cores of lifes give 4 points of life and appears only 3 times now.
 		New ranking system.
+	**0.14**
+		Results scene.
+		Added more features to pause menu.
+		Added N-T's animation when killed.
+		Added sound button on/off at menu, levels, results and game-over scenes.

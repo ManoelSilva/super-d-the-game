@@ -57,13 +57,13 @@
 	subsequently human race.
 
 ## Special considerations and credits
-	Game developed using Corona�.
-	Game and sprites arts developed by Manoel Silva, me. :) Using Inkscape�,
-	to vectorize my drawings, ShoeBox� to generate sprite sheets and sprite map.
-	Super Disease arts were inspired in Sonic the Hedgehog, Alex Kid (Sega�) and 
-	Super Mario (Nintendo�).
+	Game developed using Corona®.
+	Game and sprites arts developed by Manoel Silva, me. :) Using Inkscape®,
+	to vectorize my drawings, ShoeBox® to generate sprite sheets and sprite map.
+	Super Disease arts were inspired in Sonic the Hedgehog, Alex Kid (Sega®) and 
+	Super Mario (Nintendo®).
 	Background image of demo version 0.0.4 was obtained in google images. Unknown creator, all credits given.
-	Sound effects and music credits of demo version 0.0.4 are given to Sega�, Nintendo� and 
+	Sound effects and music credits of demo version 0.0.4 are given to Sega®, Nintendo® and 
 	Vintage Culture (Musics - You Can't Hide, Hollywood).
 	Fonts:
 		https://cooltext.com

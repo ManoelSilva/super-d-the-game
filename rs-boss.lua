@@ -102,7 +102,7 @@ local nTsBarScale = 0.1
 local alpha = 0.6
 
 -- Sound settings
-local musicTrack = audio.loadStream( "assets/audio/youCantHide.mp3" )
+local musicTrack = audio.loadStream( "assets/audio/everyday.mp3" )
 local moveTrack = audio.loadSound( "assets/audio/moveSound.mp3" )
 local jumpTrack = audio.loadSound( "assets/audio/jumpSound.mp3" )
 local punchTrack = audio.loadSound( "assets/audio/punchSound.mp3" )

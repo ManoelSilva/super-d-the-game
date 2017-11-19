@@ -725,7 +725,7 @@ local function gameTutorial()
           passText:toBack()
         end
         passTutorialText = false
-        contentText = "This is a core of life that will increase one point of life, if you need it. it appears four times randomly."
+        contentText = "This is a core of life that will increase one point of life, if you need it. It appears randomly."
         infoPointer = display.newImageRect(mainGroup, "assets/img/arrow-down.png", 50, 57);
         infoPointer.x = display.contentCenterX - 395
         infoPointer.y = display.contentHeight - 350

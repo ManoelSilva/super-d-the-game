@@ -1,7 +1,7 @@
 # Super Disease - The Game
 
 ## Actual Version
-	0.14
+	1.0
 
 ## Game name
  	Super Disease.
@@ -57,13 +57,13 @@
 	subsequently human race.
 
 ## Special considerations and credits
-	Game developed using Corona®.
-	Game and sprites arts developed by Manoel Silva, me. :) Using Inkscape®,
-	to vectorize my drawings, ShoeBox® to generate sprite sheets and sprite map.
-	Super Disease arts were inspired in Sonic the Hedgehog, Alex Kid (Sega®) and 
-	Super Mario (Nintendo®).
+	Game developed using Coronaï¿½.
+	Game and sprites arts developed by Manoel Silva, me. :) Using Inkscapeï¿½,
+	to vectorize my drawings, ShoeBoxï¿½ to generate sprite sheets and sprite map.
+	Super Disease arts were inspired in Sonic the Hedgehog, Alex Kid (Segaï¿½) and 
+	Super Mario (Nintendoï¿½).
 	Background image of demo version 0.0.4 was obtained in google images. Unknown creator, all credits given.
-	Sound effects and music credits of demo version 0.0.4 are given to Sega®, Nintendo® and 
+	Sound effects and music credits of demo version 0.0.4 are given to Segaï¿½, Nintendoï¿½ and 
 	Vintage Culture (Musics - You Can't Hide, Hollywood).
 	Fonts:
 		https://cooltext.com
@@ -131,3 +131,7 @@
 		Added more features to pause menu.
 		Added N-T's animation when killed.
 		Added sound button on/off at menu, levels, results and game-over scenes.
+	**1.0**
+		Credits scene.
+		Added new songs.
+		Important refatorations.

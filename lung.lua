@@ -88,7 +88,7 @@ local nTsBarScale = 0.1
 local alpha = 0.6
 --local offsetSuperDParams = { 0,-37, 37,-10, 23,34, -23,34, -37,-10 }
 -- Sound settings
-local musicTrack = audio.loadStream( "assets/audio/youCantHide.mp3" )
+local musicTrack = audio.loadStream( "assets/audio/wildKidz.mp3" )
 local moveTrack = audio.loadSound( "assets/audio/moveSound.mp3" )
 local jumpTrack = audio.loadSound( "assets/audio/jumpSound.mp3" )
 local punchTrack = audio.loadSound( "assets/audio/punchSound.mp3" )

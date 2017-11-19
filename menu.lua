@@ -104,7 +104,7 @@ end
 local function gotoCredits()
   print("tapped credits button")
   audio.play( selected )
-  --composer.gotoScene( "credits" )
+  composer.gotoScene( "credits" )
 end
 
 local function exitGame()

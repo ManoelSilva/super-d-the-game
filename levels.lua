@@ -40,7 +40,7 @@ local lungSubLevel
 local bossSubLevel
 local padLock
 local padLockTwo
-local padLockThree
+--local padLockThree
 local respiratorySystemText
 local respiratorySystemTextEntity
 local mouthText
@@ -201,13 +201,14 @@ local function checkPlayerData()
       bossSubLevel.alpha = 1
       bossSubLevel:addEventListener( "tap", goToBossSubLevel )
     end
-
+--[[    
     if( playerDataTable.isDigestiveLevel == true ) then
       rankSublevel( playerDataTable, "boss" )
       display.remove( padLockThree )
       passLevelButton.alpha = alpha
       passLevelButton:setEnabled( true )
     end
+]]
   end
 end
 
@@ -284,10 +285,11 @@ function scene:create( event )
   padLockTwo = display.newImageRect( backGroup, "assets/img/pad-lock.png", 50, 72 )
   padLockTwo.x = display.contentCenterX + 300
   padLockTwo.y = display.contentCenterY
-
+--[[
   padLockThree = display.newImageRect( uiGroup, "assets/img/pad-lock.png", 50, 72 )
   padLockThree.x = display.contentCenterX + 452
   padLockThree.y = display.contentCenterY + 200
+]]
 
   backToMenuButton = widget.newButton( {
     id = "backToMenuButton",
@@ -299,7 +301,7 @@ function scene:create( event )
     top = 520,
     onEvent = goBacktoMenu
   } )
-
+--[[
   passLevelButton = widget.newButton( {
     id = "passLevelButton",
     width = 100,
@@ -310,13 +312,13 @@ function scene:create( event )
     top = 520,
     onEvent = goToNextLevel
   } )
-
+]]
   backToMenuButton.alpha = alpha
-  passLevelButton.alpha = alphaToLocked
-  passLevelButton:setEnabled( false )
+  --passLevelButton.alpha = alphaToLocked
+  --passLevelButton:setEnabled( false )
 
   uiGroup:insert( backToMenuButton )
-  uiGroup:insert( passLevelButton )
+  --uiGroup:insert( passLevelButton )
 end
 
 -- show()

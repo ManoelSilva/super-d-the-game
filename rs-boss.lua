@@ -595,7 +595,7 @@ local function passSubLevel()
   playerDataTable = loadsave.loadTable( "playerData.json" )
 
   if( playerDataTable.rsBossPontuation == nil ) then
-    playerDataTable.isDigestiveLevel = true
+    playerDataTable.isEnd = true
     playerDataTable.rsBossPontuation = points
     playerDataTable.rsBossLifePoints = lives
     playerDataTable.rsBossUsedNucleums = generatedNucleums

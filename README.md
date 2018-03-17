@@ -1,7 +1,7 @@
 # Super Disease - The Game
 
 ## Actual Version
-	1.0
+	1.0.1
 
 ## Game name
  	Super Disease.
@@ -135,3 +135,5 @@
 		Credits scene.
 		Added new songs.
 		Important refatorations.
+	**1.0.1**
+		Fixed boss ranking.

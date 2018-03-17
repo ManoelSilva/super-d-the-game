@@ -201,14 +201,15 @@ local function checkPlayerData()
       bossSubLevel.alpha = 1
       bossSubLevel:addEventListener( "tap", goToBossSubLevel )
     end
---[[    
-    if( playerDataTable.isDigestiveLevel == true ) then
+    
+    if( playerDataTable.isEnd == true ) then
       rankSublevel( playerDataTable, "boss" )
-      display.remove( padLockThree )
-      passLevelButton.alpha = alpha
-      passLevelButton:setEnabled( true )
+      --[[
+        passLevelButton.alpha = alpha
+        passLevelButton:setEnabled( true )
+      ]]
     end
-]]
+
   end
 end
 
